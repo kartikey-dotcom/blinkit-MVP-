@@ -1,0 +1,14 @@
+# Local Environment Secrets
+.env
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# System / OS files
+.DS_Store
+Thumbs.db
