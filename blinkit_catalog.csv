@@ -1,0 +1,29 @@
+id,name,category,price,mrp,emoji
+DB-001,Amul Taaza Milk 1L,Dairy & Breakfast,54,54,🥛
+DB-002,Amul Pasteurised Butter 100g,Dairy & Breakfast,58,60,🧈
+DB-003,Harvest Gold Bread,Dairy & Breakfast,45,50,🍞
+DB-004,Eggoz Farm Fresh Eggs (6 pcs),Dairy & Breakfast,65,75,🥚
+DB-005,Epigamia Greek Yogurt,Dairy & Breakfast,50,55,🍨
+FV-001,Fresh Imported Hass Avocado (2 pcs),Fruits & Vegetables,189,220,🥑
+FV-002,Fresh Hybrid Tomatoes 500g,Fruits & Vegetables,24,35,🍅
+FV-003,Bananas (6 pcs),Fruits & Vegetables,48,60,🍌
+GS-001,Fortune Sunflower Oil 1L,Grocery & Staples,145,170,🌻
+GS-002,Aashirvaad Atta 5kg,Grocery & Staples,235,275,🌾
+MS-001,Doritos Nacho Cheese 150g,Munchies & Snacks,85,95,📐
+MS-002,Lay's Magic Masala 90g,Munchies & Snacks,40,45,🍟
+BC-001,Red Bull Energy Drink 250ml,Beverages & Cold Drinks,115,125,⚡
+BC-002,Coca-Cola Zero Sugar 300ml,Beverages & Cold Drinks,38,40,🥤
+GS-101,Blue Tokai Dark Roast Coffee Beans 250g,Gourmet & Specialty,490,550,☕
+GS-102,Nutella Hazelnut Spread 350g,Gourmet & Specialty,375,425,🌰
+SB-001,Cadbury Dairy Milk Silk Chocolate 150g,Sweet Tooth & Bakery,175,195,🍫
+ET-001,Spigen 20W Type-C Fast Charger,Electronics & Tech,999,1499,🔌
+ET-002,boAt Airdopes 141,Electronics & Tech,1299,2990,🎧
+ET-003,Portronics 6-in-1 Type-C HDMI Hub,Electronics & Tech,1499,2499,💻
+BP-001,Minimalist 10% Vitamin C Face Serum 30ml,Beauty & Personal Care,664,699,🧴
+BP-002,The Derma Co 1% Hyaluronic Sunscreen 50g,Beauty & Personal Care,449,499,☀️
+HK-001,InstaCuppa Electric Coffee Frother,Home & Kitchen,999,1499,☕
+HK-002,Pigeon 1.5L Electric Kettle,Home & Kitchen,699,1195,🫖
+BC-201,Pampers Fresh Clean Baby Wipes (80 sheets),Baby Care,189,225,👶
+BC-202,Sebamed Baby Gentle Lotion 200ml,Baby Care,629,699,🍼
+PC-001,Pedigree Adult Dry Dog Food 1.2kg,Pet Care,380,420,🐶
+PC-002,Whiskas Wet Cat Food Ocean Fish 85g,Pet Care,50,55,🐱
