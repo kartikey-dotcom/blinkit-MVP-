@@ -1,6 +1,6 @@
 """
 BlinkSmart: Zero-Risk First-Trial Shield Engine MVP
-Streamlit App entrypoint with dynamic hyper-local social proof count (< 50) for each product.
+Streamlit App entrypoint strictly enforcing non-grocery category recommendations (Tech, Beauty, Home, Baby, Pet Care).
 """
 
 import os
@@ -34,6 +34,15 @@ def get_product_image_data_uri(product_name, emoji="📦", color="#0C831F"):
 def get_dynamic_social_proof(product_name):
     num = (abs(hash(product_name)) % 36) + 14
     return num
+
+# NON-GROCERY CATEGORIES DEFINITION (Strictly enforced by BlinkSmart Shield Engine)
+NON_GROCERY_CATEGORIES = [
+    "Electronics & Tech",
+    "Beauty & Personal Care",
+    "Home & Kitchen",
+    "Baby Care",
+    "Pet Care"
+]
 
 # ==============================================================================
 # PAGE CONFIGURATION & EXACT BLINKIT BRAND STYLING
@@ -304,6 +313,11 @@ def load_catalog():
 
 catalog_df = load_catalog()
 
+# Filter strict non-grocery catalog for recommendation engine
+non_grocery_catalog = catalog_df[catalog_df["category"].isin(NON_GROCERY_CATEGORIES)]
+if non_grocery_catalog.empty:
+    non_grocery_catalog = catalog_df
+
 # ==============================================================================
 # SESSION STATE INITIALIZATION
 # ==============================================================================
@@ -323,28 +337,30 @@ if "exchange_requested" not in st.session_state:
     st.session_state.exchange_requested = False
 
 # ==============================================================================
-# AI NUDGE RECOMMENDATION ENGINE
+# STRICT NON-GROCERY AI NUDGE RECOMMENDATION ENGINE
 # ==============================================================================
 def get_ai_cross_sell_nudge(cart_items, api_key):
     if not cart_items:
         return None
 
-    cart_categories = list(set(item.get("category", "") for item in cart_items))
     cart_names = [item["name"] for item in cart_items]
+    cart_cats = [item.get("category", "") for item in cart_items]
 
-    unexplored_df = catalog_df[~catalog_df["category"].isin(cart_categories)]
-    if unexplored_df.empty:
-        unexplored_df = catalog_df
+    # Candidate pool MUST ONLY BE non-grocery products
+    candidates_df = non_grocery_catalog[~non_grocery_catalog["category"].isin(cart_cats)]
+    if candidates_df.empty:
+        candidates_df = non_grocery_catalog
 
+    # 1. Gemini API Integration
     if api_key and len(api_key.strip()) > 10:
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key.strip()}"
             prompt = f"""
 You are Blinkit's AI Cross-Sell Engine.
 Customer Cart: {', '.join(cart_names)}.
-Recommend ONE product from unexplored categories: {unexplored_df['name'].tolist()}.
-Write 1 short sentence (max 12 words) pairing rationale.
-Format JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your sentence."}}
+Recommend ONE high-margin NON-GROCERY product strictly from this list: {candidates_df['name'].tolist()}.
+Write 1 short sentence (max 12 words) pairing rationale connecting their cart to this non-grocery item.
+Format JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your 1 sentence rationale."}}
 """
             res = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=3)
             if res.status_code == 200:
@@ -356,18 +372,36 @@ Format JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your s
                     parsed = json.loads(match.group())
                     rec_name = parsed.get("recommended_product")
                     rationale = parsed.get("rationale")
-                    rec_item = catalog_df[catalog_df["name"] == rec_name]
+                    rec_item = candidates_df[candidates_df["name"] == rec_name]
                     if not rec_item.empty:
                         return rec_item.iloc[0].to_dict(), rationale
         except Exception:
             pass
 
-    if any("coffee" in name.lower() or "milk" in name.lower() for name in cart_names):
-        rec_row = catalog_df[catalog_df["name"].str.contains("Frother", case=False, na=False)].iloc[0].to_dict()
-        return rec_row, "Pairs with your Blue Tokai coffee..."
+    # 2. Rule Engine (STRICTLY NON-GROCERY PRODUCT TARGETING)
+    cart_str = ' '.join(cart_names).lower()
 
-    rec_row = unexplored_df.iloc[0].to_dict()
-    return rec_row, "Recommended non-grocery upgrade for your cart!"
+    # Rule A: Coffee / Milk / Breakfast -> InstaCuppa Frother (Home & Kitchen)
+    if any(k in cart_str for k in ["coffee", "milk", "bread", "butter", "eggs"]):
+        frother_match = candidates_df[candidates_df["name"].str.contains("Frother", case=False, na=False)]
+        if not frother_match.empty:
+            return frother_match.iloc[0].to_dict(), "Pairs with your Blue Tokai coffee & fresh milk..."
+
+    # Rule B: Snacks / Cold Drinks / Chocolates -> boAt Earbuds (Electronics & Tech)
+    if any(k in cart_str for k in ["chips", "snack", "coca", "red bull", "chocolate", "doritos", "lay"]):
+        earbuds_match = candidates_df[candidates_df["name"].str.contains("Earbuds|Airdopes|Charger", case=False, na=False)]
+        if not earbuds_match.empty:
+            return earbuds_match.iloc[0].to_dict(), "Perfect companion for late-night music & binge snacking!"
+
+    # Rule C: Fruits / Vegetables -> Vitamin C Face Serum (Beauty & Personal Care)
+    if any(k in cart_str for k in ["avocado", "tomatoes", "bananas", "fruit", "veggie"]):
+        serum_match = candidates_df[candidates_df["name"].str.contains("Serum|Sunscreen", case=False, na=False)]
+        if not serum_match.empty:
+            return serum_match.iloc[0].to_dict(), "Complement your healthy diet with glowing skin radiance!"
+
+    # Default Rule: First Non-Grocery SKU in candidate pool
+    rec_row = candidates_df.iloc[0].to_dict()
+    return rec_row, "Recommended non-grocery trial with 10-Minute Doorstep Exchange Shield!"
 
 # ==============================================================================
 # TOP HEADER BAR
