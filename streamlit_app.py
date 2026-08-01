@@ -1,10 +1,11 @@
 """
 BlinkSmart: Zero-Risk First-Trial Shield Engine MVP
-Streamlit App entrypoint with clean HTML rendering (newlines stripped to prevent Markdown code block bugs).
+Streamlit App entrypoint with high-reliability product images & clean HTML rendering.
 """
 
 import os
 import time
+import urllib.parse
 import requests
 import pandas as pd
 import streamlit as st
@@ -16,6 +17,18 @@ load_dotenv()
 # Helper function to strip newlines and extra spaces so Streamlit's Markdown parser NEVER treats HTML as raw code
 def clean_html(html_str):
     return " ".join(html_str.split())
+
+# High-reliability product thumbnail generator (100% guaranteed rendering across all browsers/networks)
+def get_product_image_data_uri(product_name, emoji="📦", color="#0C831F"):
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#F8FAFC" rx="20"/>
+    <rect x="10" y="10" width="180" height="180" fill="#FFFFFF" rx="16" stroke="#E2E8F0" stroke-width="2"/>
+    <circle cx="100" cy="90" r="55" fill="{color}" opacity="0.1"/>
+    <text x="50%" y="45%" dominant-baseline="central" text-anchor="middle" font-size="75">{emoji}</text>
+    <rect x="25" y="148" width="150" height="26" rx="13" fill="#0C831F"/>
+    <text x="50%" y="161%" dominant-baseline="central" text-anchor="middle" font-size="11" font-weight="900" fill="#FFFFFF">100% AUTHENTIC</text>
+    </svg>"""
+    return f"data:image/svg+xml;utf8,{urllib.parse.quote(svg)}"
 
 # ==============================================================================
 # PAGE CONFIGURATION & EXACT BLINKIT BRAND STYLING
@@ -148,13 +161,13 @@ footer { visibility: hidden; }
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    padding: 2px;
     overflow: hidden;
 }
 .nudge-img-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 8px;
 }
 .nudge-title {
@@ -265,21 +278,6 @@ footer { visibility: hidden; }
 </style>
 """), unsafe_allow_html=True)
 
-# Direct Image URLs for authentic product thumbnails
-PRODUCT_IMAGES = {
-    "Blue Tokai Coffee (250g)": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200",
-    "Amul Gold Milk (1L)": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=200",
-    "InstaCuppa Electric Coffee Frother": "https://images.unsplash.com/photo-1517668808822-9e4288246ede?w=200",
-    "boAt Airdopes 141": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200",
-    "Minimalist 10% Vitamin C Face Serum 30ml": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200",
-    "Fresh Imported Hass Avocado (2 pcs)": "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=200",
-    "Fresh Hybrid Tomatoes 500g": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=200",
-    "Pigeon 1.5L Electric Kettle": "https://images.unsplash.com/photo-1594213114663-d94db9b17126?w=200",
-    "Pedigree Adult Dry Dog Food 1.2kg": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200",
-    "Pampers Fresh Clean Baby Wipes (80 sheets)": "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=200"
-}
-DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200"
-
 # ==============================================================================
 # DATASET LOADING
 # ==============================================================================
@@ -294,7 +292,7 @@ def load_catalog():
     return pd.DataFrame([
         {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "category": "Gourmet & Specialty", "price": 499, "mrp": 550, "emoji": "☕", "subtext": "Roasted Arabica"},
         {"id": "DB-001", "name": "Amul Gold Milk (1L)", "category": "Dairy & Breakfast", "price": 66, "mrp": 66, "emoji": "🥛", "subtext": "Full Cream"},
-        {"id": "HK-001", "name": "InstaCuppa Electric Coffee Frother", "category": "Home & Kitchen", "price": 799, "mrp": 1200, "emoji": "☕", "subtext": "Frother Wand"},
+        {"id": "HK-001", "name": "InstaCuppa Electric Coffee Frother", "category": "Home & Kitchen", "price": 799, "mrp": 1200, "emoji": "⚡", "subtext": "Frother Wand"},
         {"id": "ET-002", "name": "boAt Airdopes 141", "category": "Electronics & Tech", "price": 1299, "mrp": 2990, "emoji": "🎧", "subtext": "Wireless Earbuds"},
         {"id": "BP-001", "name": "Minimalist 10% Vitamin C Face Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴", "subtext": "Face Serum"}
     ])
@@ -446,11 +444,11 @@ if not st.session_state.order_placed:
             st.info("Your basket is empty. Use the search bar above to add items!")
         else:
             for idx, item in enumerate(st.session_state.cart):
-                img_url = PRODUCT_IMAGES.get(item["name"], DEFAULT_IMAGE)
+                img_data_uri = get_product_image_data_uri(item["name"], item.get("emoji", "📦"))
                 col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
                 
                 with col_img:
-                    st.image(img_url, width=48)
+                    st.image(img_data_uri, width=48)
                     
                 with col_info:
                     st.markdown(f"**{item['name']}**")
@@ -480,17 +478,16 @@ if not st.session_state.order_placed:
         nudge_data = get_ai_cross_sell_nudge(st.session_state.cart, api_key_input)
         if nudge_data:
             nudge_item, rationale = nudge_data
-            nudge_img = PRODUCT_IMAGES.get(nudge_item["name"], DEFAULT_IMAGE)
+            nudge_img_uri = get_product_image_data_uri(nudge_item["name"], nudge_item.get("emoji", "⚡"), color="#F7C200")
             discount_pct = int(((nudge_item.get("mrp", nudge_item["price"]) - nudge_item["price"]) / nudge_item.get("mrp", nudge_item["price"])) * 100) if nudge_item.get("mrp", 0) > nudge_item["price"] else 33
             
-            # Using clean_html to eliminate raw code rendering
             nudge_html = clean_html(f"""
             <div class="nudge-card-exact">
                 <span class="badge-discount">{discount_pct}% OFF</span>
                 <span class="badge-ai">AI RECOMMEND</span>
                 <div class="nudge-body">
                     <div class="nudge-img-container">
-                        <img src="{nudge_img}" />
+                        <img src="{nudge_img_uri}" />
                     </div>
                     <div style="flex:1;">
                         <div class="nudge-title">{nudge_item['name']}</div>
