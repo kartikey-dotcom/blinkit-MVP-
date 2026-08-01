@@ -1,11 +1,10 @@
 """
 BlinkSmart: Zero-Risk First-Trial Shield Engine MVP
-Streamlit App entrypoint with textwrap dedented HTML rendering & direct image URLs.
+Streamlit App entrypoint with clean HTML rendering (newlines stripped to prevent Markdown code block bugs).
 """
 
 import os
 import time
-import textwrap
 import requests
 import pandas as pd
 import streamlit as st
@@ -13,6 +12,10 @@ from dotenv import load_dotenv
 
 # Load environment variables (.env / Streamlit secrets)
 load_dotenv()
+
+# Helper function to strip newlines and extra spaces so Streamlit's Markdown parser NEVER treats HTML as raw code
+def clean_html(html_str):
+    return " ".join(html_str.split())
 
 # ==============================================================================
 # PAGE CONFIGURATION & EXACT BLINKIT BRAND STYLING
@@ -25,7 +28,7 @@ st.set_page_config(
 )
 
 # Custom CSS matching the exact visual layout
-st.markdown(textwrap.dedent("""
+st.markdown(clean_html("""
 <style>
 /* Reset & Background */
 .stApp {
@@ -366,7 +369,7 @@ Format JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your s
 # ==============================================================================
 # TOP HEADER BAR
 # ==============================================================================
-st.markdown(textwrap.dedent("""
+st.markdown(clean_html("""
 <div class="blinkit-header">
     <div>
         <div class="header-logo">blinkit</div>
@@ -434,40 +437,41 @@ if not st.session_state.order_placed:
             st.rerun()
 
     # --------------------------------------------------------------------------
-    # CARD 1: YOUR BASKET
+    # CARD 1: YOUR BASKET (NATIVE STREAMLIT CONTAINER + COLUMNS)
     # --------------------------------------------------------------------------
-    st.markdown('<div class="blinkit-card"><div class="card-label">YOUR BASKET</div></div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.caption("YOUR BASKET")
 
-    if not st.session_state.cart:
-        st.info("Your basket is empty. Use the search bar above to add items!")
-    else:
-        for idx, item in enumerate(st.session_state.cart):
-            img_url = PRODUCT_IMAGES.get(item["name"], DEFAULT_IMAGE)
-            col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
-            
-            with col_img:
-                st.image(img_url, width=48)
+        if not st.session_state.cart:
+            st.info("Your basket is empty. Use the search bar above to add items!")
+        else:
+            for idx, item in enumerate(st.session_state.cart):
+                img_url = PRODUCT_IMAGES.get(item["name"], DEFAULT_IMAGE)
+                col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
                 
-            with col_info:
-                st.markdown(f"**{item['name']}**")
-                st.caption(item.get("subtext", item.get("category", "Fresh Stock")))
-                st.markdown(f"**₹{item['price']}**")
-                
-            with col_btn:
-                c1, c2, c3 = st.columns([1,1,1])
-                with c1:
-                    if st.button("−", key=f"minus_{idx}"):
-                        if item["qty"] > 1:
-                            item["qty"] -= 1
-                        else:
-                            st.session_state.cart.pop(idx)
-                        st.rerun()
-                with c2:
-                    st.markdown(f"<div style='text-align:center; font-weight:800; padding-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
-                with c3:
-                    if st.button("+", key=f"plus_{idx}"):
-                        item["qty"] += 1
-                        st.rerun()
+                with col_img:
+                    st.image(img_url, width=48)
+                    
+                with col_info:
+                    st.markdown(f"**{item['name']}**")
+                    st.caption(item.get("subtext", item.get("category", "Fresh Stock")))
+                    st.markdown(f"**₹{item['price']}**")
+                    
+                with col_btn:
+                    c1, c2, c3 = st.columns([1,1,1])
+                    with c1:
+                        if st.button("−", key=f"minus_{idx}"):
+                            if item["qty"] > 1:
+                                item["qty"] -= 1
+                            else:
+                                st.session_state.cart.pop(idx)
+                            st.rerun()
+                    with c2:
+                        st.markdown(f"<div style='text-align:center; font-weight:800; padding-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
+                    with c3:
+                        if st.button("+", key=f"plus_{idx}"):
+                            item["qty"] += 1
+                            st.rerun()
 
     # --------------------------------------------------------------------------
     # CARD 2: AI RECOMMEND / BLINKSMART NUDGE CARD
@@ -479,11 +483,11 @@ if not st.session_state.order_placed:
             nudge_img = PRODUCT_IMAGES.get(nudge_item["name"], DEFAULT_IMAGE)
             discount_pct = int(((nudge_item.get("mrp", nudge_item["price"]) - nudge_item["price"]) / nudge_item.get("mrp", nudge_item["price"])) * 100) if nudge_item.get("mrp", 0) > nudge_item["price"] else 33
             
-            st.markdown(textwrap.dedent(f"""
+            # Using clean_html to eliminate raw code rendering
+            nudge_html = clean_html(f"""
             <div class="nudge-card-exact">
                 <span class="badge-discount">{discount_pct}% OFF</span>
                 <span class="badge-ai">AI RECOMMEND</span>
-                
                 <div class="nudge-body">
                     <div class="nudge-img-container">
                         <img src="{nudge_img}" />
@@ -504,14 +508,14 @@ if not st.session_state.order_placed:
                         </div>
                     </div>
                 </div>
-                
                 <div class="nudge-footer">
                     <div class="shield-applied-text">
                         🛡️ Zero-Risk Shield Applied
                     </div>
                 </div>
             </div>
-            """), unsafe_allow_html=True)
+            """)
+            st.markdown(nudge_html, unsafe_allow_html=True)
             
             if st.button(f"+ Add {nudge_item['name']} to Order", key="add_nudge_btn", type="primary", use_container_width=True):
                 nudge_item_cart = dict(nudge_item)
@@ -529,10 +533,9 @@ if not st.session_state.order_placed:
     handling_fee = 15
     grand_total = item_total + delivery_fee + handling_fee
 
-    st.markdown(textwrap.dedent(f"""
+    bill_html = clean_html(f"""
     <div class="blinkit-card">
         <div class="card-label">BILL SUMMARY</div>
-        
         <div class="bill-row">
             <span>Item Total</span>
             <span style="color: #0F172A; font-weight: 700;">₹{item_total}</span>
@@ -545,25 +548,26 @@ if not st.session_state.order_placed:
             <span>Handling Fee</span>
             <span style="color: #0F172A; font-weight: 700;">₹{handling_fee}</span>
         </div>
-        
         <div class="bill-row grand-total">
             <span>Grand Total</span>
             <span>₹{grand_total}</span>
         </div>
     </div>
-    """), unsafe_allow_html=True)
+    """)
+    st.markdown(bill_html, unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
     # CARD 4: INFORMATION SHIELD BOX
     # --------------------------------------------------------------------------
-    st.markdown(textwrap.dedent("""
+    info_html = clean_html("""
     <div class="info-shield-box">
         <div class="info-icon">ⓘ</div>
         <div class="info-text">
             Don't like the non-grocery item? Request a doorstep exchange within 10 minutes of delivery. No questions asked.
         </div>
     </div>
-    """), unsafe_allow_html=True)
+    """)
+    st.markdown(info_html, unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
     # FIXED BOTTOM CHECKOUT BAR
@@ -584,16 +588,17 @@ if not st.session_state.order_placed:
 # ==============================================================================
 else:
     st.balloons()
-    st.markdown(textwrap.dedent("""
+    success_html = clean_html("""
     <div style="background-color: #064E3B; border: 2px solid #10B981; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px; color: #FFFFFF;">
         <h2 style="margin: 0; color: #FFFFFF;">🎉 Order Placed Successfully!</h2>
         <p style="color: #A7F3D0; font-size: 1rem; margin-top: 4px;">
             Arriving in <strong>8-10 Minutes</strong> • Dark Store #104 (Indiranagar)
         </p>
     </div>
-    """), unsafe_allow_html=True)
+    """)
+    st.markdown(success_html, unsafe_allow_html=True)
 
-    st.markdown(textwrap.dedent("""
+    shield_html = clean_html("""
     <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border: 2px solid #6366F1; border-radius: 16px; padding: 20px; color: #FFFFFF; margin-bottom: 20px;">
         <h3 style="color: #A5B4FC; margin-top: 0;">🛡️ Active 10-Minute First-Trial Safety Net</h3>
         <p style="color: #E0E7FF; font-size: 0.9rem;">
@@ -603,7 +608,8 @@ else:
             ⏳ 09:59 (Shield Protection Active)
         </div>
     </div>
-    """), unsafe_allow_html=True)
+    """)
+    st.markdown(shield_html, unsafe_allow_html=True)
 
     if st.button("🚨 Request 10-Minute Doorstep Exchange", type="primary", use_container_width=True):
         st.session_state.exchange_requested = True
