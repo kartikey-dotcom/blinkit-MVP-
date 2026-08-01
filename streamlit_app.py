@@ -1,10 +1,11 @@
 """
 BlinkSmart: Zero-Risk First-Trial Shield Engine MVP
-Streamlit App entrypoint for Streamlit Cloud Deployment with Global Search & Gemini AI Nudges.
+Streamlit App entrypoint with textwrap dedented HTML rendering & direct image URLs.
 """
 
 import os
 import time
+import textwrap
 import requests
 import pandas as pd
 import streamlit as st
@@ -24,243 +25,257 @@ st.set_page_config(
 )
 
 # Custom CSS matching the exact visual layout
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <style>
-    /* Reset & Background */
-    .stApp {
-        background-color: #F4F6F8 !important;
-        color: #1E293B;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-    
-    /* Hide Default Streamlit Header & Footer */
-    header[data-testid="stHeader"] { visibility: hidden; height: 0; }
-    footer { visibility: hidden; }
-    .block-container { padding-top: 0rem; padding-bottom: 5rem; max-width: 480px; }
+/* Reset & Background */
+.stApp {
+    background-color: #F4F6F8 !important;
+    color: #1E293B;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
 
-    /* Yellow Top Header */
-    .blinkit-header {
-        background-color: #F7C200;
-        padding: 14px 18px;
-        margin-left: -1rem;
-        margin-right: -1rem;
-        margin-top: -1rem;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .header-logo {
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: #000000;
-        letter-spacing: -0.5px;
-    }
-    .header-location {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #1E293B;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin-top: 2px;
-    }
-    .header-badge {
-        background-color: #FFFFFF;
-        color: #0C831F;
-        font-size: 0.75rem;
-        font-weight: 800;
-        padding: 4px 10px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+/* Hide Default Streamlit Header & Footer */
+header[data-testid="stHeader"] { visibility: hidden; height: 0; }
+footer { visibility: hidden; }
+.block-container { padding-top: 0rem; padding-bottom: 5rem; max-width: 480px; }
 
-    /* Card Wrapper */
-    .blinkit-card {
-        background: #FFFFFF;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        border: 1px solid #E2E8F0;
-    }
-    .card-label {
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #64748B;
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-    }
+/* Yellow Top Header */
+.blinkit-header {
+    background-color: #F7C200;
+    padding: 14px 18px;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-top: -1rem;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.header-logo {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #000000;
+    letter-spacing: -0.5px;
+}
+.header-location {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+.header-badge {
+    background-color: #FFFFFF;
+    color: #0C831F;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 
-    /* AI Recommend Nudge Card */
-    .nudge-card-exact {
-        background: #F0FDF4;
-        border: 1.5px solid #A7F3D0;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 16px;
-        position: relative;
-    }
-    .badge-discount {
-        background-color: #F7C200;
-        color: #000000;
-        font-size: 0.68rem;
-        font-weight: 900;
-        padding: 3px 6px;
-        border-radius: 4px;
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        z-index: 2;
-    }
-    .badge-ai {
-        background-color: #F7C200;
-        color: #000000;
-        font-size: 0.65rem;
-        font-weight: 900;
-        padding: 3px 8px;
-        border-radius: 10px;
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 2;
-    }
-    .nudge-body {
-        display: flex;
-        gap: 12px;
-        margin-top: 16px;
-    }
-    .nudge-img-container {
-        width: 90px;
-        height: 90px;
-        background: #FFFFFF;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 6px;
-    }
-    .nudge-title {
-        font-size: 0.95rem;
-        font-weight: 800;
-        color: #0F172A;
-        line-height: 1.25;
-    }
-    .nudge-rationale {
-        font-size: 0.78rem;
-        font-style: italic;
-        color: #0C831F;
-        font-weight: 600;
-        margin-top: 3px;
-    }
-    .nudge-price-row {
-        margin-top: 6px;
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-    }
-    .nudge-price {
-        font-size: 1.15rem;
-        font-weight: 900;
-        color: #0F172A;
-    }
-    .nudge-mrp {
-        font-size: 0.8rem;
-        color: #94A3B8;
-        text-decoration: line-through;
-    }
-    .social-proof-row {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 6px;
-        font-size: 0.72rem;
-        color: #64748B;
-        font-weight: 600;
-    }
-    .avatar-stack {
-        display: flex;
-    }
-    .avatar-circle {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #CBD5E1;
-        border: 1.5px solid #FFFFFF;
-        margin-left: -5px;
-    }
-    .avatar-circle:first-child { margin-left: 0; }
+/* Card Wrapper */
+.blinkit-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #E2E8F0;
+}
+.card-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #64748B;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
 
-    .nudge-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 14px;
-        padding-top: 10px;
-    }
-    .shield-applied-text {
-        font-size: 0.78rem;
-        font-weight: 800;
-        color: #0C831F;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
+/* AI Recommend Nudge Card */
+.nudge-card-exact {
+    background: #F0FDF4;
+    border: 1.5px solid #A7F3D0;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+}
+.badge-discount {
+    background-color: #F7C200;
+    color: #000000;
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 4px;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+.badge-ai {
+    background-color: #F7C200;
+    color: #000000;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 10px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
+.nudge-body {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+.nudge-img-container {
+    width: 85px;
+    height: 85px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    overflow: hidden;
+}
+.nudge-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.nudge-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.25;
+}
+.nudge-rationale {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #0C831F;
+    font-weight: 600;
+    margin-top: 3px;
+}
+.nudge-price-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+.nudge-price {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #0F172A;
+}
+.nudge-mrp {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    text-decoration: line-through;
+}
+.social-proof-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: #64748B;
+    font-weight: 600;
+}
+.avatar-stack {
+    display: flex;
+}
+.avatar-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #CBD5E1;
+    border: 1.5px solid #FFFFFF;
+    margin-left: -5px;
+}
+.avatar-circle:first-child { margin-left: 0; }
 
-    /* Bill Summary Rows */
-    .bill-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.88rem;
-        color: #64748B;
-        margin-bottom: 8px;
-    }
-    .bill-row.grand-total {
-        font-size: 1.15rem;
-        font-weight: 900;
-        color: #0F172A;
-        border-top: 1px solid #F1F5F9;
-        padding-top: 10px;
-        margin-bottom: 0;
-    }
+.nudge-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 8px;
+}
+.shield-applied-text {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #0C831F;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
-    /* Info Shield Box */
-    .info-shield-box {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 12px 14px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-bottom: 24px;
-    }
-    .info-icon {
-        color: #0C831F;
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-    .info-text {
-        font-size: 0.75rem;
-        color: #94A3B8;
-        line-height: 1.3;
-    }
+/* Bill Summary Rows */
+.bill-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: #64748B;
+    margin-bottom: 8px;
+}
+.bill-row.grand-total {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #0F172A;
+    border-top: 1px solid #F1F5F9;
+    padding-top: 10px;
+    margin-bottom: 0;
+}
+
+/* Info Shield Box */
+.info-shield-box {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.info-icon {
+    color: #0C831F;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.info-text {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    line-height: 1.3;
+}
 </style>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
-# Helper SVG Image creator for clear UI previews
-def get_svg_url(emoji, bg="#FFFFFF"):
-    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-    <rect width="100" height="100" fill="{bg}" rx="12"/>
-    <text x="50%" y="55%" dominant-baseline="central" text-anchor="middle" font-size="45">{emoji}</text>
-    </svg>"""
-    return f"data:image/svg+xml;utf8,{requests.utils.quote(svg)}"
+# Direct Image URLs for authentic product thumbnails
+PRODUCT_IMAGES = {
+    "Blue Tokai Coffee (250g)": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200",
+    "Amul Gold Milk (1L)": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=200",
+    "InstaCuppa Electric Coffee Frother": "https://images.unsplash.com/photo-1517668808822-9e4288246ede?w=200",
+    "boAt Airdopes 141": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200",
+    "Minimalist 10% Vitamin C Face Serum 30ml": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200",
+    "Fresh Imported Hass Avocado (2 pcs)": "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=200",
+    "Fresh Hybrid Tomatoes 500g": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=200",
+    "Pigeon 1.5L Electric Kettle": "https://images.unsplash.com/photo-1594213114663-d94db9b17126?w=200",
+    "Pedigree Adult Dry Dog Food 1.2kg": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200",
+    "Pampers Fresh Clean Baby Wipes (80 sheets)": "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=200"
+}
+DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200"
 
 # ==============================================================================
 # DATASET LOADING
@@ -273,15 +288,12 @@ def load_catalog():
             return pd.read_csv(csv_file)
         except Exception:
             pass
-    # Default catalog
     return pd.DataFrame([
         {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "category": "Gourmet & Specialty", "price": 499, "mrp": 550, "emoji": "☕", "subtext": "Roasted Arabica"},
         {"id": "DB-001", "name": "Amul Gold Milk (1L)", "category": "Dairy & Breakfast", "price": 66, "mrp": 66, "emoji": "🥛", "subtext": "Full Cream"},
         {"id": "HK-001", "name": "InstaCuppa Electric Coffee Frother", "category": "Home & Kitchen", "price": 799, "mrp": 1200, "emoji": "☕", "subtext": "Frother Wand"},
         {"id": "ET-002", "name": "boAt Airdopes 141", "category": "Electronics & Tech", "price": 1299, "mrp": 2990, "emoji": "🎧", "subtext": "Wireless Earbuds"},
-        {"id": "BP-001", "name": "Minimalist 10% Vitamin C Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴", "subtext": "Face Serum"},
-        {"id": "BC-201", "name": "Pampers Fresh Clean Baby Wipes", "category": "Baby Care", "price": 189, "mrp": 225, "emoji": "👶", "subtext": "80 Sheets"},
-        {"id": "PC-001", "name": "Pedigree Adult Dry Dog Food 1.2kg", "category": "Pet Care", "price": 380, "mrp": 420, "emoji": "🐶", "subtext": "Chicken & Rice"}
+        {"id": "BP-001", "name": "Minimalist 10% Vitamin C Face Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴", "subtext": "Face Serum"}
     ])
 
 catalog_df = load_catalog()
@@ -305,33 +317,28 @@ if "exchange_requested" not in st.session_state:
     st.session_state.exchange_requested = False
 
 # ==============================================================================
-# AI NUDGE RECOMMENDATION ENGINE (GEMINI API + NON-EXPLORED CATEGORIES)
+# AI NUDGE RECOMMENDATION ENGINE
 # ==============================================================================
 def get_ai_cross_sell_nudge(cart_items, api_key):
-    """
-    Analyzes cart items and recommends a product from a completely NON-EXPLORED category using Gemini AI.
-    """
     if not cart_items:
         return None
 
     cart_categories = list(set(item.get("category", "") for item in cart_items))
     cart_names = [item["name"] for item in cart_items]
 
-    # Filter catalog items from non-explored categories
     unexplored_df = catalog_df[~catalog_df["category"].isin(cart_categories)]
     if unexplored_df.empty:
         unexplored_df = catalog_df
 
-    # 1. Query Gemini 1.5 Flash API if key is present
     if api_key and len(api_key.strip()) > 10:
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key.strip()}"
             prompt = f"""
 You are Blinkit's AI Cross-Sell Engine.
-The customer has the following items in cart: {', '.join(cart_names)} (Categories: {', '.join(cart_categories)}).
-Recommend ONE item from these unexplored non-grocery categories: {unexplored_df['name'].tolist()}.
-Write 1 short sentence (max 12 words) explaining why this non-grocery item pairs with their current cart.
-Format response as JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your 1 sentence pairing rationale."}}
+Customer Cart: {', '.join(cart_names)}.
+Recommend ONE product from unexplored categories: {unexplored_df['name'].tolist()}.
+Write 1 short sentence (max 12 words) pairing rationale.
+Format JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your sentence."}}
 """
             res = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=3)
             if res.status_code == 200:
@@ -349,20 +356,17 @@ Format response as JSON: {{"recommended_product": "Exact Product Name", "rationa
         except Exception:
             pass
 
-    # 2. Smart Rule Fallback Engine
-    # If cart has Coffee / Milk -> Recommend Frother from Home & Kitchen
     if any("coffee" in name.lower() or "milk" in name.lower() for name in cart_names):
         rec_row = catalog_df[catalog_df["name"].str.contains("Frother", case=False, na=False)].iloc[0].to_dict()
         return rec_row, "Pairs with your Blue Tokai coffee..."
 
-    # If cart has snacks -> Recommend Earbuds from Electronics & Tech
     rec_row = unexplored_df.iloc[0].to_dict()
-    return rec_row, f"Recommended non-grocery upgrade for your cart!"
+    return rec_row, "Recommended non-grocery upgrade for your cart!"
 
 # ==============================================================================
-# TOP HEADER BAR (EXACT BLINKIT DESIGN)
+# TOP HEADER BAR
 # ==============================================================================
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div class="blinkit-header">
     <div>
         <div class="header-logo">blinkit</div>
@@ -377,13 +381,13 @@ st.markdown("""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # ==============================================================================
-# GLOBAL SEARCH & CATALOG ADDITION BAR
+# GLOBAL SEARCH BAR
 # ==============================================================================
 with st.expander("🔍 Search & Add Any Product from 12 Blinkit Categories", expanded=False):
-    search_query = st.text_input("Type product name (e.g., 'Milk', 'Avocado', 'Charger', 'Serum', 'Pedigree'):", "")
+    search_query = st.text_input("Type product name (e.g., 'Milk', 'Avocado', 'Charger', 'Serum'):", "")
     
     if search_query.strip():
         search_matches = catalog_df[catalog_df["name"].str.contains(search_query, case=False, na=False)]
@@ -405,14 +409,11 @@ with st.expander("🔍 Search & Add Any Product from 12 Blinkit Categories", exp
 # ==============================================================================
 if not st.session_state.order_placed:
 
-    # --------------------------------------------------------------------------
     # SIDEBAR CONTROLS
-    # --------------------------------------------------------------------------
     with st.sidebar:
         st.markdown("### ⚙️ Demo Controls & AI Keys")
         st.info("📍 **DLF Phase 3, Gurgaon**\n\n⚡ Served by *Dark Store #104*")
         
-        # Read API key from Streamlit Secrets or Environment Variable
         secret_key = ""
         try:
             secret_key = st.secrets.get("GEMINI_API_KEY", "")
@@ -435,24 +436,22 @@ if not st.session_state.order_placed:
     # --------------------------------------------------------------------------
     # CARD 1: YOUR BASKET
     # --------------------------------------------------------------------------
-    st.markdown('<div class="blinkit-card"><div class="card-label">YOUR BASKET</div>', unsafe_allow_html=True)
+    st.markdown('<div class="blinkit-card"><div class="card-label">YOUR BASKET</div></div>', unsafe_allow_html=True)
 
     if not st.session_state.cart:
         st.info("Your basket is empty. Use the search bar above to add items!")
     else:
         for idx, item in enumerate(st.session_state.cart):
-            img_url = get_svg_url(item.get("emoji", "📦"), "#F8FAFC")
+            img_url = PRODUCT_IMAGES.get(item["name"], DEFAULT_IMAGE)
             col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
             
             with col_img:
-                st.image(img_url, width=50)
+                st.image(img_url, width=48)
                 
             with col_info:
-                st.markdown(f"""
-                <div class="item-title">{item['name']}</div>
-                <div class="item-subtext">{item.get('subtext', item.get('category', 'Fresh Stock'))}</div>
-                <div class="item-price">₹{item['price']}</div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"**{item['name']}**")
+                st.caption(item.get("subtext", item.get("category", "Fresh Stock")))
+                st.markdown(f"**₹{item['price']}**")
                 
             with col_btn:
                 c1, c2, c3 = st.columns([1,1,1])
@@ -464,13 +463,11 @@ if not st.session_state.order_placed:
                             st.session_state.cart.pop(idx)
                         st.rerun()
                 with c2:
-                    st.markdown(f"<div style='text-align:center; font-weight:800; margin-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align:center; font-weight:800; padding-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
                 with c3:
                     if st.button("+", key=f"plus_{idx}"):
                         item["qty"] += 1
                         st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
     # CARD 2: AI RECOMMEND / BLINKSMART NUDGE CARD
@@ -479,17 +476,17 @@ if not st.session_state.order_placed:
         nudge_data = get_ai_cross_sell_nudge(st.session_state.cart, api_key_input)
         if nudge_data:
             nudge_item, rationale = nudge_data
-            frother_img = get_svg_url(nudge_item.get("emoji", "⚡"), "#FFFFFF")
+            nudge_img = PRODUCT_IMAGES.get(nudge_item["name"], DEFAULT_IMAGE)
             discount_pct = int(((nudge_item.get("mrp", nudge_item["price"]) - nudge_item["price"]) / nudge_item.get("mrp", nudge_item["price"])) * 100) if nudge_item.get("mrp", 0) > nudge_item["price"] else 33
             
-            st.markdown(f"""
+            st.markdown(textwrap.dedent(f"""
             <div class="nudge-card-exact">
                 <span class="badge-discount">{discount_pct}% OFF</span>
                 <span class="badge-ai">AI RECOMMEND</span>
                 
                 <div class="nudge-body">
                     <div class="nudge-img-container">
-                        <img src="{frother_img}" width="65" />
+                        <img src="{nudge_img}" />
                     </div>
                     <div style="flex:1;">
                         <div class="nudge-title">{nudge_item['name']}</div>
@@ -514,7 +511,7 @@ if not st.session_state.order_placed:
                     </div>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """), unsafe_allow_html=True)
             
             if st.button(f"+ Add {nudge_item['name']} to Order", key="add_nudge_btn", type="primary", use_container_width=True):
                 nudge_item_cart = dict(nudge_item)
@@ -532,7 +529,7 @@ if not st.session_state.order_placed:
     handling_fee = 15
     grand_total = item_total + delivery_fee + handling_fee
 
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="blinkit-card">
         <div class="card-label">BILL SUMMARY</div>
         
@@ -554,19 +551,19 @@ if not st.session_state.order_placed:
             <span>₹{grand_total}</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
-    # CARD 4: INFORMATION NUDGE / SHIELD EXPANDER
+    # CARD 4: INFORMATION SHIELD BOX
     # --------------------------------------------------------------------------
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div class="info-shield-box">
         <div class="info-icon">ⓘ</div>
         <div class="info-text">
             Don't like the non-grocery item? Request a doorstep exchange within 10 minutes of delivery. No questions asked.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
     # FIXED BOTTOM CHECKOUT BAR
@@ -574,12 +571,8 @@ if not st.session_state.order_placed:
     col_pay_left, col_pay_right = st.columns([0.4, 0.6])
     
     with col_pay_left:
-        st.markdown(f"""
-        <div style="padding-top: 4px;">
-            <div style="font-size: 1.3rem; font-weight: 900; color: #0F172A;">₹{grand_total}</div>
-            <div style="font-size: 0.68rem; font-weight: 800; color: #0C831F; text-transform: uppercase;">VIEW BILL ^</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"### ₹{grand_total}")
+        st.caption("VIEW BILL ^")
 
     with col_pay_right:
         if st.button("Pay via Face ID 🔲", type="primary", use_container_width=True):
@@ -591,18 +584,17 @@ if not st.session_state.order_placed:
 # ==============================================================================
 else:
     st.balloons()
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div style="background-color: #064E3B; border: 2px solid #10B981; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px; color: #FFFFFF;">
         <h2 style="margin: 0; color: #FFFFFF;">🎉 Order Placed Successfully!</h2>
         <p style="color: #A7F3D0; font-size: 1rem; margin-top: 4px;">
             Arriving in <strong>8-10 Minutes</strong> • Dark Store #104 (Indiranagar)
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
-    # Active 10-Minute Safety Net Banner
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%: border: 2px solid #6366F1; border-radius: 16px; padding: 20px; color: #FFFFFF; margin-bottom: 20px;">
+    st.markdown(textwrap.dedent("""
+    <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border: 2px solid #6366F1; border-radius: 16px; padding: 20px; color: #FFFFFF; margin-bottom: 20px;">
         <h3 style="color: #A5B4FC; margin-top: 0;">🛡️ Active 10-Minute First-Trial Safety Net</h3>
         <p style="color: #E0E7FF; font-size: 0.9rem;">
             Your order is protected by Blinkit's Zero-Risk Shield. Need an exchange or return? Request a 1-click doorstep rider exchange within 10 minutes!
@@ -611,9 +603,8 @@ else:
             ⏳ 09:59 (Shield Protection Active)
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
-    # Doorstep Exchange Request Button
     if st.button("🚨 Request 10-Minute Doorstep Exchange", type="primary", use_container_width=True):
         st.session_state.exchange_requested = True
 
