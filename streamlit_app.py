@@ -4,6 +4,15 @@ import time
 import requests
 import pandas as pd
 import os
+from dotenv import load_dotenv
+
+# Load environment variables (.env / Streamlit secrets)
+load_dotenv()
+
+# Robust helper function to strip all leading/trailing whitespace from each line before joining
+def clean_html(html_str):
+    lines = [line.strip() for line in html_str.splitlines() if line.strip()]
+    return " ".join(lines)
 
 # -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & BLINKIT BRAND STYLING
@@ -15,86 +24,87 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.markdown("""
-    <style>
-    .main { background-color: #0f172a; }
-    .stApp { background-color: #0f172a; color: #f8fafc; }
-    
-    .blinkit-badge {
-        background-color: #f7c200;
-        color: #000000;
-        font-weight: 800;
-        padding: 4px 12px;
-        border-radius: 6px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 16px;
-        display: inline-block;
-    }
-    
-    .nudge-card {
-        background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #0f172a 100%);
-        border: 1.5px solid #10b981;
-        border-radius: 16px;
-        padding: 18px;
-        margin-top: 14px;
-        margin-bottom: 14px;
-        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
-    }
-    
-    .nudge-tag {
-        background-color: rgba(16, 185, 129, 0.2);
-        color: #34d399;
-        border: 1px solid rgba(52, 211, 153, 0.3);
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
+# Custom CSS styling (clean, high-contrast, fully unindented HTML strings)
+st.markdown(clean_html("""
+<style>
+.main { background-color: #0f172a; }
+.stApp { background-color: #0f172a; color: #f8fafc; }
 
-    .scenario-badge {
-        background-color: #f7c200;
-        color: #0f172a;
-        font-weight: 800;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        display: inline-block;
-    }
-    
-    .rationale-box {
-        background-color: rgba(30, 41, 59, 0.85);
-        border: 1px solid rgba(51, 65, 85, 0.8);
-        border-radius: 12px;
-        padding: 12px;
-        margin-top: 10px;
-        margin-bottom: 12px;
-    }
-    
-    .shield-badge {
-        background-color: #fef08a;
-        color: #854d0e;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-    }
-    
-    .stButton > button {
-        background-color: #0c831f;
-        color: white;
-        font-weight: 700;
-        border-radius: 10px;
-        border: none;
-        padding: 8px 16px;
-        width: 100%;
-    }
-    .stButton > button:hover {
-        background-color: #15803d;
-        color: white;
-    }
-    </style>
-""", unsafe_allow_html=True)
+.blinkit-badge {
+    background-color: #f7c200;
+    color: #000000;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    display: inline-block;
+}
+
+.nudge-card {
+    background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #0f172a 100%);
+    border: 1.5px solid #10b981;
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+}
+
+.nudge-tag {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.scenario-badge {
+    background-color: #f7c200;
+    color: #0f172a;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    display: inline-block;
+}
+
+.rationale-box {
+    background-color: #1e293b !important;
+    border: 1.5px solid #10b981 !important;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+.shield-badge {
+    background-color: #fef08a;
+    color: #854d0e;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.stButton > button {
+    background-color: #0c831f;
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    padding: 8px 16px;
+    width: 100%;
+}
+.stButton > button:hover {
+    background-color: #15803d;
+    color: white;
+}
+</style>
+"""), unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # DYNAMIC BLINKIT CATALOG LOADING
@@ -173,7 +183,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
                 "social_proof": "48 snack lovers in DLF Phase 3 bought this this week"
             }}
             """
-            response = requests.post(endpoint, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=5)
+            response = requests.post(endpoint, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=4)
             if response.status_code == 200:
                 data = response.json()
                 text_content = data['candidates'][0]['content']['parts'][0]['text']
@@ -183,7 +193,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             pass
 
     # Universal Rule Engine for Any Cart Combo
-    if "doritos" in cart_text or "lays" in cart_text or "chips" in cart_text or "munchies" in cart_text or "snack" in cart_text:
+    if any(k in cart_text for k in ["doritos", "lays", "chips", "munchies", "snack", "cheese"]):
         return {
             "title": "Portronics Adjustable Multi-Angle Desktop Phone Stand",
             "price": 299,
@@ -195,7 +205,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Prop your phone hands-free to watch YouTube or sports while eating Doritos, keeping your touchscreen clean from cheese dust and grease.",
             "social_proof": "48 snack lovers in DLF Phase 3 bought this this week"
         }
-    elif "baby" in cart_text or "wipes" in cart_text or "pampers" in cart_text:
+    elif any(k in cart_text for k in ["baby", "wipes", "pampers"]):
         return {
             "title": "Sebamed Baby Gentle Body Lotion 200ml",
             "price": 540,
@@ -207,7 +217,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Use after cleansing with baby wipes to lock in 24-hour hydration and protect delicate infant skin from dryness.",
             "social_proof": "24 parents in DLF Phase 3 bought this this week"
         }
-    elif "dog" in cart_text or "cat" in cart_text or "pet" in cart_text or "pedigree" in cart_text:
+    elif any(k in cart_text for k in ["dog", "cat", "pet", "pedigree", "whiskas"]):
         return {
             "title": "Whiskas Wet Cat Food Ocean Fish (4 Pack)",
             "price": 195,
@@ -219,7 +229,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Mix wet gravy food with dry kibble to enhance meal palatability and ensure optimal hydration for your pet.",
             "social_proof": "19 pet owners in DLF Phase 3 bought this this week"
         }
-    elif "coffee" in cart_text or "milk" in cart_text or "breakfast" in cart_text or "bread" in cart_text:
+    elif any(k in cart_text for k in ["coffee", "milk", "breakfast", "bread", "butter", "tokai"]):
         return {
             "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
             "price": 799,
@@ -231,7 +241,7 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
             "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
         }
-    elif "avocado" in cart_text or "yogurt" in cart_text or "gourmet" in cart_text:
+    elif any(k in cart_text for k in ["avocado", "yogurt", "gourmet", "organic", "serum"]):
         return {
             "title": "Minimalist 10% Vitamin C Face Serum (30ml)",
             "price": 664,
@@ -257,19 +267,9 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
         }
 
 # -----------------------------------------------------------------------------
-# SIDEBAR CONFIGURATION
+# SIDEBAR CONFIGURATION & CLEAN DEVELOPER SETTINGS
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("### ⚙️ Engine Settings")
-    secret_key = ""
-    try:
-        secret_key = st.secrets.get("GEMINI_API_KEY", "")
-    except Exception:
-        pass
-    env_key = secret_key or os.getenv("GEMINI_API_KEY", "")
-    gemini_key = st.text_input("Gemini API Key (Optional)", value=env_key, type="password", help="Enter key to enable live LLM generation across all catalog items.")
-    
-    st.divider()
     st.markdown("### 📍 User Profile & Location")
     st.info("**Location:** DLF Phase 3, Gurgaon\n\n**Segment:** Metro Tech Professional\n\n**Order Speed:** ⚡ 10 Mins")
     
@@ -284,14 +284,27 @@ with st.sidebar:
         st.session_state.exchange_triggered = False
         st.rerun()
 
+    # COLLAPSED ADVANCED DEVELOPER SETTINGS
+    with st.expander("⚙️ Advanced Developer Settings", expanded=False):
+        secret_key = ""
+        try:
+            secret_key = st.secrets.get("GEMINI_API_KEY", "") or st.secrets.get("GOOGLE_AI_STUDIO_API_KEY", "")
+        except Exception:
+            pass
+        env_key = secret_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_API_KEY") or ""
+        gemini_key = st.text_input("Gemini API Key (Optional)", value=env_key, type="password", help="Auto-loaded from environment secrets. Override here if needed.")
+        
+        if gemini_key:
+            st.success("🟢 Gemini API Key active & connected!")
+
 # -----------------------------------------------------------------------------
 # MAIN APP HEADER
 # -----------------------------------------------------------------------------
 col_logo, col_loc = st.columns([1, 2])
 with col_logo:
-    st.markdown('<span class="blinkit-badge">blinkit</span>', unsafe_allow_html=True)
+    st.markdown(clean_html('<span class="blinkit-badge">blinkit</span>'), unsafe_allow_html=True)
 with col_loc:
-    st.markdown("<div style='text-align:right; font-size:12px; color:#94a3b8;'>📍 DLF Phase 3, Gurgaon • <strong>10 Mins Delivery</strong></div>", unsafe_allow_html=True)
+    st.markdown(clean_html("<div style='text-align:right; font-size:12px; color:#94a3b8;'>📍 DLF Phase 3, Gurgaon • <strong>10 Mins Delivery</strong></div>"), unsafe_allow_html=True)
 
 st.title("BlinkSmart: Zero-Risk Shield Engine")
 st.caption("Functional MVP Prototype | Search & Add Across ALL Blinkit Categories")
@@ -306,17 +319,18 @@ if st.session_state.order_placed:
     
     st.markdown("---")
     
-    st.markdown("""
-        <div style='background-color:#064e3b; border: 1px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
-            <div style='display:flex; justify-content:space-between; align-items:center;'>
-                <span style='color:#34d399; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
-                <span style='background-color:#022c22; color:#facc15; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
-            </div>
-            <p style='font-size:12px; color:#e2e8f0; margin-top:8px;'>
-                Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Inspect the unit upon arrival!
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    order_success_html = clean_html("""
+<div style='background-color:#064e3b; border: 1px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
+<div style='display:flex; justify-content:space-between; align-items:center;'>
+<span style='color:#34d399; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
+<span style='background-color:#022c22; color:#facc15; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
+</div>
+<p style='font-size:12px; color:#e2e8f0; margin-top:8px;'>
+Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Inspect the unit upon arrival!
+</p>
+</div>
+""")
+    st.markdown(order_success_html, unsafe_allow_html=True)
     
     if not st.session_state.exchange_triggered:
         if st.button("🧪 Test 10-Minute Doorstep Rider Exchange Request"):
@@ -324,14 +338,15 @@ if st.session_state.order_placed:
             st.rerun()
     else:
         st.warning("⚡ Doorstep Exchange Dispatched!")
-        st.markdown("""
-            <div style='background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:12px; font-size:12px;'>
-                <div style='font-weight:bold; color:#f8fafc; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
-                <div style='color:#34d399;'>• Exchange request logged via automated chatbot.</div>
-                <div style='color:#cbd5e1;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
-                <div style='color:#cbd5e1;'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
-            </div>
-        """, unsafe_allow_html=True)
+        exchange_log_html = clean_html("""
+<div style='background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:12px; font-size:12px;'>
+<div style='font-weight:bold; color:#f8fafc; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
+<div style='color:#34d399;'>• Exchange request logged via automated chatbot.</div>
+<div style='color:#cbd5e1;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
+<div style='color:#cbd5e1;'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
+</div>
+""")
+        st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # SCREEN 2: ACTIVE CART & CATEGORY-FILTERED SEARCH BAR
@@ -365,16 +380,17 @@ else:
         subtotal += item["price"]
         col_item, col_del = st.columns([5, 1])
         with col_item:
-            st.markdown(f"""
-                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:8px 14px;'>
-                    <div>
-                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-                        <strong style='font-size:13px; color:#f8fafc; margin-left:8px;'>{item['name']}</strong>
-                        <span style='font-size:10px; color:#94a3b8; margin-left:6px;'>({item.get('category', 'Grocery')})</span>
-                    </div>
-                    <span style='font-weight:bold; font-size:13px; color:#f8fafc;'>₹{item['price']}</span>
-                </div>
-            """, unsafe_allow_html=True)
+            cart_item_html = clean_html(f"""
+<div style='display:flex; justify-content:space-between; align-items:center; background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:8px 14px;'>
+<div>
+<span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
+<strong style='font-size:13px; color:#f8fafc; margin-left:8px;'>{item['name']}</strong>
+<span style='font-size:10px; color:#94a3b8; margin-left:6px;'>({item.get('category', 'Grocery')})</span>
+</div>
+<span style='font-weight:bold; font-size:13px; color:#f8fafc;'>₹{item['price']}</span>
+</div>
+""")
+            st.markdown(cart_item_html, unsafe_allow_html=True)
         with col_del:
             if st.button("❌", key=f"del_{idx}"):
                 st.session_state.cart.pop(idx)
@@ -385,37 +401,35 @@ else:
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart, gemini_key)
     
-    st.markdown(f"""
-        <div class="nudge-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
-                <span class="scenario-badge">{rec['scenario_badge']}</span>
-            </div>
-            
-            <div class="rationale-box">
-                <div style="font-size:11px; color:#34d399; font-weight:700; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-                <div style="font-size:12px; color:#f8fafc; margin-bottom:8px;">{rec['why_suggested']}</div>
-                
-                <div style="font-size:11px; color:#facc15; font-weight:700; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-                <div style="font-size:12px; color:#cbd5e1; line-height:1.4;">"{rec['cobuying_utility']}"</div>
-            </div>
-
-            <div style="background-color:#1e293b; border:1px solid #334155; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div style="font-size:18px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#ffffff;">{rec['title']}</strong></div>
-                    <div style="font-size:11px; color:#34d399; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
-                    <div style="margin-top:4px;">
-                        <span style="font-size:14px; font-weight:800; color:#facc15;">₹{rec['price']}</span>
-                        <span style="font-size:11px; color:#94a3b8; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top:12px; font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; align-items:center;">
-                <span>👥 <strong>{rec['social_proof']}</strong></span>
-                <span class="shield-badge">🔰 1st Trial Shield Active</span>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    nudge_card_html = clean_html(f"""
+<div class="nudge-card">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
+<span class="scenario-badge">{rec['scenario_badge']}</span>
+</div>
+<div class="rationale-box">
+<div style="font-size:11px; color:#34d399; font-weight:700; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
+<div style="font-size:12px; color:#f8fafc; margin-bottom:8px;">{rec['why_suggested']}</div>
+<div style="font-size:11px; color:#facc15; font-weight:700; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
+<div style="font-size:12px; color:#cbd5e1; line-height:1.4;">"{rec['cobuying_utility']}"</div>
+</div>
+<div style="background-color:#1e293b; border:1px solid #334155; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+<div>
+<div style="font-size:18px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#ffffff;">{rec['title']}</strong></div>
+<div style="font-size:11px; color:#34d399; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
+<div style="margin-top:4px;">
+<span style="font-size:14px; font-weight:800; color:#facc15;">₹{rec['price']}</span>
+<span style="font-size:11px; color:#94a3b8; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
+</div>
+</div>
+</div>
+<div style="margin-top:12px; font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; align-items:center;">
+<span>👥 <strong>{rec['social_proof']}</strong></span>
+<span class="shield-badge">🔰 1st Trial Shield Active</span>
+</div>
+</div>
+""")
+    st.markdown(nudge_card_html, unsafe_allow_html=True)
     
     # Nudge Add Action Button
     if not st.session_state.nudge_added:
