@@ -1,6 +1,6 @@
 """
 BlinkSmart: Zero-Risk First-Trial Shield Engine MVP
-Streamlit App matching the exact Blinkit UI design.
+Streamlit App entrypoint for Streamlit Cloud Deployment with Global Search & Gemini AI Nudges.
 """
 
 import os
@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# Load environment variables (.env)
+# Load environment variables (.env / Streamlit secrets)
 load_dotenv()
 
 # ==============================================================================
@@ -23,7 +23,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS matching the exact visual layout from the photo
+# Custom CSS matching the exact visual layout
 st.markdown("""
 <style>
     /* Reset & Background */
@@ -45,7 +45,7 @@ st.markdown("""
         margin-left: -1rem;
         margin-right: -1rem;
         margin-top: -1rem;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -95,58 +95,6 @@ st.markdown("""
         letter-spacing: 0.8px;
         text-transform: uppercase;
         margin-bottom: 12px;
-    }
-
-    /* Basket Item Row */
-    .basket-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #F1F5F9;
-    }
-    .basket-item:last-child {
-        border-bottom: none;
-    }
-    .item-img {
-        width: 54px;
-        height: 54px;
-        border-radius: 8px;
-        object-fit: contain;
-        background-color: #F8FAFC;
-        border: 1px solid #F1F5F9;
-        margin-right: 12px;
-    }
-    .item-details {
-        flex: 1;
-    }
-    .item-title {
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #1E293B;
-        line-height: 1.2;
-    }
-    .item-subtext {
-        font-size: 0.75rem;
-        color: #94A3B8;
-        margin-top: 2px;
-    }
-    .item-price {
-        font-size: 0.95rem;
-        font-weight: 800;
-        color: #0F172A;
-        margin-top: 4px;
-    }
-    .stepper-btn {
-        background-color: #0C831F;
-        color: #FFFFFF;
-        border-radius: 8px;
-        padding: 6px 14px;
-        font-size: 0.9rem;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        gap: 12px;
     }
 
     /* AI Recommend Nudge Card */
@@ -264,16 +212,6 @@ st.markdown("""
         align-items: center;
         gap: 4px;
     }
-    .btn-add-nudge {
-        background-color: #FFFFFF;
-        color: #0C831F;
-        border: 2px solid #0C831F;
-        border-radius: 8px;
-        padding: 6px 18px;
-        font-size: 0.88rem;
-        font-weight: 800;
-        cursor: pointer;
-    }
 
     /* Bill Summary Rows */
     .bill-row {
@@ -313,37 +251,6 @@ st.markdown("""
         color: #94A3B8;
         line-height: 1.3;
     }
-
-    /* Fixed Sticky Footer */
-    .fixed-bottom-bar {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 480px;
-        background: #FFFFFF;
-        border-top: 1px solid #E2E8F0;
-        padding: 12px 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 999;
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
-    }
-    .pay-btn-exact {
-        background-color: #0C831F;
-        color: #FFFFFF;
-        border-radius: 12px;
-        padding: 12px 24px;
-        font-size: 1.05rem;
-        font-weight: 800;
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -356,12 +263,36 @@ def get_svg_url(emoji, bg="#FFFFFF"):
     return f"data:image/svg+xml;utf8,{requests.utils.quote(svg)}"
 
 # ==============================================================================
+# DATASET LOADING
+# ==============================================================================
+@st.cache_data
+def load_catalog():
+    csv_file = "blinkit_catalog.csv"
+    if os.path.exists(csv_file):
+        try:
+            return pd.read_csv(csv_file)
+        except Exception:
+            pass
+    # Default catalog
+    return pd.DataFrame([
+        {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "category": "Gourmet & Specialty", "price": 499, "mrp": 550, "emoji": "☕", "subtext": "Roasted Arabica"},
+        {"id": "DB-001", "name": "Amul Gold Milk (1L)", "category": "Dairy & Breakfast", "price": 66, "mrp": 66, "emoji": "🥛", "subtext": "Full Cream"},
+        {"id": "HK-001", "name": "InstaCuppa Electric Coffee Frother", "category": "Home & Kitchen", "price": 799, "mrp": 1200, "emoji": "☕", "subtext": "Frother Wand"},
+        {"id": "ET-002", "name": "boAt Airdopes 141", "category": "Electronics & Tech", "price": 1299, "mrp": 2990, "emoji": "🎧", "subtext": "Wireless Earbuds"},
+        {"id": "BP-001", "name": "Minimalist 10% Vitamin C Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴", "subtext": "Face Serum"},
+        {"id": "BC-201", "name": "Pampers Fresh Clean Baby Wipes", "category": "Baby Care", "price": 189, "mrp": 225, "emoji": "👶", "subtext": "80 Sheets"},
+        {"id": "PC-001", "name": "Pedigree Adult Dry Dog Food 1.2kg", "category": "Pet Care", "price": 380, "mrp": 420, "emoji": "🐶", "subtext": "Chicken & Rice"}
+    ])
+
+catalog_df = load_catalog()
+
+# ==============================================================================
 # SESSION STATE INITIALIZATION
 # ==============================================================================
 if "cart" not in st.session_state:
     st.session_state.cart = [
-        {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "subtext": "Roasted Arabica", "price": 499, "mrp": 550, "emoji": "☕", "qty": 1},
-        {"id": "DB-001", "name": "Amul Gold Milk (1L)", "subtext": "Full Cream", "price": 66, "mrp": 66, "emoji": "🥛", "qty": 1}
+        {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "subtext": "Roasted Arabica", "price": 499, "mrp": 550, "emoji": "☕", "qty": 1, "category": "Gourmet & Specialty"},
+        {"id": "DB-001", "name": "Amul Gold Milk (1L)", "subtext": "Full Cream", "price": 66, "mrp": 66, "emoji": "🥛", "qty": 1, "category": "Dairy & Breakfast"}
     ]
 
 if "nudge_added" not in st.session_state:
@@ -374,7 +305,62 @@ if "exchange_requested" not in st.session_state:
     st.session_state.exchange_requested = False
 
 # ==============================================================================
-# TOP HEADER BAR (EXACT DESIGN MATCH)
+# AI NUDGE RECOMMENDATION ENGINE (GEMINI API + NON-EXPLORED CATEGORIES)
+# ==============================================================================
+def get_ai_cross_sell_nudge(cart_items, api_key):
+    """
+    Analyzes cart items and recommends a product from a completely NON-EXPLORED category using Gemini AI.
+    """
+    if not cart_items:
+        return None
+
+    cart_categories = list(set(item.get("category", "") for item in cart_items))
+    cart_names = [item["name"] for item in cart_items]
+
+    # Filter catalog items from non-explored categories
+    unexplored_df = catalog_df[~catalog_df["category"].isin(cart_categories)]
+    if unexplored_df.empty:
+        unexplored_df = catalog_df
+
+    # 1. Query Gemini 1.5 Flash API if key is present
+    if api_key and len(api_key.strip()) > 10:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key.strip()}"
+            prompt = f"""
+You are Blinkit's AI Cross-Sell Engine.
+The customer has the following items in cart: {', '.join(cart_names)} (Categories: {', '.join(cart_categories)}).
+Recommend ONE item from these unexplored non-grocery categories: {unexplored_df['name'].tolist()}.
+Write 1 short sentence (max 12 words) explaining why this non-grocery item pairs with their current cart.
+Format response as JSON: {{"recommended_product": "Exact Product Name", "rationale": "Your 1 sentence pairing rationale."}}
+"""
+            res = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=3)
+            if res.status_code == 200:
+                result_json = res.json()
+                text = result_json["candidates"][0]["content"]["parts"][0]["text"]
+                import json, re
+                match = re.search(r'\{.*\}', text, re.DOTALL)
+                if match:
+                    parsed = json.loads(match.group())
+                    rec_name = parsed.get("recommended_product")
+                    rationale = parsed.get("rationale")
+                    rec_item = catalog_df[catalog_df["name"] == rec_name]
+                    if not rec_item.empty:
+                        return rec_item.iloc[0].to_dict(), rationale
+        except Exception:
+            pass
+
+    # 2. Smart Rule Fallback Engine
+    # If cart has Coffee / Milk -> Recommend Frother from Home & Kitchen
+    if any("coffee" in name.lower() or "milk" in name.lower() for name in cart_names):
+        rec_row = catalog_df[catalog_df["name"].str.contains("Frother", case=False, na=False)].iloc[0].to_dict()
+        return rec_row, "Pairs with your Blue Tokai coffee..."
+
+    # If cart has snacks -> Recommend Earbuds from Electronics & Tech
+    rec_row = unexplored_df.iloc[0].to_dict()
+    return rec_row, f"Recommended non-grocery upgrade for your cart!"
+
+# ==============================================================================
+# TOP HEADER BAR (EXACT BLINKIT DESIGN)
 # ==============================================================================
 st.markdown("""
 <div class="blinkit-header">
@@ -394,30 +380,52 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
+# GLOBAL SEARCH & CATALOG ADDITION BAR
+# ==============================================================================
+with st.expander("🔍 Search & Add Any Product from 12 Blinkit Categories", expanded=False):
+    search_query = st.text_input("Type product name (e.g., 'Milk', 'Avocado', 'Charger', 'Serum', 'Pedigree'):", "")
+    
+    if search_query.strip():
+        search_matches = catalog_df[catalog_df["name"].str.contains(search_query, case=False, na=False)]
+    else:
+        search_matches = catalog_df
+
+    selected_sku_str = st.selectbox("Select matching product:", [f"{r['emoji']} {r['name']} — ₹{r['price']} ({r['category']})" for _, r in search_matches.iterrows()])
+    
+    if st.button("➕ Add Selected Item to Cart", use_container_width=True):
+        idx = [f"{r['emoji']} {r['name']} — ₹{r['price']} ({r['category']})" for _, r in search_matches.iterrows()].index(selected_sku_str)
+        matched_row = search_matches.iloc[idx].to_dict()
+        matched_row["qty"] = 1
+        st.session_state.cart.append(matched_row)
+        st.toast(f"Added {matched_row['name']} to cart!", icon="🛒")
+        st.rerun()
+
+# ==============================================================================
 # MAIN CHECKOUT VIEW VS ORDER PLACED VIEW
 # ==============================================================================
 if not st.session_state.order_placed:
 
     # --------------------------------------------------------------------------
-    # SIDEBAR CONTROL FOR TESTING & REPOSITORIES
+    # SIDEBAR CONTROLS
     # --------------------------------------------------------------------------
     with st.sidebar:
-        st.markdown("### ⚙️ Demo Controls")
+        st.markdown("### ⚙️ Demo Controls & AI Keys")
         st.info("📍 **DLF Phase 3, Gurgaon**\n\n⚡ Served by *Dark Store #104*")
         
-        env_gemini_key = os.getenv("GEMINI_API_KEY", "")
+        # Read API key from Streamlit Secrets or Environment Variable
+        secret_key = ""
+        try:
+            secret_key = st.secrets.get("GEMINI_API_KEY", "")
+        except Exception:
+            pass
+        env_gemini_key = secret_key or os.getenv("GEMINI_API_KEY", "")
         api_key_input = st.text_input("Gemini API Key (Optional)", value=env_gemini_key, type="password")
 
         st.markdown("---")
-        st.markdown("#### Basket Modification")
-        if st.button("➕ Add Test Coffee SKU"):
-            st.session_state.cart.append({"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "subtext": "Roasted Arabica", "price": 499, "mrp": 550, "emoji": "☕", "qty": 1})
-            st.rerun()
-            
-        if st.button("🔄 Reset Basket"):
+        if st.button("🔄 Reset Cart to Initial State"):
             st.session_state.cart = [
-                {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "subtext": "Roasted Arabica", "price": 499, "mrp": 550, "emoji": "☕", "qty": 1},
-                {"id": "DB-001", "name": "Amul Gold Milk (1L)", "subtext": "Full Cream", "price": 66, "mrp": 66, "emoji": "🥛", "qty": 1}
+                {"id": "GS-101", "name": "Blue Tokai Coffee (250g)", "subtext": "Roasted Arabica", "price": 499, "mrp": 550, "emoji": "☕", "qty": 1, "category": "Gourmet & Specialty"},
+                {"id": "DB-001", "name": "Amul Gold Milk (1L)", "subtext": "Full Cream", "price": 66, "mrp": 66, "emoji": "🥛", "qty": 1, "category": "Dairy & Breakfast"}
             ]
             st.session_state.nudge_added = False
             st.session_state.order_placed = False
@@ -429,91 +437,92 @@ if not st.session_state.order_placed:
     # --------------------------------------------------------------------------
     st.markdown('<div class="blinkit-card"><div class="card-label">YOUR BASKET</div>', unsafe_allow_html=True)
 
-    for idx, item in enumerate(st.session_state.cart):
-        img_url = get_svg_url(item["emoji"], "#F8FAFC")
-        col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
-        
-        with col_img:
-            st.image(img_url, width=50)
+    if not st.session_state.cart:
+        st.info("Your basket is empty. Use the search bar above to add items!")
+    else:
+        for idx, item in enumerate(st.session_state.cart):
+            img_url = get_svg_url(item.get("emoji", "📦"), "#F8FAFC")
+            col_img, col_info, col_btn = st.columns([0.2, 0.55, 0.25])
             
-        with col_info:
-            st.markdown(f"""
-            <div class="item-title">{item['name']}</div>
-            <div class="item-subtext">{item.get('subtext', 'Fresh Stock')}</div>
-            <div class="item-price">₹{item['price']}</div>
-            """, unsafe_allow_html=True)
-            
-        with col_btn:
-            c1, c2, c3 = st.columns([1,1,1])
-            with c1:
-                if st.button("−", key=f"minus_{idx}"):
-                    if item["qty"] > 1:
-                        item["qty"] -= 1
-                    else:
-                        st.session_state.cart.pop(idx)
-                    st.rerun()
-            with c2:
-                st.markdown(f"<div style='text-align:center; font-weight:800; margin-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
-            with c3:
-                if st.button("+", key=f"plus_{idx}"):
-                    item["qty"] += 1
-                    st.rerun()
+            with col_img:
+                st.image(img_url, width=50)
+                
+            with col_info:
+                st.markdown(f"""
+                <div class="item-title">{item['name']}</div>
+                <div class="item-subtext">{item.get('subtext', item.get('category', 'Fresh Stock'))}</div>
+                <div class="item-price">₹{item['price']}</div>
+                """, unsafe_allow_html=True)
+                
+            with col_btn:
+                c1, c2, c3 = st.columns([1,1,1])
+                with c1:
+                    if st.button("−", key=f"minus_{idx}"):
+                        if item["qty"] > 1:
+                            item["qty"] -= 1
+                        else:
+                            st.session_state.cart.pop(idx)
+                        st.rerun()
+                with c2:
+                    st.markdown(f"<div style='text-align:center; font-weight:800; margin-top:4px;'>{item['qty']}</div>", unsafe_allow_html=True)
+                with c3:
+                    if st.button("+", key=f"plus_{idx}"):
+                        item["qty"] += 1
+                        st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --------------------------------------------------------------------------
     # CARD 2: AI RECOMMEND / BLINKSMART NUDGE CARD
     # --------------------------------------------------------------------------
-    if not st.session_state.nudge_added:
-        frother_img = get_svg_url("☕", "#FFFFFF")
-        
-        st.markdown(f"""
-        <div class="nudge-card-exact">
-            <span class="badge-discount">33% OFF</span>
-            <span class="badge-ai">AI RECOMMEND</span>
+    if not st.session_state.nudge_added and st.session_state.cart:
+        nudge_data = get_ai_cross_sell_nudge(st.session_state.cart, api_key_input)
+        if nudge_data:
+            nudge_item, rationale = nudge_data
+            frother_img = get_svg_url(nudge_item.get("emoji", "⚡"), "#FFFFFF")
+            discount_pct = int(((nudge_item.get("mrp", nudge_item["price"]) - nudge_item["price"]) / nudge_item.get("mrp", nudge_item["price"])) * 100) if nudge_item.get("mrp", 0) > nudge_item["price"] else 33
             
-            <div class="nudge-body">
-                <div class="nudge-img-container">
-                    <img src="{frother_img}" width="65" />
-                </div>
-                <div style="flex:1;">
-                    <div class="nudge-title">InstaCuppa Electric Coffee Frother</div>
-                    <div class="nudge-rationale">"Pairs with your Blue Tokai coffee..."</div>
-                    <div class="nudge-price-row">
-                        <span class="nudge-price">₹799</span>
-                        <span class="nudge-mrp">₹1,200</span>
+            st.markdown(f"""
+            <div class="nudge-card-exact">
+                <span class="badge-discount">{discount_pct}% OFF</span>
+                <span class="badge-ai">AI RECOMMEND</span>
+                
+                <div class="nudge-body">
+                    <div class="nudge-img-container">
+                        <img src="{frother_img}" width="65" />
                     </div>
-                    <div class="social-proof-row">
-                        <div class="avatar-stack">
-                            <div class="avatar-circle"></div>
-                            <div class="avatar-circle"></div>
+                    <div style="flex:1;">
+                        <div class="nudge-title">{nudge_item['name']}</div>
+                        <div class="nudge-rationale">"{rationale}"</div>
+                        <div class="nudge-price-row">
+                            <span class="nudge-price">₹{nudge_item['price']}</span>
+                            <span class="nudge-mrp">₹{nudge_item.get('mrp', nudge_item['price'] + 400)}</span>
                         </div>
-                        <span>32 neighbors in DLF Phase 3 bought this</span>
+                        <div class="social-proof-row">
+                            <div class="avatar-stack">
+                                <div class="avatar-circle"></div>
+                                <div class="avatar-circle"></div>
+                            </div>
+                            <span>32 neighbors in DLF Phase 3 bought this</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nudge-footer">
+                    <div class="shield-applied-text">
+                        🛡️ Zero-Risk Shield Applied
                     </div>
                 </div>
             </div>
+            """, unsafe_allow_html=True)
             
-            <div class="nudge-footer">
-                <div class="shield-applied-text">
-                    🛡️ Zero-Risk Shield Applied
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("+ Add Frother to Order", key="add_nudge_btn", type="primary", use_container_width=True):
-            st.session_state.cart.append({
-                "id": "HK-001",
-                "name": "InstaCuppa Electric Coffee Frother",
-                "subtext": "Frother Wand",
-                "price": 799,
-                "mrp": 1200,
-                "emoji": "☕",
-                "qty": 1
-            })
-            st.session_state.nudge_added = True
-            st.toast("Added InstaCuppa Coffee Frother with Zero-Risk Shield!", icon="🛡️")
-            st.rerun()
+            if st.button(f"+ Add {nudge_item['name']} to Order", key="add_nudge_btn", type="primary", use_container_width=True):
+                nudge_item_cart = dict(nudge_item)
+                nudge_item_cart["qty"] = 1
+                st.session_state.cart.append(nudge_item_cart)
+                st.session_state.nudge_added = True
+                st.toast(f"Added {nudge_item['name']} with Zero-Risk Shield!", icon="🛡️")
+                st.rerun()
 
     # --------------------------------------------------------------------------
     # CARD 3: BILL SUMMARY
@@ -554,7 +563,7 @@ if not st.session_state.order_placed:
     <div class="info-shield-box">
         <div class="info-icon">ⓘ</div>
         <div class="info-text">
-            Don't like the frother? Request a doorstep exchange within 10 minutes of delivery. No questions asked.
+            Don't like the non-grocery item? Request a doorstep exchange within 10 minutes of delivery. No questions asked.
         </div>
     </div>
     """, unsafe_allow_html=True)
