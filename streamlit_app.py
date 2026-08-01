@@ -24,38 +24,39 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS styling (clean, high-contrast, fully unindented HTML strings)
+# Custom light CSS styling matching Blinkit's mobile app theme
 st.markdown(clean_html("""
 <style>
-.main { background-color: #0f172a; }
-.stApp { background-color: #0f172a; color: #f8fafc; }
+.main { background-color: #f8fafc; }
+.stApp { background-color: #f8fafc; color: #1e293b; }
 
 .blinkit-badge {
     background-color: #f7c200;
     color: #000000;
     font-weight: 800;
-    padding: 4px 12px;
-    border-radius: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .nudge-card {
-    background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #0f172a 100%);
+    background: #f0fdf4;
     border: 1.5px solid #10b981;
     border-radius: 16px;
     padding: 18px;
     margin-top: 14px;
     margin-bottom: 14px;
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+    color: #1e293b;
 }
 
 .nudge-tag {
-    background-color: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    border: 1px solid rgba(52, 211, 153, 0.3);
-    padding: 3px 10px;
+    background-color: #0c831f;
+    color: #ffffff;
+    padding: 4px 10px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
@@ -64,28 +65,30 @@ st.markdown(clean_html("""
 
 .scenario-badge {
     background-color: #f7c200;
-    color: #0f172a;
+    color: #000000;
     font-weight: 800;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: 20px;
     font-size: 11px;
     display: inline-block;
 }
 
 .rationale-box {
-    background-color: #1e293b !important;
+    background-color: #ffffff !important;
     border: 1.5px solid #10b981 !important;
     border-radius: 12px;
     padding: 14px;
     margin-top: 10px;
     margin-bottom: 12px;
+    color: #1e293b !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .shield-badge {
     background-color: #fef08a;
     color: #854d0e;
     font-weight: 700;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: 6px;
     font-size: 11px;
 }
@@ -304,7 +307,7 @@ col_logo, col_loc = st.columns([1, 2])
 with col_logo:
     st.markdown(clean_html('<span class="blinkit-badge">blinkit</span>'), unsafe_allow_html=True)
 with col_loc:
-    st.markdown(clean_html("<div style='text-align:right; font-size:12px; color:#94a3b8;'>📍 DLF Phase 3, Gurgaon • <strong>10 Mins Delivery</strong></div>"), unsafe_allow_html=True)
+    st.markdown(clean_html("<div style='text-align:right; font-size:12px; color:#475569;'>📍 DLF Phase 3, Gurgaon • <strong style='color:#0c831f;'>10 Mins Delivery</strong></div>"), unsafe_allow_html=True)
 
 st.title("BlinkSmart: Zero-Risk Shield Engine")
 st.caption("Functional MVP Prototype | Search & Add Across ALL Blinkit Categories")
@@ -320,12 +323,12 @@ if st.session_state.order_placed:
     st.markdown("---")
     
     order_success_html = clean_html("""
-<div style='background-color:#064e3b; border: 1px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
+<div style='background-color:#f0fdf4; border: 1.5px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
 <div style='display:flex; justify-content:space-between; align-items:center;'>
-<span style='color:#34d399; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
-<span style='background-color:#022c22; color:#facc15; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
+<span style='color:#0c831f; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
+<span style='background-color:#f7c200; color:#000000; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
 </div>
-<p style='font-size:12px; color:#e2e8f0; margin-top:8px;'>
+<p style='font-size:12px; color:#1e293b; margin-top:8px;'>
 Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Inspect the unit upon arrival!
 </p>
 </div>
@@ -339,11 +342,11 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
     else:
         st.warning("⚡ Doorstep Exchange Dispatched!")
         exchange_log_html = clean_html("""
-<div style='background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:12px; font-size:12px;'>
-<div style='font-weight:bold; color:#f8fafc; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
-<div style='color:#34d399;'>• Exchange request logged via automated chatbot.</div>
-<div style='color:#cbd5e1;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
-<div style='color:#cbd5e1;'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
+<div style='background-color:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:12px; font-size:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05);'>
+<div style='font-weight:bold; color:#1e293b; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
+<div style='color:#0c831f;'>• Exchange request logged via automated chatbot.</div>
+<div style='color:#475569;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
+<div style='color:#475569;'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
 </div>
 """)
         st.markdown(exchange_log_html, unsafe_allow_html=True)
@@ -381,13 +384,13 @@ else:
         col_item, col_del = st.columns([5, 1])
         with col_item:
             cart_item_html = clean_html(f"""
-<div style='display:flex; justify-content:space-between; align-items:center; background-color:#1e293b; border:1px solid #334155; border-radius:10px; padding:8px 14px;'>
+<div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:8px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.02);'>
 <div>
 <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-<strong style='font-size:13px; color:#f8fafc; margin-left:8px;'>{item['name']}</strong>
-<span style='font-size:10px; color:#94a3b8; margin-left:6px;'>({item.get('category', 'Grocery')})</span>
+<strong style='font-size:13px; color:#1e293b; margin-left:8px;'>{item['name']}</strong>
+<span style='font-size:10px; color:#64748b; margin-left:6px;'>({item.get('category', 'Grocery')})</span>
 </div>
-<span style='font-weight:bold; font-size:13px; color:#f8fafc;'>₹{item['price']}</span>
+<span style='font-weight:bold; font-size:13px; color:#1e293b;'>₹{item['price']}</span>
 </div>
 """)
             st.markdown(cart_item_html, unsafe_allow_html=True)
@@ -408,22 +411,22 @@ else:
 <span class="scenario-badge">{rec['scenario_badge']}</span>
 </div>
 <div class="rationale-box">
-<div style="font-size:11px; color:#34d399; font-weight:700; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-<div style="font-size:12px; color:#f8fafc; margin-bottom:8px;">{rec['why_suggested']}</div>
-<div style="font-size:11px; color:#facc15; font-weight:700; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-<div style="font-size:12px; color:#cbd5e1; line-height:1.4;">"{rec['cobuying_utility']}"</div>
+<div style="font-size:11px; color:#0c831f; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
+<div style="font-size:12px; color:#1e293b; margin-bottom:8px;">{rec['why_suggested']}</div>
+<div style="font-size:11px; color:#d97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
+<div style="font-size:12px; color:#475569; line-height:1.4;">"{rec['cobuying_utility']}"</div>
 </div>
-<div style="background-color:#1e293b; border:1px solid #334155; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+<div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
 <div>
-<div style="font-size:18px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#ffffff;">{rec['title']}</strong></div>
-<div style="font-size:11px; color:#34d399; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
+<div style="font-size:18px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#1e293b;">{rec['title']}</strong></div>
+<div style="font-size:11px; color:#0c831f; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
 <div style="margin-top:4px;">
-<span style="font-size:14px; font-weight:800; color:#facc15;">₹{rec['price']}</span>
-<span style="font-size:11px; color:#94a3b8; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
+<span style="font-size:14px; font-weight:800; color:#0c831f;">₹{rec['price']}</span>
+<span style="font-size:11px; color:#64748b; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
 </div>
 </div>
 </div>
-<div style="margin-top:12px; font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; align-items:center;">
+<div style="margin-top:12px; font-size:12px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
 <span>👥 <strong>{rec['social_proof']}</strong></span>
 <span class="shield-badge">🔰 1st Trial Shield Active</span>
 </div>
