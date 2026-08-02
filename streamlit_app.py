@@ -366,24 +366,31 @@ else:
     filtered_df = CATALOG_DF if selected_cat == "All Categories" else CATALOG_DF[CATALOG_DF["category"] == selected_cat]
     product_map = {row["name"]: row for _, row in filtered_df.iterrows()}
     
-    with col_prod:
-        selected_title = st.selectbox("Select Product:", list(product_map.keys()), label_visibility="collapsed")
-        
-    with col_btn:
-        if st.button("+ Add Item"):
-            item_to_add = product_map[selected_title]
-            st.session_state.cart.append(item_to_add)
-            st.rerun()
+    selected_title = None
+    if product_map:
+        with col_prod:
+            selected_title = st.selectbox("Select Product:", list(product_map.keys()), label_visibility="collapsed")
+        with col_btn:
+            if st.button("+ Add Item"):
+                item_to_add = product_map[selected_title]
+                st.session_state.cart.append(item_to_add)
+                st.rerun()
+    else:
+        with col_prod:
+            st.selectbox("Select Product:", ["No products found"], disabled=True, label_visibility="collapsed")
 
     # Active Cart List
     st.markdown("#### 🧺 Active Grocery Basket")
-    subtotal = 0
     
-    for idx, item in enumerate(st.session_state.cart):
-        subtotal += item["price"]
-        col_item, col_del = st.columns([5, 1])
-        with col_item:
-            cart_item_html = clean_html(f"""
+    if not st.session_state.cart:
+        st.info("🛒 Your basket is empty. Use the search bar above to add items!")
+    else:
+        subtotal = 0
+        for idx, item in enumerate(st.session_state.cart):
+            subtotal += item["price"]
+            col_item, col_del = st.columns([5, 1])
+            with col_item:
+                cart_item_html = clean_html(f"""
 <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:8px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.02);'>
 <div>
 <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
@@ -393,18 +400,18 @@ else:
 <span style='font-weight:bold; font-size:13px; color:#1e293b;'>₹{item['price']}</span>
 </div>
 """)
-            st.markdown(cart_item_html, unsafe_allow_html=True)
-        with col_del:
-            if st.button("❌", key=f"del_{idx}"):
-                st.session_state.cart.pop(idx)
-                st.rerun()
+                st.markdown(cart_item_html, unsafe_allow_html=True)
+            with col_del:
+                if st.button("❌", key=f"del_{idx}"):
+                    st.session_state.cart.pop(idx)
+                    st.rerun()
 
-    # -------------------------------------------------------------------------
-    # BLINKSMART CONTEXTUAL AI NUDGE CARD WITH CLEAR CO-BUYING REASONING
-    # -------------------------------------------------------------------------
-    rec = get_blinksmart_recommendation(st.session_state.cart, gemini_key)
-    
-    nudge_card_html = clean_html(f"""
+        # -------------------------------------------------------------------------
+        # BLINKSMART CONTEXTUAL AI NUDGE CARD WITH CLEAR CO-BUYING REASONING
+        # -------------------------------------------------------------------------
+        rec = get_blinksmart_recommendation(st.session_state.cart, gemini_key)
+        
+        nudge_card_html = clean_html(f"""
 <div class="nudge-card">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
 <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
@@ -432,43 +439,43 @@ else:
 </div>
 </div>
 """)
-    st.markdown(nudge_card_html, unsafe_allow_html=True)
-    
-    # Nudge Add Action Button
-    if not st.session_state.nudge_added:
-        if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)"):
-            st.session_state.nudge_added = True
+        st.markdown(nudge_card_html, unsafe_allow_html=True)
+        
+        # Nudge Add Action Button
+        if not st.session_state.nudge_added:
+            if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)"):
+                st.session_state.nudge_added = True
+                st.rerun()
+        else:
+            st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
+            subtotal += rec['price']
+
+        # -------------------------------------------------------------------------
+        # BILL SUMMARY & FAST CHECKOUT BAR
+        # -------------------------------------------------------------------------
+        st.markdown("#### 📄 Bill Summary")
+        handling_fee = 0 if st.session_state.nudge_added else 15
+        grand_total = subtotal + handling_fee
+        
+        col_label, col_val = st.columns([3, 1])
+        with col_label:
+            st.write("Item Subtotal")
+            st.write("Delivery Fee (⚡ 10 Mins)")
+            st.write("Handling Fee")
+            if st.session_state.nudge_added:
+                st.write("First-Trial Shield Fee Waiver")
+            st.markdown("**Grand Total**")
+        with col_val:
+            st.write(f"₹{subtotal}")
+            st.write("FREE")
+            st.write(f"₹{handling_fee}")
+            if st.session_state.nudge_added:
+                st.write("-₹15")
+            st.markdown(f"**₹{grand_total}**")
+
+        st.divider()
+        
+        # Sticky Checkout Bar
+        if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔"):
+            st.session_state.order_placed = True
             st.rerun()
-    else:
-        st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
-        subtotal += rec['price']
-
-    # -------------------------------------------------------------------------
-    # BILL SUMMARY & FAST CHECKOUT BAR
-    # -------------------------------------------------------------------------
-    st.markdown("#### 📄 Bill Summary")
-    handling_fee = 0 if st.session_state.nudge_added else 15
-    grand_total = subtotal + handling_fee
-    
-    col_label, col_val = st.columns([3, 1])
-    with col_label:
-        st.write("Item Subtotal")
-        st.write("Delivery Fee (⚡ 10 Mins)")
-        st.write("Handling Fee")
-        if st.session_state.nudge_added:
-            st.write("First-Trial Shield Fee Waiver")
-        st.markdown("**Grand Total**")
-    with col_val:
-        st.write(f"₹{subtotal}")
-        st.write("FREE")
-        st.write(f"₹{handling_fee}")
-        if st.session_state.nudge_added:
-            st.write("-₹15")
-        st.markdown(f"**₹{grand_total}**")
-
-    st.divider()
-    
-    # Sticky Checkout Bar
-    if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔"):
-        st.session_state.order_placed = True
-        st.rerun()
