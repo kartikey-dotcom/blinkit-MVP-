@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-import time
 import requests
 import pandas as pd
 import os
@@ -119,11 +118,13 @@ def load_blinkit_catalog():
         return df.to_dict(orient="records")
     else:
         return [
+            {"id": "aashirvaad_atta", "name": "Aashirvaad Shuddh Chakki Atta 5kg", "category": "Grocery & Staples", "price": 245, "mrp": 270, "emoji": "🌾"},
             {"id": "blue_tokai", "name": "Blue Tokai Dark Roast Coffee Beans 250g", "category": "Gourmet & Specialty", "price": 490, "mrp": 550, "emoji": "☕"},
             {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy & Breakfast", "price": 72, "mrp": 75, "emoji": "🥛"},
             {"id": "doritos", "name": "Doritos Nacho Cheese Chips 150g", "category": "Munchies & Snacks", "price": 60, "mrp": 60, "emoji": "🧀"},
             {"id": "lays_chips", "name": "Lay's India's Magic Masala Chips 90g", "category": "Munchies & Snacks", "price": 40, "mrp": 40, "emoji": "🥔"},
             {"id": "red_bull", "name": "Red Bull Energy Drink 250ml", "category": "Beverages & Cold Drinks", "price": 125, "mrp": 125, "emoji": "⚡"},
+            {"id": "avocado", "name": "Fresh Imported Hass Avocado (2 pcs)", "category": "Fruits & Vegetables", "price": 299, "mrp": 350, "emoji": "🥑"},
             {"id": "minimalist_serum", "name": "Minimalist 10% Vitamin C Face Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴"},
             {"id": "spigen_charger", "name": "Spigen 20W Type-C Fast Wall Charger", "category": "Electronics & Tech", "price": 899, "mrp": 1499, "emoji": "🔌"},
             {"id": "pampers_wipes", "name": "Pampers Fresh Clean Baby Wipes (80 Sheets)", "category": "Baby Care", "price": 185, "mrp": 225, "emoji": "👶"},
@@ -138,8 +139,7 @@ CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 # -----------------------------------------------------------------------------
 if "cart" not in st.session_state:
     st.session_state.cart = [
-        {"id": "doritos", "name": "Doritos Nacho Cheese Chips 150g", "category": "Munchies & Snacks", "price": 60, "emoji": "🧀"},
-        {"id": "red_bull", "name": "Red Bull Energy Drink 250ml", "category": "Beverages & Cold Drinks", "price": 125, "emoji": "⚡"}
+        {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy & Breakfast", "price": 72, "emoji": "🥛"}
     ]
 
 if "nudge_added" not in st.session_state:
@@ -152,18 +152,16 @@ if "exchange_triggered" not in st.session_state:
     st.session_state.exchange_triggered = False
 
 # -----------------------------------------------------------------------------
-# GEMINI API / LOCAL FALLBACK RECOMMENDATION LOGIC WITH WATERTIGHT MATRIX
+# CONSTRAINED GEMINI API / FEW-SHOT FALLBACK LOGIC
 # -----------------------------------------------------------------------------
-def get_blinksmart_recommendation(cart_items, api_key=""):
+def get_blinksmart_recommendation(cart_items):
+    # Fetch Gemini API Key silently from environment or secrets (NO FRONTEND DISPLAY)
+    api_key = os.environ.get("GEMINI_API_KEY") or getattr(st, "secrets", {}).get("GEMINI_API_KEY", "")
     cart_names = [item["name"] for item in cart_items]
     cart_categories = [item.get("category", "") for item in cart_items]
     cart_text = " ".join(cart_names).lower() + " " + " ".join(cart_categories).lower()
 
-    # Silent API Key resolution
-    if not api_key:
-        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_AI_STUDIO_API_KEY") or getattr(st, "secrets", {}).get("GEMINI_API_KEY", "")
-
-    # Attempt Live Gemini API Call with tight pairing instructions
+    # Attempt Live Gemini Call with Strict Few-Shot In-Context Training
     if api_key:
         try:
             endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
@@ -173,27 +171,47 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             Cart Categories: {cart_categories}
             Location: DLF Phase 3, Gurgaon.
             
-            Recommend strictly ONE high-margin non-grocery SKU (Electronics & Tech, Beauty & Personal Care, Home & Kitchen, Baby Care, or Pet Care) that contextually pairs with this cart mix based on this matrix:
-            1. Grocery Staples (Atta, Rice, Oil, Dal, Spices) -> Recommend "Portronics Digital Kitchen Weight Scale" (Home & Kitchen, ₹399) - Scenario: "👩🍳 Perfect Kitchen Measurement". Co-buying utility: "Measure exact flour-to-water ratios with 1-gram precision to consistently make soft, fluffy rotis and dough without guessing."
-            2. Munchies & Snacks (Doritos, Lays, Chips, Popcorn) -> Recommend "Portronics Adjustable Multi-Angle Desktop Phone Stand" (Electronics & Tech, ₹299) - Scenario: "📺 Hands-Free Binge Watching". Co-buying utility: "Prop your phone hands-free to watch YouTube or sports while eating chips, keeping your touchscreen clean from grease and cheese dust."
-            3. Dairy, Gourmet & Breakfast (Coffee, Milk, Bread, Eggs, Butter) -> Recommend "InstaCuppa Electric Milk Frother & Hand Mixer" (Home & Kitchen, ₹799) - Scenario: "☕ 15-Second Homemade Cafe Foam". Co-buying utility: "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds."
-            4. Fruits & Vegetables -> Recommend "Minimalist 10% Vitamin C Face Serum (30ml)" (Beauty & Personal Care, ₹664) - Scenario: "✨ Clean Morning Skin Routine". Co-buying utility: "Apply 2-3 drops during your morning breakfast routine to boost skin glow and protect against daily metro pollution."
-            5. Baby Care (Wipes, Diapers) -> Recommend "Sebamed Baby Gentle Body Lotion 200ml" (Baby Care, ₹540) - Scenario: "👶 Baby Skin Care Essentials". Co-buying utility: "Use after cleansing with baby wipes to lock in 24-hour moisture and protect delicate infant skin."
-            6. Pet Care (Dog/Cat Food) -> Recommend "Whiskas Wet Cat Food Ocean Fish (4 Pack)" (Pet Care, ₹195) - Scenario: "🐾 Pet Nutrition Booster". Co-buying utility: "Mix wet gravy food with dry kibble to enhance meal palatability and ensure optimal hydration."
-            7. Beverages & Cold Drinks -> Recommend "Spigen 20W Fast Type-C Wall Charger Adapter" (Electronics & Tech, ₹899) - Scenario: "⚡ Late-Night Work Power Utility". Co-buying utility: "Power your phone from 0% to 50% in just 25 minutes while enjoying your energy drinks."
+            STRICT CONSTRAINTS & CATEGORY PAIRING RULES:
+            1. NEVER recommend tech chargers, power banks, or USB cables for Dairy, Breakfast, Fruits, Vegetables, or Cooking Staples.
+            2. Grocery & Staples (Atta, Rice, Flour, Oil) MUST recommend Home & Kitchen utilities (Kitchen Scale, Electric Kettle).
+            3. Dairy & Breakfast (Milk, Coffee, Bread, Eggs) MUST recommend Frothers, Coffee Mixers, or Breakfast Appliances.
+            4. Snacks & Munchies (Doritos, Chips, Popcorn) MUST recommend Desktop Phone Stands or Wet Wipes.
             
-            Respond strictly in valid JSON format:
+            FEW-SHOT EXAMPLES:
+            Example 1 Input: ["Amul Milk", "Blue Tokai Coffee"]
+            Example 1 Output:
             {{
-                "title": "Exact Recommended Title",
-                "price": 299,
-                "mrp": 699,
-                "category": "Recommended Category",
-                "emoji": "📱",
-                "scenario_badge": "Scenario Badge",
-                "why_suggested": "Why Suggested",
-                "cobuying_utility": "Co-buying utility rationale details.",
+                "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
+                "price": 799, "mrp": 1200, "category": "Home & Kitchen", "emoji": "⚡",
+                "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
+                "why_suggested": "Suggested to upgrade your daily coffee & milk selection.",
+                "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create thick, frothy lattes in 15 seconds.",
+                "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
+            }}
+
+            Example 2 Input: ["Aashirvaad Atta 5kg", "Fortune Sunflower Oil"]
+            Example 2 Output:
+            {{
+                "title": "Portronics Digital Kitchen Weight Scale",
+                "price": 399, "mrp": 899, "category": "Home & Kitchen", "emoji": "⚖️",
+                "scenario_badge": "👩🍳 Perfect Kitchen Measurement",
+                "why_suggested": "Matched to your daily cooking & flour staples selection.",
+                "cobuying_utility": "Measure exact flour-to-water ratios with 1-gram precision to consistently make soft, fluffy rotis every time.",
+                "social_proof": "54 home cooks in DLF Phase 3 bought this this week"
+            }}
+
+            Example 3 Input: ["Doritos Nacho Cheese", "Lay's Chips"]
+            Example 3 Output:
+            {{
+                "title": "Portronics Multi-Angle Desktop Phone Stand",
+                "price": 299, "mrp": 699, "category": "Electronics & Tech", "emoji": "📱",
+                "scenario_badge": "📺 Hands-Free Binge Watching",
+                "why_suggested": "Pairs with your snack & munchies selection for desk entertainment.",
+                "cobuying_utility": "Prop your phone hands-free to watch YouTube or sports while eating Doritos, keeping your touchscreen clean from cheese dust and grease.",
                 "social_proof": "48 snack lovers in DLF Phase 3 bought this this week"
             }}
+
+            Respond strictly in valid JSON format matching the schema above.
             """
             response = requests.post(endpoint, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=4)
             if response.status_code == 200:
@@ -204,24 +222,34 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
         except Exception:
             pass
 
-    # Watertight Rule Engine Fallback Matrix
-    # 1. Grocery Staples (Atta, Rice, Cooking Oil, Dal, Spices)
-    if any(k in cart_text for k in ["atta", "rice", "oil", "dal", "flour", "cooking", "masala", "spices"]):
+    # Watertight Python Rule Engine (Guarantees Relevant Suggestions)
+    if any(k in cart_text for k in ["atta", "rice", "oil", "staples", "flour", "dal", "wheat"]):
         return {
             "title": "Portronics Digital Kitchen Weight Scale",
             "price": 399,
-            "mrp": 999,
+            "mrp": 899,
             "category": "Home & Kitchen",
             "emoji": "⚖️",
             "scenario_badge": "👩‍🍳 Perfect Kitchen Measurement",
-            "why_suggested": "Matched to your daily cooking & flour staples order.",
+            "why_suggested": "Matched to your daily cooking & flour staples selection.",
             "cobuying_utility": "Measure exact flour-to-water ratios with 1-gram precision to consistently make soft, fluffy rotis and dough without guessing.",
-            "social_proof": "37 home cooks in DLF Phase 3 bought this this week"
+            "social_proof": "54 home cooks in DLF Phase 3 bought this this week"
         }
-    # 2. Munchies & Snacks (Doritos, Lay's, Chips, Popcorn)
-    elif any(k in cart_text for k in ["doritos", "lays", "chips", "munchies", "snack", "cheese", "popcorn"]):
+    elif any(k in cart_text for k in ["milk", "coffee", "breakfast", "bread", "eggs", "butter", "dairy", "tokai"]):
         return {
-            "title": "Portronics Adjustable Multi-Angle Desktop Phone Stand",
+            "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
+            "price": 799,
+            "mrp": 1200,
+            "category": "Home & Kitchen",
+            "emoji": "⚡",
+            "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
+            "why_suggested": "Suggested to upgrade your milk & breakfast basket.",
+            "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
+            "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
+        }
+    elif any(k in cart_text for k in ["doritos", "lays", "chips", "munchies", "snack", "popcorn"]):
+        return {
+            "title": "Portronics Multi-Angle Desktop Phone Stand",
             "price": 299,
             "mrp": 699,
             "category": "Electronics & Tech",
@@ -231,21 +259,31 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Prop your phone hands-free to watch YouTube or sports while eating chips, keeping your touchscreen clean from grease and cheese dust.",
             "social_proof": "48 snack lovers in DLF Phase 3 bought this this week"
         }
-    # 3. Dairy, Gourmet & Breakfast (Blue Tokai Coffee, Amul Milk, Bread, Eggs, Butter)
-    elif any(k in cart_text for k in ["coffee", "milk", "breakfast", "bread", "butter", "tokai", "eggs", "yogurt", "gourmet", "specialty"]):
+    elif any(k in cart_text for k in ["baby", "wipes", "pampers", "diaper"]):
         return {
-            "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
-            "price": 799,
-            "mrp": 1200,
-            "category": "Home & Kitchen",
-            "emoji": "⚡",
-            "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
-            "why_suggested": "Suggested to upgrade your coffee & breakfast basket.",
-            "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
-            "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
+            "title": "Sebamed Baby Gentle Body Lotion 200ml",
+            "price": 540,
+            "mrp": 600,
+            "category": "Baby Care",
+            "emoji": "🍼",
+            "scenario_badge": "👶 Baby Care Essentials",
+            "why_suggested": "Complements your baby wipe reorder for complete skin hydration.",
+            "cobuying_utility": "Use after cleansing with baby wipes to lock in 24-hour moisture and protect delicate infant skin from dryness.",
+            "social_proof": "24 parents in DLF Phase 3 bought this this week"
         }
-    # 4. Fruits & Vegetables (Fresh Hass Avocado, Tomatoes, Fruits)
-    elif any(k in cart_text for k in ["avocado", "tomatoes", "bananas", "fruit", "veggie", "vegetable"]):
+    elif any(k in cart_text for k in ["dog", "cat", "pet", "pedigree", "whiskas"]):
+        return {
+            "title": "Whiskas Wet Cat Food Ocean Fish (4 Pack)",
+            "price": 195,
+            "mrp": 220,
+            "category": "Pet Care",
+            "emoji": "🐱",
+            "scenario_badge": "🐾 Pet Nutrition Booster",
+            "why_suggested": "Complements your dry pet food reorder with wet gravy treats.",
+            "cobuying_utility": "Mix wet gravy food with dry kibble to enhance meal palatability and ensure optimal hydration for your pet.",
+            "social_proof": "19 pet owners in DLF Phase 3 bought this this week"
+        }
+    elif any(k in cart_text for k in ["avocado", "yogurt", "fruit", "veggie", "gourmet"]):
         return {
             "title": "Minimalist 10% Vitamin C Face Serum (30ml)",
             "price": 664,
@@ -257,46 +295,6 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "cobuying_utility": "Apply 2-3 drops during your morning breakfast routine to boost skin glow and protect against daily metro pollution.",
             "social_proof": "28 residents in DLF Phase 3 bought this this week"
         }
-    # 5. Baby Care (Pampers Baby Wipes, Diapers)
-    elif any(k in cart_text for k in ["baby", "wipes", "pampers", "diaper"]):
-        return {
-            "title": "Sebamed Baby Gentle Body Lotion 200ml",
-            "price": 540,
-            "mrp": 600,
-            "category": "Baby Care",
-            "emoji": "🍼",
-            "scenario_badge": "👶 Baby Skin Care Essentials",
-            "why_suggested": "Complements your baby wipe reorder for complete skin hydration.",
-            "cobuying_utility": "Use after cleansing with baby wipes to lock in 24-hour moisture and protect delicate infant skin.",
-            "social_proof": "24 parents in DLF Phase 3 bought this this week"
-        }
-    # 6. Pet Care (Pedigree Dog Food, Whiskas Cat Food)
-    elif any(k in cart_text for k in ["dog", "cat", "pet", "pedigree", "whiskas"]):
-        return {
-            "title": "Whiskas Wet Cat Food Ocean Fish (4 Pack)",
-            "price": 195,
-            "mrp": 220,
-            "category": "Pet Care",
-            "emoji": "🐱",
-            "scenario_badge": "🐾 Pet Nutrition Booster",
-            "why_suggested": "Complements your dry pet food reorder with wet gravy treats.",
-            "cobuying_utility": "Mix wet gravy food with dry kibble to enhance meal palatability and ensure optimal hydration.",
-            "social_proof": "19 pet owners in DLF Phase 3 bought this this week"
-        }
-    # 7. Beverages & Cold Drinks (Red Bull, Coca-Cola Zero)
-    elif any(k in cart_text for k in ["red bull", "cola", "coca", "beverage", "drink", "energy"]):
-        return {
-            "title": "Spigen 20W Fast Type-C Wall Charger Adapter",
-            "price": 899,
-            "mrp": 1499,
-            "category": "Electronics & Tech",
-            "emoji": "🔌",
-            "scenario_badge": "⚡ Late-Night Work Power Utility",
-            "why_suggested": "Essential fast-charge utility paired with your active work sprint.",
-            "cobuying_utility": "Power your phone from 0% to 50% in just 25 minutes while enjoying your energy drinks.",
-            "social_proof": "42 residents in DLF Phase 3 bought this this week"
-        }
-    # Default Fallback
     else:
         return {
             "title": "Spigen 20W Fast Type-C Wall Charger Adapter",
@@ -304,24 +302,22 @@ def get_blinksmart_recommendation(cart_items, api_key=""):
             "mrp": 1499,
             "category": "Electronics & Tech",
             "emoji": "🔌",
-            "scenario_badge": "⚡ Desk & Late-Night Power Utility",
-            "why_suggested": "Essential fast-charge utility paired with your active order.",
-            "cobuying_utility": "Power your phone from 0% to 50% in just 25 minutes while enjoying your snacks and beverages.",
+            "scenario_badge": "⚡ Late-Night Work Power Utility",
+            "why_suggested": "Essential fast-charge utility paired with your active work sprint beverages.",
+            "cobuying_utility": "Power your phone from 0% to 50% in just 25 minutes while enjoying your energy drinks.",
             "social_proof": "42 residents in DLF Phase 3 bought this this week"
         }
 
 # -----------------------------------------------------------------------------
-# SIDEBAR CONFIGURATION (NO DEVELOPER API INPUT BOXES)
+# CLEAN SIDEBAR CONFIGURATION (ZERO FRONTEND API KEY DISPLAY)
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("### 📍 User Profile & Location")
-    st.info("**Location:** DLF Phase 3, Gurgaon\n\n**Segment:** Metro Tech Professional\n\n**Order Speed:** ⚡ 10 Mins")
-    
+    st.markdown("### 📍 Location & User Profile")
+    st.info("Location: DLF Phase 3, Gurgaon\n\n**Segment:** Metro Tech Professional\n\n**Delivery Promise:** ⚡ 10 Mins")
     st.divider()
     if st.button("🔄 Reset Simulation Demo"):
         st.session_state.cart = [
-            {"id": "doritos", "name": "Doritos Nacho Cheese Chips 150g", "category": "Munchies & Snacks", "price": 60, "emoji": "🧀"},
-            {"id": "red_bull", "name": "Red Bull Energy Drink 250ml", "category": "Beverages & Cold Drinks", "price": 125, "emoji": "⚡"}
+            {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy & Breakfast", "price": 72, "emoji": "🥛"}
         ]
         st.session_state.nudge_added = False
         st.session_state.order_placed = False
@@ -338,7 +334,7 @@ with col_loc:
     st.markdown(clean_html("<div style='text-align:right; font-size:12px; color:#475569;'>📍 DLF Phase 3, Gurgaon • <strong style='color:#0c831f;'>10 Mins Delivery</strong></div>"), unsafe_allow_html=True)
 
 st.title("BlinkSmart: Zero-Risk Shield Engine")
-st.caption("Functional MVP Prototype | Search & Add Across ALL Blinkit Categories")
+st.caption("Functional MVP Prototype | Contextual Non-Grocery Cross-Sell Engine")
 
 # -----------------------------------------------------------------------------
 # SCREEN 1: ORDER PLACED & 10-MIN EXCHANGE SIMULATOR
@@ -346,10 +342,9 @@ st.caption("Functional MVP Prototype | Search & Add Across ALL Blinkit Categorie
 if st.session_state.order_placed:
     st.balloons()
     st.success("🎉 Order Placed Successfully in 8 Minutes!")
-    st.caption("Fulfillment Dark Store: Gurgaon Sector 43 Hub | Rider Assigned: **Ramesh Kumar**")
-    
-    st.markdown("---")
-    
+    st.caption("Fulfillment Dark Store: Gurgaon Sector 43 Hub | Rider Assigned: Ramesh Kumar")
+    st.divider()
+
     order_success_html = clean_html("""
 <div style='background-color:#f0fdf4; border: 1.5px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
 <div style='display:flex; justify-content:space-between; align-items:center;'>
@@ -362,7 +357,7 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
 </div>
 """)
     st.markdown(order_success_html, unsafe_allow_html=True)
-    
+
     if not st.session_state.exchange_triggered:
         if st.button("🧪 Test 10-Minute Doorstep Rider Exchange Request"):
             st.session_state.exchange_triggered = True
@@ -384,16 +379,15 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
 # -----------------------------------------------------------------------------
 else:
     st.markdown("#### 🛒 Search & Add Items to Grocery Basket")
-    
     col_cat, col_prod, col_btn = st.columns([1.5, 2.5, 1])
-    
+
     all_categories = ["All Categories"] + sorted(list(CATALOG_DF["category"].unique()))
     with col_cat:
         selected_cat = st.selectbox("Category:", all_categories, label_visibility="collapsed")
         
     filtered_df = CATALOG_DF if selected_cat == "All Categories" else CATALOG_DF[CATALOG_DF["category"] == selected_cat]
     product_map = {row["name"]: row for _, row in filtered_df.iterrows()}
-    
+
     selected_title = None
     if product_map:
         with col_prod:
@@ -435,10 +429,10 @@ else:
                     st.rerun()
 
         # -------------------------------------------------------------------------
-        # BLINKSMART CONTEXTUAL AI NUDGE CARD WITH CLEAR CO-BUYING REASONING
+        # BLINKSMART CONTEXTUAL AI NUDGE CARD (CLEAN VISUAL HTML RENDERING)
         # -------------------------------------------------------------------------
         rec = get_blinksmart_recommendation(st.session_state.cart)
-        
+
         nudge_card_html = clean_html(f"""
 <div class="nudge-card">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -468,7 +462,7 @@ else:
 </div>
 """)
         st.markdown(nudge_card_html, unsafe_allow_html=True)
-        
+
         # Nudge Add Action Button
         if not st.session_state.nudge_added:
             if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)"):
@@ -484,7 +478,7 @@ else:
         st.markdown("#### 📄 Bill Summary")
         handling_fee = 0 if st.session_state.nudge_added else 15
         grand_total = subtotal + handling_fee
-        
+
         col_label, col_val = st.columns([3, 1])
         with col_label:
             st.write("Item Subtotal")
@@ -502,7 +496,7 @@ else:
             st.markdown(f"**₹{grand_total}**")
 
         st.divider()
-        
+
         # Sticky Checkout Bar
         if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔"):
             st.session_state.order_placed = True
