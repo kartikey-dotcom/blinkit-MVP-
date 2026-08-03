@@ -487,9 +487,9 @@ def get_blinksmart_recommendation(cart_items):
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# TOP APP HEADER (LOGO, LOCATION, THEME TOGGLE & RESET)
+# TOP APP HEADER (LOGO, LOCATION & RESET)
 # -----------------------------------------------------------------------------
-col_logo, col_info, col_actions = st.columns([1, 1.8, 1.2])
+col_logo, col_info, col_reset = st.columns([1, 2, 1])
 with col_logo:
     st.markdown(clean_html("""
     <div style='display:flex; align-items:center; justify-content:flex-start;'>
@@ -498,28 +498,20 @@ with col_logo:
     """), unsafe_allow_html=True)
 
 with col_info:
-    st.markdown(clean_html(f"""
+    st.markdown(clean_html("""
     <div style='text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;'>
-        <div style='font-size:12px; font-weight:800; color:{text_main}; margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
+        <div style='font-size:12px; font-weight:800; color:#111827; margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
     """), unsafe_allow_html=True)
 
-with col_actions:
-    col_theme, col_reset = st.columns([1, 1])
-    with col_theme:
-        theme_btn_label = "☀️ Light" if is_dark else "🌙 Dark"
-        if st.button(theme_btn_label, key="theme_toggle_btn"):
-            st.session_state.theme = "light" if is_dark else "dark"
-            st.rerun()
-
-    with col_reset:
-        if st.button("🔄 Reset", key="top_reset_btn"):
-            st.session_state.cart = []
-            st.session_state.nudge_added = False
-            st.session_state.order_placed = False
-            st.session_state.exchange_triggered = False
-            st.rerun()
+with col_reset:
+    if st.button("🔄 Reset", key="top_reset_btn"):
+        st.session_state.cart = []
+        st.session_state.nudge_added = False
+        st.session_state.order_placed = False
+        st.session_state.exchange_triggered = False
+        st.rerun()
 
 # -----------------------------------------------------------------------------
 # SCREEN 1: ORDER PLACED & 10-MIN EXCHANGE SIMULATOR
