@@ -16,21 +16,21 @@ def clean_html(html_str):
     return " ".join(lines)
 
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & VERTICAL MOBILE APP UX STYLING
+# PAGE CONFIGURATION & OFFICIAL BLINKIT LIGHT UX THEME (#F4F6FB, #F7C200, #0C831F)
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Blinkit Quick Commerce | Mobile App MVP",
+    page_title="Blinkit Quick Commerce | Light Theme MVP",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for Sleek Vertical Mobile App Layout
+# Custom CSS for Light Theme matching official Blinkit Yellow & Green Mobile Palette
 st.markdown(clean_html("""
 <style>
-/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #0F172A, Text #111827 */
-.main { background-color: #0F172A; padding: 10px 0; }
-.stApp { background-color: #0F172A; color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
+/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Light Background #F4F6FB, Text #111827 */
+.main { background-color: #F4F6FB; padding: 10px 0; }
+.stApp { background-color: #F4F6FB; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
 
 /* Hide default streamlit headers/footers for app feel */
 #MainMenu { visibility: hidden; }
@@ -49,6 +49,7 @@ header { visibility: hidden; }
     background-color: #FFFFFF;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+    border-bottom: 1px solid #F1F5F9;
 }
 
 .dynamic-island-pill {
@@ -62,17 +63,18 @@ header { visibility: hidden; }
     background-color: #F7C200;
     color: #000000;
     font-weight: 900;
-    padding: 5px 14px;
+    padding: 6px 14px;
     border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 20px;
     display: inline-block;
     letter-spacing: -0.5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .delivery-pill {
     background-color: #F0FDF4;
-    border: 1px solid #BBF7D0;
+    border: 1.5px solid #BBF7D0;
     color: #0C831F;
     font-weight: 800;
     font-size: 11px;
@@ -83,7 +85,7 @@ header { visibility: hidden; }
 }
 
 .nudge-card {
-    background: #F0FDF4;
+    background: #FFFFFF;
     border: 1.5px solid #10B981;
     border-radius: 16px;
     padding: 16px;
@@ -114,7 +116,7 @@ header { visibility: hidden; }
 }
 
 .rationale-box {
-    background-color: #FFFFFF !important;
+    background-color: #F8FAFC !important;
     border: 1.5px solid #10B981 !important;
     border-radius: 12px;
     padding: 12px;
@@ -142,6 +144,7 @@ header { visibility: hidden; }
     padding: 8px 14px;
     font-size: 13px;
     width: 100%;
+    box-shadow: 0 2px 4px rgba(12, 131, 31, 0.2);
 }
 .stButton > button:hover {
     background-color: #096818;
@@ -158,6 +161,7 @@ header { visibility: hidden; }
     padding: 10px 0 6px 0;
     margin-top: 20px;
     border-radius: 16px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
 }
 
 .ios-tab-item {
@@ -177,7 +181,7 @@ header { visibility: hidden; }
 .ios-home-indicator {
     width: 134px;
     height: 5px;
-    background-color: #94A3B8;
+    background-color: #CBD5E1;
     border-radius: 100px;
     margin: 10px auto 4px auto;
 }
@@ -451,7 +455,7 @@ def get_blinksmart_recommendation(cart_items):
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# TOP APP HEADER (1:2:1 CENTERED MIDPOINT ALIGNMENT)
+# TOP APP HEADER (1:2:1 CENTERED MIDPOINT ALIGNMENT IN LIGHT THEME)
 # -----------------------------------------------------------------------------
 col_logo, col_info, col_reset = st.columns([1, 2, 1])
 with col_logo:
@@ -464,7 +468,7 @@ with col_logo:
 with col_info:
     st.markdown(clean_html("""
     <div style='text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;'>
-        <div style='font-size:12px; font-weight:800; color:#FFFFFF; margin-bottom:3px; text-shadow:0 1px 2px rgba(0,0,0,0.5);'>📍 DLF Phase 3, Gurgaon</div>
+        <div style='font-size:12px; font-weight:800; color:#111827; margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
     """), unsafe_allow_html=True)
@@ -518,11 +522,11 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: VERTICAL MOBILE APP LAYOUT FLOW
+# SCREEN 2: VERTICAL MOBILE APP LAYOUT FLOW (LIGHT THEME)
 # -----------------------------------------------------------------------------
 else:
     # 1. SEARCH & CATEGORY SELECTION
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#F8FAFC;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
     
     search_query = st.text_input(
         "Search Catalog",
@@ -619,7 +623,7 @@ else:
     st.markdown("---")
 
     # 3. ACTIVE GROCERY BASKET
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#F8FAFC;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
     
     if not st.session_state.cart:
         st.info("🛒 Your basket is empty. Select an item above to add!")
@@ -648,7 +652,7 @@ else:
         if st.session_state.nudge_added:
             subtotal += rec['price']
 
-        st.markdown("<div style='font-weight:800; font-size:14px; color:#F8FAFC; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
         handling_fee = 0 if st.session_state.nudge_added else 15
         grand_total = subtotal + handling_fee
 
