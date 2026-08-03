@@ -19,13 +19,13 @@ def clean_html(html_str):
 # PAGE CONFIGURATION & OFFICIAL BLINKIT LIGHT UX THEME (#F4F6FB, #F7C200, #0C831F)
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Blinkit Quick Commerce | Light Theme MVP",
+    page_title="Blinkit Quick Commerce | Mobile App MVP",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for Light Theme matching official Blinkit Yellow & Green Mobile Palette
+# Custom CSS for Light Theme & Differentiated CTA Visual Hierarchy
 st.markdown(clean_html("""
 <style>
 /* Blinkit Palette: Yellow #F7C200, Green #0C831F, Light Background #F4F6FB, Text #111827 */
@@ -134,10 +134,10 @@ header { visibility: hidden; }
     font-size: 11px;
 }
 
-/* Blinkit Green Buttons */
+/* Primary Green CTA Button (Checkout & Catalog Add) */
 .stButton > button {
     background-color: #0C831F;
-    color: white;
+    color: #FFFFFF;
     font-weight: 800;
     border-radius: 10px;
     border: none;
@@ -148,7 +148,20 @@ header { visibility: hidden; }
 }
 .stButton > button:hover {
     background-color: #096818;
-    color: white;
+    color: #FFFFFF;
+}
+
+/* Secondary CTA (Nudge Add-on Button): Distinct Blinkit Gold (#F7C200) with dark text */
+.nudge-btn-wrapper .stButton > button {
+    background-color: #F7C200 !important;
+    color: #111827 !important;
+    border: 1.5px solid #0C831F !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 6px rgba(247, 194, 0, 0.3) !important;
+}
+.nudge-btn-wrapper .stButton > button:hover {
+    background-color: #E5B200 !important;
+    color: #000000 !important;
 }
 
 /* iOS Bottom Tab Bar */
@@ -522,10 +535,12 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: VERTICAL MOBILE APP LAYOUT FLOW (LIGHT THEME)
+# SCREEN 2: CART-FIRST RE-ORDERED INFORMATION ARCHITECTURE
 # -----------------------------------------------------------------------------
 else:
-    # 1. SEARCH & CATEGORY SELECTION
+    # -------------------------------------------------------------------------
+    # 1. SEARCH & CATALOG LISTING / SELECTION
+    # -------------------------------------------------------------------------
     st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
     
     search_query = st.text_input(
@@ -564,23 +579,59 @@ else:
     filtered_df = CATALOG_DF
     if target_category != "All Categories":
         filtered_df = filtered_df[filtered_df["category"] == target_category]
-    if search_query:
+    
+    # Clean Search Banner Logic (Suppress error box on empty, whitespace, or '-')
+    if search_query and search_query.strip() not in ["", "-"]:
         filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
     product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
 
     if product_map:
         selected_item_key = st.selectbox("Select Product to Add:", list(product_map.keys()))
-        if st.button("+ Add Item to Grocery Basket", use_container_width=True):
+        if st.button("+ Add Item to Grocery Basket", use_container_width=True, key="add_catalog_item_btn"):
             item_to_add = product_map[selected_item_key]
             st.session_state.cart.append(item_to_add)
             st.rerun()
     else:
-        st.info("🔍 No products match search. Clear search query or pick another category.")
+        # Triggered ONLY during actual failed searches
+        if search_query and search_query.strip() not in ["", "-"]:
+            st.info("🔍 No products match your search query. Try searching for milk, sunscreen, chips, or oats.")
 
     st.markdown("---")
 
-    # 2. BLINKSMART CONTEXTUAL AI NUDGE CARD (PULLED DIRECTLY UNDER SEARCH & CATEGORY)
+    # -------------------------------------------------------------------------
+    # 2. ACTIVE GROCERY BASKET (RENDERS FIRST BELOW CATALOG)
+    # -------------------------------------------------------------------------
+    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
+    
+    if not st.session_state.cart:
+        st.info("🛒 Your basket is empty. Select an item above to add!")
+    else:
+        subtotal = 0
+        for idx, item in enumerate(st.session_state.cart):
+            subtotal += item["price"]
+            col_item, col_del = st.columns([4.5, 0.8])
+            with col_item:
+                cart_item_html = clean_html(f"""
+                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
+                    <div>
+                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
+                        <strong style='font-size:13px; color:#111827; margin-left:6px;'>{item['name']}</strong>
+                    </div>
+                    <span style='font-weight:bold; font-size:13px; color:#111827;'>₹{item['price']}</span>
+                </div>
+                """)
+                st.markdown(cart_item_html, unsafe_allow_html=True)
+            with col_del:
+                if st.button("❌", key=f"del_cart_{idx}"):
+                    st.session_state.cart.pop(idx)
+                    st.rerun()
+
+    st.markdown("---")
+
+    # -------------------------------------------------------------------------
+    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (RENDERS SECOND BELOW BASKET)
+    # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
 
     nudge_card_html = clean_html(f"""
@@ -613,42 +664,22 @@ else:
 """)
     st.markdown(nudge_card_html, unsafe_allow_html=True)
 
+    # Differentiated Secondary CTA button styling (Blinkit Gold #F7C200)
     if not st.session_state.nudge_added:
+        st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
         if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
             st.session_state.nudge_added = True
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
 
     st.markdown("---")
 
-    # 3. ACTIVE GROCERY BASKET
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
-    
-    if not st.session_state.cart:
-        st.info("🛒 Your basket is empty. Select an item above to add!")
-    else:
-        subtotal = 0
-        for idx, item in enumerate(st.session_state.cart):
-            subtotal += item["price"]
-            col_item, col_del = st.columns([4.5, 0.8])
-            with col_item:
-                cart_item_html = clean_html(f"""
-                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
-                    <div>
-                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-                        <strong style='font-size:13px; color:#111827; margin-left:6px;'>{item['name']}</strong>
-                    </div>
-                    <span style='font-weight:bold; font-size:13px; color:#111827;'>₹{item['price']}</span>
-                </div>
-                """)
-                st.markdown(cart_item_html, unsafe_allow_html=True)
-            with col_del:
-                if st.button("❌", key=f"del_cart_{idx}"):
-                    st.session_state.cart.pop(idx)
-                    st.rerun()
-
-        # 4. BILL SUMMARY & FAST CHECKOUT BAR
+    # -------------------------------------------------------------------------
+    # 4. BILL SUMMARY & PRIMARY CHECKOUT CTA (RENDERS THIRD)
+    # -------------------------------------------------------------------------
+    if st.session_state.cart:
         if st.session_state.nudge_added:
             subtotal += rec['price']
 
@@ -674,7 +705,7 @@ else:
 
         st.divider()
 
-        # Sticky Fast Checkout Button
+        # Dominant Primary CTA (Solid Blinkit Dark Green #0C831F)
         if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
             st.session_state.order_placed = True
             st.rerun()
