@@ -28,9 +28,9 @@ st.set_page_config(
 # Custom CSS for Sleek Vertical Mobile App Layout
 st.markdown(clean_html("""
 <style>
-/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #F4F6FB, Text #111827 */
+/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #0F172A, Text #111827 */
 .main { background-color: #0F172A; padding: 10px 0; }
-.stApp { background-color: #0F172A; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
+.stApp { background-color: #0F172A; color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
 
 /* Hide default streamlit headers/footers for app feel */
 #MainMenu { visibility: hidden; }
@@ -74,11 +74,12 @@ header { visibility: hidden; }
     background-color: #F0FDF4;
     border: 1px solid #BBF7D0;
     color: #0C831F;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 11px;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     display: inline-block;
+    text-align: center;
 }
 
 .nudge-card {
@@ -450,18 +451,24 @@ def get_blinksmart_recommendation(cart_items):
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# TOP APP HEADER
+# TOP APP HEADER (1:2:1 CENTERED MIDPOINT ALIGNMENT)
 # -----------------------------------------------------------------------------
-col_logo, col_info, col_reset = st.columns([1.2, 2.2, 1])
+col_logo, col_info, col_reset = st.columns([1, 2, 1])
 with col_logo:
-    st.markdown(clean_html('<span class="blinkit-logo-badge">blinkit</span>'), unsafe_allow_html=True)
+    st.markdown(clean_html("""
+    <div style='display:flex; align-items:center; justify-content:flex-start;'>
+        <span class="blinkit-logo-badge">blinkit</span>
+    </div>
+    """), unsafe_allow_html=True)
+
 with col_info:
     st.markdown(clean_html("""
-    <div style='font-size:12px; color:#111827;'>
-        <div>📍 <strong>DLF Phase 3, Gurgaon</strong></div>
+    <div style='text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;'>
+        <div style='font-size:12px; font-weight:800; color:#FFFFFF; margin-bottom:3px; text-shadow:0 1px 2px rgba(0,0,0,0.5);'>📍 DLF Phase 3, Gurgaon</div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
     """), unsafe_allow_html=True)
+
 with col_reset:
     if st.button("🔄 Reset", key="top_reset_btn"):
         st.session_state.cart = [
@@ -515,7 +522,7 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
 # -----------------------------------------------------------------------------
 else:
     # 1. SEARCH & CATEGORY SELECTION
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-weight:800; font-size:15px; color:#F8FAFC;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
     
     search_query = st.text_input(
         "Search Catalog",
@@ -612,7 +619,7 @@ else:
     st.markdown("---")
 
     # 3. ACTIVE GROCERY BASKET
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-weight:800; font-size:15px; color:#F8FAFC;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
     
     if not st.session_state.cart:
         st.info("🛒 Your basket is empty. Select an item above to add!")
@@ -641,7 +648,7 @@ else:
         if st.session_state.nudge_added:
             subtotal += rec['price']
 
-        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-weight:800; font-size:14px; color:#F8FAFC; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
         handling_fee = 0 if st.session_state.nudge_added else 15
         grand_total = subtotal + handling_fee
 
