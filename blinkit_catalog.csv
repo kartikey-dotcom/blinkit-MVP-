@@ -1,29 +1,85 @@
 id,name,category,price,mrp,emoji
-DB-001,Amul Taaza Milk 1L,Dairy & Breakfast,54,54,🥛
-DB-002,Amul Pasteurised Butter 100g,Dairy & Breakfast,58,60,🧈
-DB-003,Harvest Gold Bread,Dairy & Breakfast,45,50,🍞
-DB-004,Eggoz Farm Fresh Eggs (6 pcs),Dairy & Breakfast,65,75,🥚
-DB-005,Epigamia Greek Yogurt,Dairy & Breakfast,50,55,🍨
-FV-001,Fresh Imported Hass Avocado (2 pcs),Fruits & Vegetables,189,220,🥑
-FV-002,Fresh Hybrid Tomatoes 500g,Fruits & Vegetables,24,35,🍅
-FV-003,Bananas (6 pcs),Fruits & Vegetables,48,60,🍌
-GS-001,Fortune Sunflower Oil 1L,Grocery & Staples,145,170,🌻
-GS-002,Aashirvaad Atta 5kg,Grocery & Staples,235,275,🌾
-MS-001,Doritos Nacho Cheese 150g,Munchies & Snacks,85,95,📐
-MS-002,Lay's Magic Masala 90g,Munchies & Snacks,40,45,🍟
-BC-001,Red Bull Energy Drink 250ml,Beverages & Cold Drinks,115,125,⚡
-BC-002,Coca-Cola Zero Sugar 300ml,Beverages & Cold Drinks,38,40,🥤
-GS-101,Blue Tokai Dark Roast Coffee Beans 250g,Gourmet & Specialty,490,550,☕
-GS-102,Nutella Hazelnut Spread 350g,Gourmet & Specialty,375,425,🌰
-SB-001,Cadbury Dairy Milk Silk Chocolate 150g,Sweet Tooth & Bakery,175,195,🍫
-ET-001,Spigen 20W Type-C Fast Charger,Electronics & Tech,999,1499,🔌
-ET-002,boAt Airdopes 141,Electronics & Tech,1299,2990,🎧
-ET-003,Portronics 6-in-1 Type-C HDMI Hub,Electronics & Tech,1499,2499,💻
-BP-001,Minimalist 10% Vitamin C Face Serum 30ml,Beauty & Personal Care,664,699,🧴
-BP-002,The Derma Co 1% Hyaluronic Sunscreen 50g,Beauty & Personal Care,449,499,☀️
-HK-001,InstaCuppa Electric Coffee Frother,Home & Kitchen,999,1499,☕
-HK-002,Pigeon 1.5L Electric Kettle,Home & Kitchen,699,1195,🫖
-BC-201,Pampers Fresh Clean Baby Wipes (80 sheets),Baby Care,189,225,👶
-BC-202,Sebamed Baby Gentle Lotion 200ml,Baby Care,629,699,🍼
-PC-001,Pedigree Adult Dry Dog Food 1.2kg,Pet Care,380,420,🐶
-PC-002,Whiskas Wet Cat Food Ocean Fish 85g,Pet Care,50,55,🐱
+amul_milk_1l,Amul Taaza T-Special Milk 1L,"Dairy, Bread & Eggs",72,75,🥛
+amul_butter_100g,Amul Pasteurised Salted Butter 100g,"Dairy, Bread & Eggs",60,62,🧈
+harvest_bread_white,Harvest Gold White Bread 400g,"Dairy, Bread & Eggs",40,40,🍞
+harvest_brown_bread,Harvest Gold 100% Whole Wheat Brown Bread 400g,"Dairy, Bread & Eggs",50,50,🍞
+eggoz_white_6,Eggoz Farm Fresh White Eggs (6 pcs),"Dairy, Bread & Eggs",65,70,🥚
+eggoz_brown_10,Eggoz Organic Brown Eggs (10 pcs),"Dairy, Bread & Eggs",135,150,🥚
+epigamia_greek_yogurt,Epigamia Greek Yogurt Mango 100g,"Dairy, Bread & Eggs",60,65,🥭
+mother_dairy_paneer,Mother Dairy Fresh Paneer 200g,"Dairy, Bread & Eggs",92,95,🧀
+fresh_avocado_2,Fresh Imported Hass Avocado (2 pcs),Fruits & Vegetables,299,350,🥑
+fresh_tomatoes_500g,Fresh Hybrid Tomatoes 500g,Fruits & Vegetables,28,35,🍅
+fresh_onions_1kg,Fresh Red Onions 1kg,Fruits & Vegetables,42,50,🧅
+fresh_potatoes_1kg,Fresh New Crop Potatoes 1kg,Fruits & Vegetables,38,45,🥔
+fresh_bananas_6,Fresh Robusta Bananas (6 pcs),Fruits & Vegetables,45,50,🍌
+fresh_apples_4,Fresh Royal Gala Apples (4 pcs),Fruits & Vegetables,180,220,🍎
+fresh_coriander,Fresh Green Coriander Bunch 100g,Fruits & Vegetables,15,20,🌿
+fresh_lemon_200g,Fresh Juicy Yellow Lemons (200g),Fruits & Vegetables,35,40,🍋
+aashirvaad_atta_5kg,Aashirvaad Shuddh Chakki Atta 5kg,Grocery & Staples,245,270,🌾
+fortune_sunflower_oil,Fortune Sunlite Sunflower Oil 1L,Grocery & Staples,145,160,🛢️
+daawat_basmati_rice,Daawat Rozana Super Basmati Rice 5kg,Grocery & Staples,380,450,🍚
+tata_sampann_toor_dal,Tata Sampann Unpolished Toor Dal 1kg,Grocery & Staples,175,195,🍲
+tata_salt_1kg,Tata Salt Vacuum Evaporated Iodized Salt 1kg,Grocery & Staples,28,28,🧂
+catch_turmeric_powder,Catch Turmeric Powder (Haldi) 200g,Grocery & Staples,52,58,🟡
+mdh_deggi_mirch,MDH Deggi Mirch Red Chilli Powder 100g,Grocery & Staples,88,95,🌶️
+doritos_nacho_150g,Doritos Nacho Cheese Chips 150g,Munchies & Snacks,60,60,🧀
+lays_magic_masala,Lay's India's Magic Masala Chips 50g,Munchies & Snacks,20,20,🥔
+haldiram_bhujia_400g,Haldiram's Plain Bhujia Sev 400g,Munchies & Snacks,120,130,🥨
+act2_popcorn_butter,Act II Instant Butter Popcorn 150g,Munchies & Snacks,50,55,🍿
+kurkure_masala_munch,Kurkure Masala Munch Crunchy Snack 90g,Munchies & Snacks,20,20,🔥
+pringles_sour_cream,Pringles Sour Cream & Onion Potato Chips 107g,Munchies & Snacks,115,135,🥫
+red_bull_250ml,Red Bull Energy Drink 250ml,Beverages & Cold Drinks,125,125,⚡
+coke_zero_300ml,Coca-Cola Zero Sugar 300ml Can,Beverages & Cold Drinks,40,40,🥤
+thums_up_750ml,Thums Up Soft Drink 750ml Bottle,Beverages & Cold Drinks,40,40,🍾
+real_mixed_fruit,Real Fruit Power Mixed Fruit Juice 1L,Beverages & Cold Drinks,110,130,🧃
+bisleri_water_5l,Bisleri Packaged Drinking Water Jar 5L,Beverages & Cold Drinks,70,75,💧
+blue_tokai_dark_roast,Blue Tokai Dark Roast Coffee Beans 250g,"Tea, Coffee & Health Drinks",490,550,☕
+nescafe_classic_100g,Nescafe Classic Instant Coffee Powder 100g,"Tea, Coffee & Health Drinks",340,375,☕
+tata_tea_gold_500g,Tata Tea Gold Premium Black Tea 500g,"Tea, Coffee & Health Drinks",310,350,🍃
+tetley_green_tea,Tetley Green Tea Lemon & Honey (25 Bags),"Tea, Coffee & Health Drinks",180,210,🍵
+bournvita_500g,Cadbury Bournvita Chocolate Health Drink 500g,"Tea, Coffee & Health Drinks",240,265,🍫
+maggi_2min_noodles,Maggi 2-Minute Masala Instant Noodles (4 Pack),Instant & Frozen Food,56,60,🍜
+quaker_oats_1kg,Quaker Rolled Whole Oats 1kg,Instant & Frozen Food,190,225,🥣
+mccain_french_fries,McCain Crispy French Fries 420g,Instant & Frozen Food,125,140,🍟
+kellogg_corn_flakes,Kellogg's Real Almond & Honey Corn Flakes 300g,Instant & Frozen Food,210,235,🥣
+yippee_noodles_pack,Sunfeast YiPPee! Magic Masala Noodles (4 Pack),Instant & Frozen Food,52,56,🍜
+cadbury_silk_150g,Cadbury Dairy Milk Silk Chocolate 150g,"Sweet Tooth, Chocolates & Bakery",175,180,🍫
+nutella_spread_350g,Nutella Hazelnut Cocoa Spread 350g,"Sweet Tooth, Chocolates & Bakery",395,420,🍫
+ferrero_rocher_16,Ferrero Rocher Premium Chocolates (16 Pack),"Sweet Tooth, Chocolates & Bakery",625,699,🍬
+kwality_vanilla_brick,Kwality Wall's Vanilla Ice Cream Tub 700ml,"Sweet Tooth, Chocolates & Bakery",160,180,🍨
+derma_co_sunscreen,The Derma Co 1% Hyaluronic Sunscreen Aqua Gel 50g,Beauty & Cosmetics,449,499,☀️
+minimalist_vit_c,Minimalist 10% Vitamin C Face Serum 30ml,Beauty & Cosmetics,664,699,🧴
+garnier_micellar_water,Garnier Skin Naturals Micellar Cleansing Water 125ml,Beauty & Cosmetics,199,225,🧼
+maybelline_mascara,Maybelline New York Hypercurl Waterproof Mascara,Beauty & Cosmetics,349,399,💄
+cetaphil_cleanser_125ml,Cetaphil Gentle Skin Cleanser 125ml,"Bath, Body & Personal Care",335,375,🧴
+colgate_maxfresh_150g,Colgate MaxFresh Red Gel Toothpaste 150g,"Bath, Body & Personal Care",115,130,🪥
+dettol_soap_3pack,Dettol Original Germ Protection Bathing Soap (3 Pack),"Bath, Body & Personal Care",140,155,🧼
+dove_shampoo_340ml,Dove Intense Repair Hair Shampoo 340ml,"Bath, Body & Personal Care",280,325,🧴
+nivea_body_lotion,Nivea Nourishing Body Milk Lotion 200ml,"Bath, Body & Personal Care",240,275,🧴
+spigen_20w_charger,Spigen 20W Fast Type-C Wall Charger Adapter,Electronics & Tech Accessories,899,1499,🔌
+boat_airdopes_141,boAt Airdopes 141 True Wireless Earbuds,Electronics & Tech Accessories,1299,4490,🎧
+portronics_type_c_cable,Portronics Konnect L 3A Type-C Fast Charging Cable 1.2m,Electronics & Tech Accessories,199,499,⚡
+mi_10000mah_powerbank,Mi Power Bank 3i 10000mAh 18W Fast Charging,Electronics & Tech Accessories,1299,2199,🔋
+instacuppa_frother,InstaCuppa Electric Milk Frother & Hand Mixer,Home & Kitchen Utilities,799,1200,⚡
+portronics_kitchen_scale,Portronics Digital Kitchen Weight Scale (1g to 10kg),Home & Kitchen Utilities,399,999,⚖️
+pigeon_electric_kettle,Pigeon 1.5L Stainless Steel Electric Kettle,Home & Kitchen Utilities,649,1195,🫖
+portronics_phone_stand,Portronics Multi-Angle Desktop Phone Stand,Home & Kitchen Utilities,249,699,📱
+borosil_fondue_bowl,Borosil Microwave Safe Glass Dessert & Fondue Bowl,Home & Kitchen Utilities,299,499,🥣
+surf_excel_matic_top,Surf Excel Matic Top Load Washing Powder 1kg,Cleaning & Household Essentials,215,235,🧺
+colin_surface_cleaner,Colin Glass and Surface Cleaner Spray 500ml,Cleaning & Household Essentials,105,120,🧹
+vim_dishwash_liquid,Vim Gel Lemon Dishwash Liquid Bottle 500ml,Cleaning & Household Essentials,125,140,🧽
+origami_tissue_box,Origami 2-Ply Facial Tissue Box (200 Sheets),Cleaning & Household Essentials,95,110,🧻
+pampers_baby_wipes,Pampers Fresh Clean Baby Wipes (80 Sheets),Baby Care,185,225,👶
+pampers_diapers_m,Pampers All-in-One Pants Diapers Medium (30 Count),Baby Care,540,649,👶
+sebamed_baby_lotion,Sebamed Baby Gentle Body Lotion 200ml,Baby Care,540,600,🍼
+pedigree_dog_food_1kg,Pedigree Adult Dry Dog Food Chicken & Vegetables 1.2kg,Pet Care,380,410,🐶
+whiskas_cat_wet_food,Whiskas Wet Cat Food Ocean Fish (4 Pack x 85g),Pet Care,195,220,🐱
+ors_apple_drink,Enerzal ORS Apple Electrolyte Drink 200ml,"Health, Pharma & Wellness",32,35,🧃
+volini_spray_50g,Volini Pain Relief Spray 50g,"Health, Pharma & Wellness",165,185,💊
+dettol_plaster_strips,Dettol Adhesive Antiseptic Bandages (10 Strips),"Health, Pharma & Wellness",30,35,🩹
+classmate_notebook,Classmate Pulse Long Spiral Notebook (200 Pages),"Stationery, Books & Games",90,100,📓
+parker_gel_pen,Parker Vector Stainless Steel Gel Pen,"Stationery, Books & Games",275,300,🖊️
+uno_cards_classic,Mattel UNO Classic Card Game,"Stationery, Books & Games",149,199,🃏
+orbit_spearmint_gum,Orbit Spearmint Sugarfree Chewing Gum 22g,Paan & Party Essentials,50,50,🍬
+catch_club_soda_750ml,Catch Club Soda 750ml,Paan & Party Essentials,20,20,🥤
+licious_chicken_breast,Fresh Boneless Chicken Breast 400g,"Meat, Fish & Eggs",245,275,🍗
