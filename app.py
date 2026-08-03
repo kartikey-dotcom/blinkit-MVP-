@@ -23,34 +23,49 @@ def get_product_unit(name):
     return "1 Unit"
 
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & NATIVE BLINKIT MOBILE UX STYLING
+# PAGE CONFIGURATION & NATIVE iOS MOBILE APP UX STYLING
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Blinkit Quick Commerce | BlinkSmart MVP",
+    page_title="Blinkit Quick Commerce | iOS Mobile App MVP",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Custom light CSS styling matching Blinkit's native mobile app design system
+# Custom light CSS styling matching Blinkit's native iOS mobile app design system
 st.markdown(clean_html("""
 <style>
-/* Blinkit Brand Palette: Yellow #F7C200, Green #0C831F, Background #F4F6FB, Text #111827 */
-.main { background-color: #F4F6FB; }
-.stApp { background-color: #F4F6FB; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #F4F6FB, Text #111827 */
+.main { background-color: #0F172A; padding: 10px 0; }
+.stApp { background-color: #0F172A; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
 
-/* Hide default streamlit headers/footers for native app look */
+/* Hide default streamlit headers/footers for iOS app feel */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
 
-.mobile-header-card {
+/* iOS Top Status Bar & Dynamic Island */
+.ios-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px 4px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
     background-color: #FFFFFF;
-    border-radius: 16px;
-    padding: 12px 16px;
-    margin-bottom: 14px;
-    border: 1px solid #E5E7EB;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.dynamic-island-pill {
+    width: 110px;
+    height: 24px;
+    background-color: #000000;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .blinkit-logo-badge {
@@ -60,7 +75,7 @@ header { visibility: hidden; }
     padding: 5px 14px;
     border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 22px;
+    font-size: 20px;
     display: inline-block;
     letter-spacing: -0.5px;
 }
@@ -76,6 +91,7 @@ header { visibility: hidden; }
     display: inline-block;
 }
 
+/* Native Product Row Card */
 .product-row-card {
     background-color: #FFFFFF;
     border-radius: 14px;
@@ -191,8 +207,54 @@ header { visibility: hidden; }
     background-color: #096818;
     color: white;
 }
+
+/* iOS Bottom Tab Bar */
+.ios-tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    padding: 10px 0 6px 0;
+    margin-top: 20px;
+    border-radius: 16px;
+}
+
+.ios-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #6B7280;
+}
+
+.ios-tab-item.active {
+    color: #0C831F;
+    font-weight: 800;
+}
+
+.ios-home-indicator {
+    width: 134px;
+    height: 5px;
+    background-color: #94A3B8;
+    border-radius: 100px;
+    margin: 10px auto 4px auto;
+}
 </style>
 """), unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# iOS DYNAMIC ISLAND & STATUS BAR
+# -----------------------------------------------------------------------------
+ios_status_html = clean_html("""
+<div class="ios-status-bar">
+    <span>9:41</span>
+    <div class="dynamic-island-pill"></div>
+    <span>📶 🛜 🔋 100%</span>
+</div>
+""")
+st.markdown(ios_status_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # DYNAMIC BLINKIT CATALOG LOADING (REPRESENTING ALL 19 CATEGORIES)
@@ -567,7 +629,7 @@ else:
     if not display_products:
         st.info("🔍 No products found matching your search. Try searching for 'milk', 'atta', 'charger', 'snack', or select 'All Categories'.")
     else:
-        # Show top product cards (capped at 12 for clean mobile scroll UX if unfiltered)
+        # Show top product cards (capped at 15 for clean mobile scroll UX if unfiltered)
         cards_to_show = display_products[:15]
         for idx, prod in enumerate(cards_to_show):
             unit_str = prod.get("unit") or get_product_unit(prod["name"])
@@ -690,3 +752,33 @@ else:
         if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
             st.session_state.order_placed = True
             st.rerun()
+
+# -----------------------------------------------------------------------------
+# iOS BOTTOM TAB BAR & HOME INDICATOR
+# -----------------------------------------------------------------------------
+ios_tab_html = clean_html("""
+<div class="ios-tab-bar">
+    <div class="ios-tab-item active">
+        <span style="font-size:18px;">🏠</span>
+        <span>Home</span>
+    </div>
+    <div class="ios-tab-item">
+        <span style="font-size:18px;">🔍</span>
+        <span>Categories</span>
+    </div>
+    <div class="ios-tab-item">
+        <span style="font-size:18px;">⚡</span>
+        <span>BlinkSmart</span>
+    </div>
+    <div class="ios-tab-item">
+        <span style="font-size:18px;">🧺</span>
+        <span>Basket</span>
+    </div>
+    <div class="ios-tab-item">
+        <span style="font-size:18px;">👤</span>
+        <span>Account</span>
+    </div>
+</div>
+<div class="ios-home-indicator"></div>
+""")
+st.markdown(ios_tab_html, unsafe_allow_html=True)
