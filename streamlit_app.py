@@ -19,57 +19,45 @@ def clean_html(html_str):
 # PAGE CONFIGURATION & OFFICIAL BLINKIT LIGHT UX THEME (#F4F6FB, #F7C200, #0C831F)
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Blinkit Quick Commerce | Mobile App MVP",
+    page_title="Blinkit Quick Commerce | Mobile & Web MVP",
     page_icon="⚡",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for Light Theme & Differentiated CTA Visual Hierarchy
+# Custom CSS for Wide Desktop & Mobile Responsive Theme with High-Legibility Typography
 st.markdown(clean_html("""
 <style>
 /* Blinkit Palette: Yellow #F7C200, Green #0C831F, Light Background #F4F6FB, Text #111827 */
 .main { background-color: #F4F6FB; padding: 10px 0; }
-.stApp { background-color: #F4F6FB; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
+.stApp { background-color: #F4F6FB; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; font-size: 15px; }
+
+/* Responsive Container Max Width & Padding */
+.block-container {
+    max-width: 1280px !important;
+    padding-top: 1rem !important;
+    padding-bottom: 2.5rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    margin: 0 auto !important;
+}
 
 /* Hide default streamlit headers/footers for app feel */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
 
-/* iOS Top Status Bar & Dynamic Island */
-.ios-status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px 4px 16px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #111827;
-    background-color: #FFFFFF;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom: 1px solid #F1F5F9;
-}
-
-.dynamic-island-pill {
-    width: 110px;
-    height: 24px;
-    background-color: #000000;
-    border-radius: 20px;
-}
-
 .blinkit-logo-badge {
     background-color: #F7C200;
     color: #000000;
     font-weight: 900;
-    padding: 6px 14px;
-    border-radius: 8px;
+    padding: 8px 20px;
+    border-radius: 10px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 20px;
+    font-size: 24px;
     display: inline-block;
     letter-spacing: -0.5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
 .delivery-pill {
@@ -77,8 +65,8 @@ header { visibility: hidden; }
     border: 1.5px solid #BBF7D0;
     color: #0C831F;
     font-weight: 800;
-    font-size: 11px;
-    padding: 4px 12px;
+    font-size: 13px;
+    padding: 6px 16px;
     border-radius: 20px;
     display: inline-block;
     text-align: center;
@@ -88,9 +76,9 @@ header { visibility: hidden; }
     background: #FFFFFF;
     border: 1.5px solid #10B981;
     border-radius: 16px;
-    padding: 16px;
-    margin-top: 14px;
-    margin-bottom: 14px;
+    padding: 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.08);
     color: #1E293B;
 }
@@ -98,9 +86,9 @@ header { visibility: hidden; }
 .nudge-tag {
     background-color: #0C831F;
     color: #FFFFFF;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
 }
@@ -109,9 +97,9 @@ header { visibility: hidden; }
     background-color: #F7C200;
     color: #000000;
     font-weight: 800;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 13px;
     display: inline-block;
 }
 
@@ -119,9 +107,9 @@ header { visibility: hidden; }
     background-color: #F8FAFC !important;
     border: 1.5px solid #10B981 !important;
     border-radius: 12px;
-    padding: 12px;
-    margin-top: 10px;
-    margin-bottom: 12px;
+    padding: 14px;
+    margin-top: 12px;
+    margin-bottom: 14px;
     color: #1E293B !important;
 }
 
@@ -129,9 +117,9 @@ header { visibility: hidden; }
     background-color: #FEF08A;
     color: #854D0E;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 /* Primary Green CTA Button (Checkout & Catalog Add) */
@@ -139,16 +127,18 @@ header { visibility: hidden; }
     background-color: #0C831F;
     color: #FFFFFF;
     font-weight: 800;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: 10px 18px;
+    font-size: 15px;
     width: 100%;
-    box-shadow: 0 2px 4px rgba(12, 131, 31, 0.2);
+    box-shadow: 0 3px 6px rgba(12, 131, 31, 0.2);
+    transition: all 0.2s ease;
 }
 .stButton > button:hover {
     background-color: #096818;
     color: #FFFFFF;
+    transform: translateY(-1px);
 }
 
 /* Secondary CTA (Nudge Add-on Button): Distinct Blinkit Gold (#F7C200) with dark text */
@@ -157,22 +147,31 @@ header { visibility: hidden; }
     color: #111827 !important;
     border: 1.5px solid #0C831F !important;
     font-weight: 800 !important;
-    box-shadow: 0 2px 6px rgba(247, 194, 0, 0.3) !important;
+    font-size: 15px !important;
+    padding: 12px 20px !important;
+    box-shadow: 0 3px 8px rgba(247, 194, 0, 0.3) !important;
 }
 .nudge-btn-wrapper .stButton > button:hover {
     background-color: #E5B200 !important;
     color: #000000 !important;
 }
 
-/* iOS Bottom Tab Bar */
+/* High-contrast input text and selectbox */
+.stTextInput input, .stSelectbox select {
+    font-size: 15px !important;
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+}
+
+/* App Footer Navigation Bar */
 .ios-tab-bar {
     display: flex;
     justify-content: space-around;
     align-items: center;
     background-color: #FFFFFF;
     border-top: 1px solid #E5E7EB;
-    padding: 10px 0 6px 0;
-    margin-top: 20px;
+    padding: 12px 0 8px 0;
+    margin-top: 30px;
     border-radius: 16px;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
 }
@@ -181,7 +180,7 @@ header { visibility: hidden; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     color: #6B7280;
 }
@@ -190,28 +189,8 @@ header { visibility: hidden; }
     color: #0C831F;
     font-weight: 800;
 }
-
-.ios-home-indicator {
-    width: 134px;
-    height: 5px;
-    background-color: #CBD5E1;
-    border-radius: 100px;
-    margin: 10px auto 4px auto;
-}
 </style>
 """), unsafe_allow_html=True)
-
-# -----------------------------------------------------------------------------
-# iOS DYNAMIC ISLAND & STATUS BAR
-# -----------------------------------------------------------------------------
-ios_status_html = clean_html("""
-<div class="ios-status-bar">
-    <span>9:41</span>
-    <div class="dynamic-island-pill"></div>
-    <span>📶 🛜 🔋 100%</span>
-</div>
-""")
-st.markdown(ios_status_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # DYNAMIC BLINKIT CATALOG LOADING
@@ -468,7 +447,7 @@ def get_blinksmart_recommendation(cart_items):
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# TOP APP HEADER (1:2:1 CENTERED MIDPOINT ALIGNMENT IN LIGHT THEME)
+# TOP APP HEADER (RESPONSIVE DESKTOP & MOBILE HEADER)
 # -----------------------------------------------------------------------------
 col_logo, col_info, col_reset = st.columns([1, 2, 1])
 with col_logo:
@@ -481,13 +460,13 @@ with col_logo:
 with col_info:
     st.markdown(clean_html("""
     <div style='text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;'>
-        <div style='font-size:12px; font-weight:800; color:#111827; margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
+        <div style='font-size:15px; font-weight:800; color:#111827; margin-bottom:4px;'>📍 DLF Phase 3, Gurgaon</div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
     """), unsafe_allow_html=True)
 
 with col_reset:
-    if st.button("🔄 Reset", key="top_reset_btn"):
+    if st.button("🔄 Reset App State", key="top_reset_btn"):
         st.session_state.cart = [
             {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
         ]
@@ -495,6 +474,8 @@ with col_reset:
         st.session_state.order_placed = False
         st.session_state.exchange_triggered = False
         st.rerun()
+
+st.divider()
 
 # -----------------------------------------------------------------------------
 # SCREEN 1: ORDER PLACED & 10-MIN EXCHANGE SIMULATOR
@@ -506,12 +487,12 @@ if st.session_state.order_placed:
     st.divider()
 
     order_success_html = clean_html("""
-<div style='background-color:#f0fdf4; border: 1.5px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
+<div style='background-color:#f0fdf4; border: 1.5px solid #10b981; border-radius:14px; padding:20px; margin-bottom:16px;'>
 <div style='display:flex; justify-content:space-between; align-items:center;'>
-<span style='color:#0c831f; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
-<span style='background-color:#f7c200; color:#000000; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
+<span style='color:#0c831f; font-weight:800; font-size:16px;'>🔰 First-Trial Safety Net Active</span>
+<span style='background-color:#f7c200; color:#000000; font-family:monospace; font-weight:bold; padding:4px 12px; border-radius:6px; font-size:14px;'>09:59 MINS</span>
 </div>
-<p style='font-size:12px; color:#1e293b; margin-top:8px;'>
+<p style='font-size:14px; color:#1e293b; margin-top:10px; line-height:1.5;'>
 Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Inspect the unit upon arrival!
 </p>
 </div>
@@ -525,217 +506,212 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
     else:
         st.warning("⚡ Doorstep Exchange Dispatched!")
         exchange_log_html = clean_html("""
-<div style='background-color:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:12px; font-size:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05);'>
-<div style='font-weight:bold; color:#1e293b; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
-<div style='color:#0c831f;'>• Exchange request logged via automated chatbot.</div>
-<div style='color:#475569;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
+<div style='background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; font-size:14px; box-shadow:0 2px 6px rgba(0,0,0,0.05);'>
+<div style='font-weight:bold; color:#1e293b; margin-bottom:6px; font-size:15px;'>🛵 Live Exchange Status Log:</div>
+<div style='color:#0c831f; margin-bottom:4px;'>• Exchange request logged via automated chatbot.</div>
+<div style='color:#475569; margin-bottom:4px;'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
 <div style='color:#475569;'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
 </div>
 """)
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: CART-FIRST RE-ORDERED INFORMATION ARCHITECTURE
+# SCREEN 2: DUAL-COLUMN DESKTOP & MOBILE RESPONSIVE LAYOUT
 # -----------------------------------------------------------------------------
 else:
+    # 2-Column Responsive Layout for Wide Screens (Left: Catalog & Basket | Right: AI Nudge & Bill Summary)
+    col_left, col_right = st.columns([1.4, 1], gap="large")
+
     # -------------------------------------------------------------------------
-    # 1. SEARCH & CATALOG LISTING / SELECTION
+    # LEFT COLUMN: SEARCH, CATALOG & ACTIVE BASKET
     # -------------------------------------------------------------------------
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
-    
-    search_query = st.text_input(
-        "Search Catalog",
-        placeholder="🔍 Type 'milk, 20W charger, doritos, sunscreen...'",
-        label_visibility="collapsed"
-    )
+    with col_left:
+        st.markdown("<div style='font-weight:800; font-size:18px; color:#111827; margin-bottom:8px;'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
+        
+        search_query = st.text_input(
+            "Search Catalog",
+            placeholder="🔍 Type 'milk, 20W charger, doritos, sunscreen...'",
+            label_visibility="collapsed"
+        )
 
-    category_mapping = {
-        "All Categories 🛒": "All Categories",
-        "Dairy, Bread & Eggs 🥛": "Dairy, Bread & Eggs",
-        "Fruits & Vegetables 🥑": "Fruits & Vegetables",
-        "Grocery & Staples 🌾": "Grocery & Staples",
-        "Munchies & Snacks 🧀": "Munchies & Snacks",
-        "Beverages & Cold Drinks 🥤": "Beverages & Cold Drinks",
-        "Tea, Coffee & Health Drinks ☕": "Tea, Coffee & Health Drinks",
-        "Instant & Frozen Food 🍜": "Instant & Frozen Food",
-        "Sweet Tooth, Chocolates & Bakery 🍫": "Sweet Tooth, Chocolates & Bakery",
-        "Beauty & Cosmetics 🧴": "Beauty & Cosmetics",
-        "Bath, Body & Personal Care 🧼": "Bath, Body & Personal Care",
-        "Electronics & Tech Accessories ⚡": "Electronics & Tech Accessories",
-        "Home & Kitchen Utilities ⚖️": "Home & Kitchen Utilities",
-        "Cleaning & Household Essentials 🧺": "Cleaning & Household Essentials",
-        "Baby Care 👶": "Baby Care",
-        "Pet Care 🐶": "Pet Care",
-        "Health, Pharma & Wellness 💊": "Health, Pharma & Wellness",
-        "Stationery, Books & Games 📓": "Stationery, Books & Games",
-        "Paan & Party Essentials 🍬": "Paan & Party Essentials",
-        "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
-    }
+        category_mapping = {
+            "All Categories 🛒": "All Categories",
+            "Dairy, Bread & Eggs 🥛": "Dairy, Bread & Eggs",
+            "Fruits & Vegetables 🥑": "Fruits & Vegetables",
+            "Grocery & Staples 🌾": "Grocery & Staples",
+            "Munchies & Snacks 🧀": "Munchies & Snacks",
+            "Beverages & Cold Drinks 🥤": "Beverages & Cold Drinks",
+            "Tea, Coffee & Health Drinks ☕": "Tea, Coffee & Health Drinks",
+            "Instant & Frozen Food 🍜": "Instant & Frozen Food",
+            "Sweet Tooth, Chocolates & Bakery 🍫": "Sweet Tooth, Chocolates & Bakery",
+            "Beauty & Cosmetics 🧴": "Beauty & Cosmetics",
+            "Bath, Body & Personal Care 🧼": "Bath, Body & Personal Care",
+            "Electronics & Tech Accessories ⚡": "Electronics & Tech Accessories",
+            "Home & Kitchen Utilities ⚖️": "Home & Kitchen Utilities",
+            "Cleaning & Household Essentials 🧺": "Cleaning & Household Essentials",
+            "Baby Care 👶": "Baby Care",
+            "Pet Care 🐶": "Pet Care",
+            "Health, Pharma & Wellness 💊": "Health, Pharma & Wellness",
+            "Stationery, Books & Games 📓": "Stationery, Books & Games",
+            "Paan & Party Essentials 🍬": "Paan & Party Essentials",
+            "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
+        }
 
-    selected_pill = st.selectbox("Category:", list(category_mapping.keys()), label_visibility="collapsed")
-    target_category = category_mapping[selected_pill]
+        selected_pill = st.selectbox("Category:", list(category_mapping.keys()), label_visibility="collapsed")
+        target_category = category_mapping[selected_pill]
 
-    # Filter catalog dataset
-    filtered_df = CATALOG_DF
-    if target_category != "All Categories":
-        filtered_df = filtered_df[filtered_df["category"] == target_category]
-    
-    # Clean Search Banner Logic (Suppress error box on empty, whitespace, or '-')
-    if search_query and search_query.strip() not in ["", "-"]:
-        filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
-
-    product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
-
-    if product_map:
-        selected_item_key = st.selectbox("Select Product to Add:", list(product_map.keys()))
-        if st.button("+ Add Item to Grocery Basket", use_container_width=True, key="add_catalog_item_btn"):
-            item_to_add = product_map[selected_item_key]
-            st.session_state.cart.append(item_to_add)
-            st.rerun()
-    else:
-        # Triggered ONLY during actual failed searches
+        # Filter catalog dataset
+        filtered_df = CATALOG_DF
+        if target_category != "All Categories":
+            filtered_df = filtered_df[filtered_df["category"] == target_category]
+        
         if search_query and search_query.strip() not in ["", "-"]:
-            st.info("🔍 No products match your search query. Try searching for milk, sunscreen, chips, or oats.")
+            filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
-    st.markdown("---")
+        product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
 
-    # -------------------------------------------------------------------------
-    # 2. ACTIVE GROCERY BASKET (RENDERS FIRST BELOW CATALOG)
-    # -------------------------------------------------------------------------
-    st.markdown("<div style='font-weight:800; font-size:15px; color:#111827;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
-    
-    if not st.session_state.cart:
-        st.info("🛒 Your basket is empty. Select an item above to add!")
-    else:
-        subtotal = 0
-        for idx, item in enumerate(st.session_state.cart):
-            subtotal += item["price"]
-            col_item, col_del = st.columns([4.5, 0.8])
-            with col_item:
-                cart_item_html = clean_html(f"""
-                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
-                    <div>
-                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-                        <strong style='font-size:13px; color:#111827; margin-left:6px;'>{item['name']}</strong>
+        if product_map:
+            selected_item_key = st.selectbox("Select Product to Add:", list(product_map.keys()))
+            if st.button("+ Add Item to Grocery Basket", use_container_width=True, key="add_catalog_item_btn"):
+                item_to_add = product_map[selected_item_key]
+                st.session_state.cart.append(item_to_add)
+                st.rerun()
+        else:
+            if search_query and search_query.strip() not in ["", "-"]:
+                st.info("🔍 No products match your search query. Try searching for milk, sunscreen, chips, or oats.")
+
+        st.markdown("<br/>", unsafe_allow_html=True)
+        st.markdown("<div style='font-weight:800; font-size:18px; color:#111827; margin-bottom:8px;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
+        
+        if not st.session_state.cart:
+            st.info("🛒 Your basket is empty. Select an item above to add!")
+        else:
+            subtotal = 0
+            for idx, item in enumerate(st.session_state.cart):
+                subtotal += item["price"]
+                col_item, col_del = st.columns([5, 1])
+                with col_item:
+                    cart_item_html = clean_html(f"""
+                    <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:12px; padding:12px 16px; margin-bottom:8px;'>
+                        <div>
+                            <span style='font-size:18px;'>{item.get('emoji', '🛒')}</span>
+                            <strong style='font-size:15px; color:#111827; margin-left:8px;'>{item['name']}</strong>
+                        </div>
+                        <span style='font-weight:800; font-size:15px; color:#111827;'>₹{item['price']}</span>
                     </div>
-                    <span style='font-weight:bold; font-size:13px; color:#111827;'>₹{item['price']}</span>
+                    """)
+                    st.markdown(cart_item_html, unsafe_allow_html=True)
+                with col_del:
+                    if st.button("❌", key=f"del_cart_{idx}"):
+                        st.session_state.cart.pop(idx)
+                        st.rerun()
+
+    # -------------------------------------------------------------------------
+    # RIGHT COLUMN: BLINKSMART NUDGE CARD & BILL SUMMARY
+    # -------------------------------------------------------------------------
+    with col_right:
+        rec = get_blinksmart_recommendation(st.session_state.cart)
+
+        nudge_card_html = clean_html(f"""
+    <div class="nudge-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
+            <span class="scenario-badge">{rec['scenario_badge']}</span>
+        </div>
+        <div class="rationale-box">
+            <div style="font-size:12px; color:#0C831F; font-weight:800; margin-bottom:4px;">🎯 WHY SUGGESTED:</div>
+            <div style="font-size:14px; color:#111827; margin-bottom:6px; font-weight:500;">{rec['why_suggested']}</div>
+            <div style="font-size:12px; color:#D97706; font-weight:800; margin-bottom:4px;">🤝 CO-BUYING UTILITY:</div>
+            <div style="font-size:13px; color:#475569; line-height:1.5;">"{rec['cobuying_utility']}"</div>
+        </div>
+        <div style="background-color:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="font-size:16px; font-weight:700; color:#111827;">{rec['emoji']} {rec['title']}</div>
+                <div style="font-size:12px; color:#0C831F; font-weight:600; margin-top:2px;">🔰 100% Brand Authenticity Seal</div>
+                <div style="margin-top:6px;">
+                    <span style="font-size:16px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
+                    <span style="font-size:13px; color:#9CA3AF; text-decoration:line-through; margin-left:6px;">₹{rec['mrp']}</span>
                 </div>
-                """)
-                st.markdown(cart_item_html, unsafe_allow_html=True)
-            with col_del:
-                if st.button("❌", key=f"del_cart_{idx}"):
-                    st.session_state.cart.pop(idx)
-                    st.rerun()
-
-    st.markdown("---")
-
-    # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (RENDERS SECOND BELOW BASKET)
-    # -------------------------------------------------------------------------
-    rec = get_blinksmart_recommendation(st.session_state.cart)
-
-    nudge_card_html = clean_html(f"""
-<div class="nudge-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
-        <span class="scenario-badge">{rec['scenario_badge']}</span>
-    </div>
-    <div class="rationale-box">
-        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-        <div style="font-size:12px; color:#111827; margin-bottom:4px;">{rec['why_suggested']}</div>
-        <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-        <div style="font-size:12px; color:#475569; line-height:1.4;">"{rec['cobuying_utility']}"</div>
-    </div>
-    <div style="background-color:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <div style="font-size:15px; font-weight:700; color:#111827;">{rec['emoji']} {rec['title']}</div>
-            <div style="font-size:11px; color:#0C831F; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
-            <div style="margin-top:4px;">
-                <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
-                <span style="font-size:11px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
             </div>
         </div>
+        <div style="margin-top:10px; font-size:12px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
+            <span>👥 <strong>{rec['social_proof']}</strong></span>
+            <span class="shield-badge">🔰 1st Trial Shield Active</span>
+        </div>
     </div>
-    <div style="margin-top:8px; font-size:11px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
-        <span>👥 <strong>{rec['social_proof']}</strong></span>
-        <span class="shield-badge">🔰 1st Trial Shield Active</span>
-    </div>
-</div>
-""")
-    st.markdown(nudge_card_html, unsafe_allow_html=True)
+    """)
+        st.markdown(nudge_card_html, unsafe_allow_html=True)
 
-    # Differentiated Secondary CTA button styling (Blinkit Gold #F7C200)
-    if not st.session_state.nudge_added:
-        st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
-        if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
-            st.session_state.nudge_added = True
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    else:
-        st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
+        if not st.session_state.nudge_added:
+            st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
+            if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
+                st.session_state.nudge_added = True
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
 
-    st.markdown("---")
+        st.markdown("<br/>", unsafe_allow_html=True)
 
-    # -------------------------------------------------------------------------
-    # 4. BILL SUMMARY & PRIMARY CHECKOUT CTA (RENDERS THIRD)
-    # -------------------------------------------------------------------------
-    if st.session_state.cart:
-        if st.session_state.nudge_added:
-            subtotal += rec['price']
-
-        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
-        handling_fee = 0 if st.session_state.nudge_added else 15
-        grand_total = subtotal + handling_fee
-
-        col_label, col_val = st.columns([3, 1])
-        with col_label:
-            st.write("Item Subtotal")
-            st.write("Delivery Fee (⚡ 10 Mins)")
-            st.write("Handling Fee")
+        # -------------------------------------------------------------------------
+        # BILL SUMMARY & PRIMARY CHECKOUT CTA
+        # -------------------------------------------------------------------------
+        if st.session_state.cart:
+            subtotal = sum(item["price"] for item in st.session_state.cart)
             if st.session_state.nudge_added:
-                st.write("First-Trial Shield Fee Waiver")
-            st.markdown("**Grand Total**")
-        with col_val:
-            st.write(f"₹{subtotal}")
-            st.write("FREE")
-            st.write(f"₹{handling_fee}")
-            if st.session_state.nudge_added:
-                st.write("-₹15")
-            st.markdown(f"**₹{grand_total}**")
+                subtotal += rec['price']
 
-        st.divider()
+            st.markdown("<div style='font-weight:800; font-size:16px; color:#111827; margin-bottom:8px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
+            handling_fee = 0 if st.session_state.nudge_added else 15
+            grand_total = subtotal + handling_fee
 
-        # Dominant Primary CTA (Solid Blinkit Dark Green #0C831F)
-        if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
-            st.session_state.order_placed = True
-            st.rerun()
+            col_label, col_val = st.columns([3, 1])
+            with col_label:
+                st.markdown("<div style='font-size:14px; margin-bottom:4px;'>Item Subtotal</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:14px; margin-bottom:4px;'>Delivery Fee (⚡ 10 Mins)</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:14px; margin-bottom:4px;'>Handling Fee</div>", unsafe_allow_html=True)
+                if st.session_state.nudge_added:
+                    st.markdown("<div style='font-size:14px; margin-bottom:4px; color:#0C831F; font-weight:600;'>First-Trial Shield Fee Waiver</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:16px; font-weight:800; margin-top:8px;'>Grand Total</div>", unsafe_allow_html=True)
+            with col_val:
+                st.markdown(f"<div style='font-size:14px; margin-bottom:4px;'>₹{subtotal}</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:14px; margin-bottom:4px; color:#0C831F; font-weight:700;'>FREE</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:14px; margin-bottom:4px;'>₹{handling_fee}</div>", unsafe_allow_html=True)
+                if st.session_state.nudge_added:
+                    st.markdown("<div style='font-size:14px; margin-bottom:4px; color:#0C831F; font-weight:700;'>-₹15</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:16px; font-weight:800; margin-top:8px; color:#0C831F;'>₹{grand_total}</div>", unsafe_allow_html=True)
+
+            st.divider()
+
+            if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
+                st.session_state.order_placed = True
+                st.rerun()
 
 # -----------------------------------------------------------------------------
-# iOS BOTTOM TAB BAR & HOME INDICATOR
+# APP FOOTER NAVIGATION BAR
 # -----------------------------------------------------------------------------
 ios_tab_html = clean_html("""
 <div class="ios-tab-bar">
     <div class="ios-tab-item active">
-        <span style="font-size:18px;">🏠</span>
+        <span style="font-size:20px;">🏠</span>
         <span>Home</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">🔍</span>
+        <span style="font-size:20px;">🔍</span>
         <span>Search</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">⚡</span>
+        <span style="font-size:20px;">⚡</span>
         <span>BlinkSmart</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">🧺</span>
+        <span style="font-size:20px;">🧺</span>
         <span>Basket</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">👤</span>
+        <span style="font-size:20px;">👤</span>
         <span>Account</span>
     </div>
 </div>
-<div class="ios-home-indicator"></div>
 """)
 st.markdown(ios_tab_html, unsafe_allow_html=True)
