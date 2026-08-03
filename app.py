@@ -266,75 +266,93 @@ CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 
 # -----------------------------------------------------------------------------
-# BLINKSMART CONTEXTUAL DISCOVERY ENGINE (FIXED LOGIC & PRICE RATIO GUARDRAILS)
+# BLINKSMART AI ENGINE (DYNAMIC MULTI-CATEGORY ROUTING & STRICT NO-DEFAULT)
 # -----------------------------------------------------------------------------
-BLINKSMART_CATALOG = [
-    # CATEGORY 1: SNACK COMPANIONS & HAND HYGIENE (Trigger: Chips, Namkeen, Biscuits, Chocolates)
-    {
-        "sku": "001",
-        "triggers": ["chips", "snack", "namkeen", "biscuits", "chocolate", "munchies", "doritos", "lays", "kurkure"],
-        "scenario_badge": "🧼 Instant Finger Cleanup",
-        "why_suggested": "Essential cleanup utility for snack time.",
-        "cobuying_utility": "Instantly wipes away grease and seasoning from fingers without drying your skin.",
-        "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-        "mrp": 99,
-        "price": 49,
-        "emoji": "🧼",
-        "social_proof": "👥 48 snack buyers in your neighborhood added this this week"
-    },
-    {
-        "sku": "002",
-        "triggers": ["coke", "pepsi", "sprite", "thums up", "soda", "drink", "cold drink", "can", "beverages"],
-        "scenario_badge": "❄️ Sub-Zero Can Chill",
-        "why_suggested": "Keep your beverage chilled alongside your snacks.",
-        "cobuying_utility": "Prevents condensation and keeps soft drinks or iced teas cold 2x longer while snacking.",
-        "title": "Insulated Neoprene Cold Can Cooler Sleeve",
-        "mrp": 199,
-        "price": 99,
-        "emoji": "🥤",
-        "social_proof": "👥 19 users nearby added this to their beverage cart"
-    },
-    # CATEGORY 2: BEAUTY & SKINCARE (Trigger: Sunscreens, Serums, Face Wash)
-    {
-        "sku": "101",
-        "triggers": ["sunscreen", "serum", "face wash", "toner", "beauty", "cosmetics", "skincare", "lotion", "cream"],
-        "scenario_badge": "✨ Facial Sculpt & Glow Massage",
-        "why_suggested": "Complements your skincare & serum routine.",
-        "cobuying_utility": "Massage skin after applying sunscreen or serums to enhance product absorption.",
-        "title": "Jade Facial Roller & Gua Sha Massager Set",
-        "mrp": 999,
-        "price": 499,
-        "emoji": "💎",
-        "social_proof": "👥 28 skincare users in DLF Phase 3 bought this this week"
-    },
-    # CATEGORY 3: SMALL TECH ACCESSORIES (Trigger: Work Station Items, Headphones, USB Cables | Cart Total > ₹300)
-    {
-        "sku": "201",
-        "triggers": ["desk", "office", "stationery", "workstation", "laptop", "cable", "charger", "adapter", "electronics"],
-        "min_cart_value": 300,
-        "scenario_badge": "⚡ High-Speed Power Backup",
-        "why_suggested": "Emergency power backup for your active workstation.",
-        "cobuying_utility": "Fast charge your smartphone up to 50% in 25 minutes during work sessions.",
-        "title": "Type-C 20W PD Fast Charging Adapter",
-        "mrp": 1299,
-        "price": 699,
-        "emoji": "🔌",
-        "social_proof": "👥 34 tech users in DLF Phase 3 bought this this week"
-    },
-    # CATEGORY 4: GOURMET COFFEE & DAIRY
-    {
-        "sku": "301",
-        "triggers": ["coffee", "nescafe", "tea", "dairy", "milk"],
-        "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
-        "why_suggested": "Pairs with your gourmet coffee & dairy selection.",
-        "cobuying_utility": "Create cafe-grade velvety micro-foam in 15 seconds directly inside your morning coffee cup.",
-        "title": "Electric Stainless Steel Milk Frother & Foamer",
-        "mrp": 799,
-        "price": 399,
-        "emoji": "⚡",
-        "social_proof": "👥 63 coffee lovers in DLF Phase 3 bought this this week"
-    }
-]
+BLINKSMART_CATALOG = {
+    "COFFEE_TEA": [
+        {
+            "sku": "301",
+            "triggers": ["coffee", "beans", "espresso", "davidoff", "nescafe", "tea", "green tea", "chai"],
+            "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
+            "why_suggested": "Pairs with your gourmet coffee & dairy selection.",
+            "cobuying_utility": "Create cafe-grade velvety micro-foam in 15 seconds directly inside your morning coffee cup.",
+            "title": "Electric Stainless Steel Milk Frother & Foamer",
+            "mrp": 799,
+            "price": 399,
+            "emoji": "⚡",
+            "social_proof": "👥 63 coffee lovers in DLF Phase 3 bought this this week"
+        },
+        {
+            "sku": "302",
+            "triggers": ["coffee", "beans", "espresso", "tea"],
+            "scenario_badge": "❄️ Hot/Cold Thermal Lock",
+            "why_suggested": "Keep your freshly brewed coffee hot on the go.",
+            "cobuying_utility": "Double-wall vacuum insulation keeps hot brews warm for 6 hours.",
+            "title": "Stainless Steel Insulated Travel Tumbler (500ml)",
+            "mrp": 1199,
+            "price": 699,
+            "emoji": "🥤",
+            "social_proof": "👥 22 beverage buyers nearby bought this this week"
+        }
+    ],
+    "SNACKS": [
+        {
+            "sku": "001",
+            "triggers": ["chips", "lays", "doritos", "kurkure", "namkeen", "biscuits", "nachos", "munchies", "snack"],
+            "scenario_badge": "🧼 Instant Finger Cleanup",
+            "why_suggested": "Essential cleanup utility for snack time.",
+            "cobuying_utility": "Instantly wipes away grease and seasoning from fingers without drying your skin.",
+            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
+            "mrp": 99,
+            "price": 49,
+            "emoji": "🧼",
+            "social_proof": "👥 48 snack buyers in your neighborhood added this this week"
+        }
+    ],
+    "BEAUTY": [
+        {
+            "sku": "101",
+            "triggers": ["sunscreen", "serum", "facewash", "face wash", "moisturizer", "derma", "plum", "toner", "skincare"],
+            "scenario_badge": "✨ Facial Sculpt & Glow Massage",
+            "why_suggested": "Complements your skincare & serum routine.",
+            "cobuying_utility": "Massage skin after applying sunscreen or serums to enhance product absorption.",
+            "title": "Jade Facial Roller & Gua Sha Massager Set",
+            "mrp": 999,
+            "price": 499,
+            "emoji": "💎",
+            "social_proof": "👥 28 skincare users in DLF Phase 3 bought this this week"
+        }
+    ],
+    "TECH": [
+        {
+            "sku": "201",
+            "triggers": ["notebook", "charger", "cable", "energy drink", "red bull", "pen", "sticky notes", "office", "desk", "laptop"],
+            "min_cart_value": 300,
+            "scenario_badge": "⚡ High-Speed Power Backup",
+            "why_suggested": "Emergency power backup for your active workstation.",
+            "cobuying_utility": "Fast charge your smartphone up to 50% in 25 minutes during work sessions.",
+            "title": "Type-C 20W PD Fast Charging Adapter",
+            "mrp": 1299,
+            "price": 699,
+            "emoji": "🔌",
+            "social_proof": "👥 34 tech users in DLF Phase 3 bought this this week"
+        }
+    ],
+    "STAPLES_DAIRY": [
+        {
+            "sku": "301",
+            "triggers": ["milk", "paneer", "dairy"],
+            "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
+            "why_suggested": "Pairs with your fresh dairy & milk selection.",
+            "cobuying_utility": "Create cafe-grade velvety micro-foam in 15 seconds directly inside your morning milk or coffee.",
+            "title": "Electric Stainless Steel Milk Frother & Foamer",
+            "mrp": 799,
+            "price": 399,
+            "emoji": "⚡",
+            "social_proof": "👥 63 dairy buyers in DLF Phase 3 bought this this week"
+        }
+    ]
+}
 
 # -----------------------------------------------------------------------------
 # SESSION STATE INITIALIZATION
@@ -351,78 +369,71 @@ if "order_placed" not in st.session_state:
 if "exchange_triggered" not in st.session_state:
     st.session_state.exchange_triggered = False
 
+def create_nudge_payload(anchor_name, candidate):
+    return {
+        "should_nudge": True,
+        "anchor_item": anchor_name or "Basket Item",
+        "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
+        "category_pill": candidate["scenario_badge"],
+        "why_suggested": candidate["why_suggested"],
+        "cobuying_utility": candidate["cobuying_utility"],
+        "product": {
+            "title": candidate["title"],
+            "mrp": candidate["mrp"],
+            "offer_price": candidate["price"],
+            "authenticity_badge": "🔰 100% Brand Authenticity Seal",
+            "shield_badge": "🔰 1st Trial Shield Active"
+        },
+        "social_proof": candidate["social_proof"],
+        "emoji": candidate["emoji"]
+    }
+
 def get_blinksmart_recommendation(cart_items):
     # 1. SILENT COLLAPSE: Return false if cart is empty
     if not cart_items:
         return {"should_nudge": False}
 
     cart_subtotal = sum(item.get("price", 0) for item in cart_items)
-    
-    # 2. STRICT BASKET VALUE RATIO GUARDRAIL:
-    # NEVER suggest a product whose price is more than 3x the current cart subtotal
     max_allowed_price = cart_subtotal * 3
 
-    # Match cart items against catalog triggers
-    matched_candidates = []
+    # Dynamic Keyword Routing across cart items
     for item in cart_items:
         item_name = item.get("name", "").lower()
         item_cat = item.get("category", "").lower()
         full_text = f"{item_name} {item_cat}"
 
-        for sku_data in BLINKSMART_CATALOG:
-            # Check minimum cart value constraint if specified (e.g. > ₹300 for Tech)
-            if "min_cart_value" in sku_data and cart_subtotal < sku_data["min_cart_value"]:
-                continue
+        # Route 1: COFFEE / TEA / BEVERAGE ROUTE
+        for candidate in BLINKSMART_CATALOG["COFFEE_TEA"]:
+            if any(t in full_text for t in candidate["triggers"]):
+                if candidate["price"] <= max_allowed_price:
+                    return create_nudge_payload(item.get("name"), candidate)
 
-            for trigger in sku_data["triggers"]:
-                if trigger in full_text:
-                    matched_candidates.append((item.get("name", "Basket Item"), sku_data))
+        # Route 2: SNACKS / CHIPS / PACKAGED FOOD ROUTE
+        for candidate in BLINKSMART_CATALOG["SNACKS"]:
+            if any(t in full_text for t in candidate["triggers"]):
+                if candidate["price"] <= max_allowed_price:
+                    return create_nudge_payload(item.get("name"), candidate)
 
-    # Evaluate matched candidates against the 3x price ratio constraint
-    for anchor_name, candidate in matched_candidates:
-        if candidate["price"] <= max_allowed_price:
-            return {
-                "should_nudge": True,
-                "anchor_item": anchor_name,
-                "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
-                "category_pill": candidate["scenario_badge"],
-                "why_suggested": candidate["why_suggested"],
-                "cobuying_utility": candidate["cobuying_utility"],
-                "product": {
-                    "title": candidate["title"],
-                    "mrp": candidate["mrp"],
-                    "offer_price": candidate["price"],
-                    "authenticity_badge": "🔰 100% Brand Authenticity Seal",
-                    "shield_badge": "🔰 1st Trial Shield Active"
-                },
-                "social_proof": candidate["social_proof"],
-                "emoji": candidate["emoji"]
-            }
+        # Route 3: BEAUTY & SKINCARE ROUTE
+        for candidate in BLINKSMART_CATALOG["BEAUTY"]:
+            if any(t in full_text for t in candidate["triggers"]):
+                if candidate["price"] <= max_allowed_price:
+                    return create_nudge_payload(item.get("name"), candidate)
 
-    # Intent-Based Fallback for Snacks: Low-cost wet wipes if within price ratio
-    has_snack = any(any(t in f"{i.get('name','').lower()} {i.get('category','').lower()}" for t in ["chips","snack","namkeen","biscuits","doritos","lays","munchies"]) for i in cart_items)
-    if has_snack:
-        wipes_sku = BLINKSMART_CATALOG[0] # ₹49 Wipes
-        if wipes_sku["price"] <= max_allowed_price:
-            return {
-                "should_nudge": True,
-                "anchor_item": cart_items[0].get("name", "Basket Item"),
-                "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
-                "category_pill": wipes_sku["scenario_badge"],
-                "why_suggested": wipes_sku["why_suggested"],
-                "cobuying_utility": wipes_sku["cobuying_utility"],
-                "product": {
-                    "title": wipes_sku["title"],
-                    "mrp": wipes_sku["mrp"],
-                    "offer_price": wipes_sku["price"],
-                    "authenticity_badge": "🔰 100% Brand Authenticity Seal",
-                    "shield_badge": "🔰 1st Trial Shield Active"
-                },
-                "social_proof": wipes_sku["social_proof"],
-                "emoji": wipes_sku["emoji"]
-            }
+        # Route 4: TECH & OFFICE SUPPLIES ROUTE (Cart > 300)
+        for candidate in BLINKSMART_CATALOG["TECH"]:
+            if any(t in full_text for t in candidate["triggers"]):
+                if cart_subtotal >= candidate.get("min_cart_value", 300) and candidate["price"] <= max_allowed_price:
+                    return create_nudge_payload(item.get("name"), candidate)
 
-    # 3. SILENT COLLAPSE: If no item satisfies the 3x price ratio or confidence is low
+        # Route 5: STAPLES / DAIRY / HOUSEHOLD ROUTE
+        for candidate in BLINKSMART_CATALOG["STAPLES_DAIRY"]:
+            if any(t in full_text for t in candidate["triggers"]):
+                if candidate["price"] <= max_allowed_price:
+                    return create_nudge_payload(item.get("name"), candidate)
+
+    # 2. STRICT SILENT COLLAPSE: No default recommendation!
+    # SKU 001 (Wet Wipes) is NEVER defaulted for non-snack items.
     return {"should_nudge": False}
 
 # -----------------------------------------------------------------------------
@@ -591,7 +602,7 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (STRICT PRICE RATIO & SILENT COLLAPSE)
+    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (STRICT MULTI-CATEGORY ROUTING & NO DEFAULT)
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
 
