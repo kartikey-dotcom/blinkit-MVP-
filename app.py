@@ -472,25 +472,9 @@ if "exchange_triggered" not in st.session_state:
     st.session_state.exchange_triggered = False
 
 def get_blinksmart_recommendation(cart_items):
+    # SILENT COLLAPSE: Do NOT suggest anything if cart is empty!
     if not cart_items:
-        rec = BLINKSMART_CATALOG[6]  # Electric Milk Frother
-        return {
-            "should_nudge": True,
-            "anchor_item": "Cart (Empty)",
-            "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
-            "category_pill": rec["scenario_badge"],
-            "why_suggested": rec["why_suggested"],
-            "cobuying_utility": rec["cobuying_utility"],
-            "product": {
-                "title": rec["title"],
-                "mrp": rec["mrp"],
-                "offer_price": rec["price"],
-                "authenticity_badge": "🔰 100% Brand Authenticity Seal",
-                "shield_badge": "🔰 1st Trial Shield Active"
-            },
-            "social_proof": rec["social_proof"],
-            "emoji": rec["emoji"]
-        }
+        return {"should_nudge": False}
 
     # Match cart item names and categories against BLINKSMART_CATALOG triggers
     for item in cart_items:
@@ -519,12 +503,11 @@ def get_blinksmart_recommendation(cart_items):
                         "emoji": sku_data["emoji"]
                     }
 
-    # Default complementary SKU fallback
-    rec = BLINKSMART_CATALOG[0]  # Jade Facial Roller
-    anchor_name = cart_items[0].get("name", "Basket Item") if cart_items else "Cart"
+    # Fallback when items are in cart but no specific keyword matched
+    rec = BLINKSMART_CATALOG[0]
     return {
         "should_nudge": True,
-        "anchor_item": anchor_name,
+        "anchor_item": cart_items[0].get("name", "Basket Item"),
         "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
         "category_pill": rec["scenario_badge"],
         "why_suggested": rec["why_suggested"],
@@ -706,12 +689,14 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (RENDERS SECOND BELOW BASKET)
+    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (ONLY RENDERS WHEN BASKET HAS ITEMS)
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
-    prod = rec["product"]
 
-    nudge_card_html = clean_html(f"""
+    if rec.get("should_nudge", False):
+        prod = rec["product"]
+
+        nudge_card_html = clean_html(f"""
 <div class="nudge-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span class="nudge-tag">{rec['nudge_badge']}</span>
@@ -739,25 +724,25 @@ else:
     </div>
 </div>
 """)
-    st.markdown(nudge_card_html, unsafe_allow_html=True)
+        st.markdown(nudge_card_html, unsafe_allow_html=True)
 
-    # Differentiated Secondary CTA button styling (Blinkit Gold #F7C200)
-    if not st.session_state.nudge_added:
-        st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
-        if st.button(f"+ Add {prod['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
-            st.session_state.nudge_added = True
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    else:
-        st.success(f"✓ {prod['title']} Added to Basket with First-Trial Shield!")
+        # Differentiated Secondary CTA button styling (Blinkit Gold #F7C200)
+        if not st.session_state.nudge_added:
+            st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
+            if st.button(f"+ Add {prod['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
+                st.session_state.nudge_added = True
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.success(f"✓ {prod['title']} Added to Basket with First-Trial Shield!")
 
-    st.markdown("---")
+        st.markdown("---")
 
     # -------------------------------------------------------------------------
     # 4. BILL SUMMARY & PRIMARY CHECKOUT CTA (RENDERS THIRD)
     # -------------------------------------------------------------------------
     if st.session_state.cart:
-        if st.session_state.nudge_added:
+        if st.session_state.nudge_added and rec.get("should_nudge", False):
             subtotal += prod['offer_price']
 
         st.markdown("""<div style='font-weight:800; font-size:14px; color:var(--text-primary); margin-top:10px;'>📄 Bill Summary</div>""", unsafe_allow_html=True)
