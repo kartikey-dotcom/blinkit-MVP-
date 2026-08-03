@@ -447,9 +447,7 @@ CATEGORY_RECOMMENDATIONS = {
 # SESSION STATE INITIALIZATION
 # -----------------------------------------------------------------------------
 if "cart" not in st.session_state:
-    st.session_state.cart = [
-        {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
-    ]
+    st.session_state.cart = []
 
 if "nudge_added" not in st.session_state:
     st.session_state.nudge_added = False
@@ -488,9 +486,7 @@ with col_info:
 
 with col_reset:
     if st.button("🔄 Reset", key="top_reset_btn"):
-        st.session_state.cart = [
-            {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
-        ]
+        st.session_state.cart = []
         st.session_state.nudge_added = False
         st.session_state.order_placed = False
         st.session_state.exchange_triggered = False
