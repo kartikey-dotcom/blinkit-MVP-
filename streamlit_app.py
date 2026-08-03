@@ -583,11 +583,16 @@ else:
     product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
 
     if product_map:
-        selected_item_key = st.selectbox("Select Product to Add:", list(product_map.keys()))
+        placeholder = "-- Choose a Product from Catalog --"
+        options = [placeholder] + list(product_map.keys())
+        selected_item_key = st.selectbox("Select Product to Add:", options)
         if st.button("+ Add Item to Grocery Basket", use_container_width=True, key="add_catalog_item_btn"):
-            item_to_add = product_map[selected_item_key]
-            st.session_state.cart.append(item_to_add)
-            st.rerun()
+            if selected_item_key == placeholder:
+                st.warning("⚠️ Please select a product from the list above first.")
+            else:
+                item_to_add = product_map[selected_item_key]
+                st.session_state.cart.append(item_to_add)
+                st.rerun()
     else:
         # Triggered ONLY during actual failed searches
         if search_query and search_query.strip() not in ["", "-"]:
