@@ -266,7 +266,7 @@ CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 
 # -----------------------------------------------------------------------------
-# BLINKSMART AI ENGINE (FULL BASKET & LATEST ITEM PRIORITY ROUTING)
+# BLINKSMART AI ENGINE (ALWAYS VISIBLE WHEN CART HAS ITEMS)
 # -----------------------------------------------------------------------------
 BLINKSMART_CATALOG = {
     "COFFEE_TEA": [
@@ -298,15 +298,15 @@ BLINKSMART_CATALOG = {
     "SNACKS": [
         {
             "sku": "001",
-            "triggers": ["lays", "chips", "kurkure", "namkeen", "biscuits", "munchies", "doritos", "nachos"],
-            "scenario_badge": "🧼 Instant Finger Cleanup",
-            "why_suggested": "Essential cleanup utility for snack time.",
-            "cobuying_utility": "Instantly wipes away grease and seasoning from fingers without drying your skin.",
+            "triggers": ["lays", "chips", "kurkure", "namkeen", "biscuits", "munchies", "doritos", "nachos", "onion", "vegetable", "fruit", "grocery"],
+            "scenario_badge": "🧼 Instant Finger & Kitchen Cleanup",
+            "why_suggested": "Essential cleanup utility for kitchen & food preparation.",
+            "cobuying_utility": "Instantly wipes away dirt, grease, and residue from hands without drying your skin.",
             "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
             "mrp": 99,
             "price": 49,
             "emoji": "🧼",
-            "social_proof": "👥 48 snack buyers in your neighborhood added this this week"
+            "social_proof": "👥 48 grocery buyers in your neighborhood added this this week"
         }
     ],
     "BEAUTY": [
@@ -374,43 +374,27 @@ def create_nudge_payload(anchor_name, candidate):
     }
 
 def get_blinksmart_recommendation(cart_items):
-    # 1. SILENT COLLAPSE: Return false if cart is empty
+    # SILENT COLLAPSE ONLY WHEN BASKET IS 100% EMPTY!
     if not cart_items:
         return {"should_nudge": False}
 
-    cart_subtotal = sum(item.get("price", 0) for item in cart_items)
-    max_allowed_price = cart_subtotal * 3
-
-    # Gather full basket item names and categories into lower text string
     full_cart_text = [f"{i.get('name','').lower()} {i.get('category','').lower()}" for i in cart_items]
     combined_cart_str = " ".join(full_cart_text)
 
-    # 2. COMBINATION BASKET CONTEXT: Detect multi-item cart synergies
-    # Combination A: Coffee + Milk/Dairy
+    # 1. COMBINATION BASKET CONTEXT:
     if any(k in combined_cart_str for k in ["coffee", "beans", "espresso", "tokai"]) and any(k in combined_cart_str for k in ["milk", "dairy", "cream"]):
-        candidate = BLINKSMART_CATALOG["COFFEE_TEA"][0]
-        if candidate["price"] <= max_allowed_price:
-            return create_nudge_payload(cart_items[-1].get("name"), candidate)
+        return create_nudge_payload(cart_items[-1].get("name"), BLINKSMART_CATALOG["COFFEE_TEA"][0])
 
-    # Combination B: Chips + Beverage
     if any(k in combined_cart_str for k in ["chips", "lays", "doritos", "namkeen"]) and any(k in combined_cart_str for k in ["coke", "pepsi", "drink", "soda"]):
-        candidate = BLINKSMART_CATALOG["SNACKS"][0]
-        if candidate["price"] <= max_allowed_price:
-            return create_nudge_payload(cart_items[-1].get("name"), candidate)
+        return create_nudge_payload(cart_items[-1].get("name"), BLINKSMART_CATALOG["SNACKS"][0])
 
-    # Combination C: Sunscreen + Serum
     if "sunscreen" in combined_cart_str and "serum" in combined_cart_str:
-        candidate = BLINKSMART_CATALOG["BEAUTY"][0]
-        if candidate["price"] <= max_allowed_price:
-            return create_nudge_payload(cart_items[-1].get("name"), candidate)
+        return create_nudge_payload(cart_items[-1].get("name"), BLINKSMART_CATALOG["BEAUTY"][0])
 
-    # Combination D: Energy Drink + Office Supplies
     if any(k in combined_cart_str for k in ["red bull", "energy drink"]) and any(k in combined_cart_str for k in ["notebook", "pen", "desk", "office"]):
-        candidate = BLINKSMART_CATALOG["TECH"][0]
-        if candidate["price"] <= max_allowed_price:
-            return create_nudge_payload(cart_items[-1].get("name"), candidate)
+        return create_nudge_payload(cart_items[-1].get("name"), BLINKSMART_CATALOG["TECH"][0])
 
-    # 3. LATEST ITEM PRIORITY: Iterate backwards starting from the LAST added item
+    # 2. LATEST ITEM PRIORITY (Iterate backwards starting from the LAST added item)
     for item in reversed(cart_items):
         item_name = item.get("name", "")
         full_text = f"{item_name.lower()} {item.get('category', '').lower()}"
@@ -418,49 +402,36 @@ def get_blinksmart_recommendation(cart_items):
         # Route: COFFEE / TEA
         for candidate in BLINKSMART_CATALOG["COFFEE_TEA"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item_name, candidate)
+                return create_nudge_payload(item_name, candidate)
 
         # Route: BEAUTY / SKINCARE
         for candidate in BLINKSMART_CATALOG["BEAUTY"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item_name, candidate)
+                return create_nudge_payload(item_name, candidate)
 
         # Route: TECH / DESK ITEMS
         for candidate in BLINKSMART_CATALOG["TECH"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item_name, candidate)
+                return create_nudge_payload(item_name, candidate)
 
         # Route: SNACKS / CHIPS
         for candidate in BLINKSMART_CATALOG["SNACKS"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item_name, candidate)
+                return create_nudge_payload(item_name, candidate)
 
-    # Category Fallback for last item if within price ratio constraint
+    # 3. 100% ACTIVE GUARANTEE FOR ANY OTHER GROCERY / PRODUCE / DAIRY ITEM IN BASKET
     last_item = cart_items[-1]
     cat_lower = last_item.get("category", "").lower()
-    if any(k in cat_lower for k in ["tea", "coffee", "dairy", "bread"]):
-        cand = BLINKSMART_CATALOG["COFFEE_TEA"][0]
-        if cand["price"] <= max_allowed_price:
-            return create_nudge_payload(last_item.get("name"), cand)
-    elif any(k in cat_lower for k in ["snack", "munchies", "sweet"]):
-        cand = BLINKSMART_CATALOG["SNACKS"][0]
-        if cand["price"] <= max_allowed_price:
-            return create_nudge_payload(last_item.get("name"), cand)
-    elif any(k in cat_lower for k in ["beauty", "personal"]):
-        cand = BLINKSMART_CATALOG["BEAUTY"][0]
-        if cand["price"] <= max_allowed_price:
-            return create_nudge_payload(last_item.get("name"), cand)
+    
+    if any(k in cat_lower for k in ["beauty", "personal"]):
+        return create_nudge_payload(last_item.get("name"), BLINKSMART_CATALOG["BEAUTY"][0])
     elif any(k in cat_lower for k in ["tech", "electronics"]):
-        cand = BLINKSMART_CATALOG["TECH"][0]
-        if cand["price"] <= max_allowed_price:
-            return create_nudge_payload(last_item.get("name"), cand)
-
-    # 4. SILENT COLLAPSE if no candidate satisfies the price ratio constraint
-    return {"should_nudge": False}
+        return create_nudge_payload(last_item.get("name"), BLINKSMART_CATALOG["TECH"][0])
+    elif any(k in cat_lower for k in ["tea", "coffee", "dairy"]):
+        return create_nudge_payload(last_item.get("name"), BLINKSMART_CATALOG["COFFEE_TEA"][0])
+    else:
+        # Default active trial nudge for Fresh Red Onions, Vegetables, Fruits & Staples
+        return create_nudge_payload(last_item.get("name"), BLINKSMART_CATALOG["SNACKS"][0])
 
 # -----------------------------------------------------------------------------
 # TOP APP HEADER (LOGO, LOCATION & RESET)
@@ -628,7 +599,7 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (FULL BASKET & LATEST ITEM PRIORITY)
+    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (100% VISIBLE ON ANY BASKET ITEM)
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
 
