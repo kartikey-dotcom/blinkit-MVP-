@@ -15,13 +15,6 @@ def clean_html(html_str):
     lines = [line.strip() for line in html_str.splitlines() if line.strip()]
     return " ".join(lines)
 
-# Helper to extract product unit/pack weight from name if absent
-def get_product_unit(name):
-    match = re.search(r'(\d+\s*(?:g|kg|ml|L|pcs|Pack|Count|Sheets|Strips|Tub|Jar|Can|Bottle|Bags))', name, re.IGNORECASE)
-    if match:
-        return match.group(1)
-    return "1 Unit"
-
 # -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & STABLE SINGLE-SCREEN LAYOUT
 # -----------------------------------------------------------------------------
@@ -32,7 +25,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for 1-Page Fixed Viewport (Zero Page Scrolling)
+# Custom CSS for Minimal 1-Page Viewport (Zero Scroll Bloat)
 st.markdown(clean_html("""
 <style>
 /* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #0F172A, Text #111827 */
@@ -88,60 +81,6 @@ header { visibility: hidden; }
     display: inline-block;
 }
 
-/* Compact Product Row Card */
-.product-row-card {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    border: 1px solid #E5E7EB;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-    display: flex;
-    align-items: center;
-}
-
-.product-emoji-box {
-    background-color: #F8FAFC;
-    border: 1px solid #F1F5F9;
-    border-radius: 10px;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-right: 10px;
-}
-
-.product-name-text {
-    font-size: 12px;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.product-unit-text {
-    font-size: 10px;
-    color: #6B7280;
-    margin-bottom: 2px;
-}
-
-.price-tag-current {
-    font-size: 12px;
-    font-weight: 800;
-    color: #111827;
-}
-
-.price-tag-mrp {
-    font-size: 10px;
-    color: #9CA3AF;
-    text-decoration: line-through;
-    margin-left: 4px;
-}
-
 .nudge-card {
     background: #F0FDF4;
     border: 1.5px solid #10B981;
@@ -183,15 +122,6 @@ header { visibility: hidden; }
     color: #1E293B !important;
 }
 
-.shield-badge {
-    background-color: #FEF08A;
-    color: #854D0E;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-}
-
 /* Blinkit Green Buttons */
 .stButton > button {
     background-color: #0C831F;
@@ -199,7 +129,7 @@ header { visibility: hidden; }
     font-weight: 800;
     border-radius: 8px;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 12px;
     font-size: 12px;
     width: 100%;
 }
@@ -216,7 +146,7 @@ header { visibility: hidden; }
     background-color: #FFFFFF;
     border-top: 1px solid #E5E7EB;
     padding: 6px 0 4px 0;
-    margin-top: 8px;
+    margin-top: 10px;
     border-radius: 14px;
 }
 
@@ -572,20 +502,20 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: 1-PAGE STABLE VIEWPORT (SIDE-BY-SIDE SIDEBAR-FREE 2-COL DASHBOARD)
+# SCREEN 2: MINIMAL SINGLE-PAGE STABLE DASHBOARD (WITHOUT EXTENDED CARD STACK)
 # -----------------------------------------------------------------------------
 else:
-    col_left, col_right = st.columns([1.15, 0.85], gap="small")
+    col_left, col_right = st.columns([1.1, 0.9], gap="small")
 
     # -------------------------------------------------------------------------
-    # LEFT COLUMN: CATALOG SEARCH & INNER SCROLLABLE PRODUCT LIST
+    # LEFT COLUMN: MINIMAL COMPACT SEARCH & QUICK-ADD PRODUCT SELECTOR
     # -------------------------------------------------------------------------
     with col_left:
-        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827;'>⚡ Instant 10-Min Catalog</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827;'>⚡ Search & Add Products</div>", unsafe_allow_html=True)
         
         search_query = st.text_input(
             "Search Catalog",
-            placeholder="🔍 Search 'milk, 20W charger, doritos, sunscreen...'",
+            placeholder="🔍 Type 'milk, 20W charger, doritos, sunscreen...'",
             label_visibility="collapsed"
         )
 
@@ -612,7 +542,7 @@ else:
             "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
         }
 
-        selected_pill = st.selectbox("Filter Category:", list(category_mapping.keys()), label_visibility="collapsed")
+        selected_pill = st.selectbox("Category:", list(category_mapping.keys()), label_visibility="collapsed")
         target_category = category_mapping[selected_pill]
 
         # Filter catalog dataset
@@ -622,38 +552,16 @@ else:
         if search_query:
             filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
-        display_products = filtered_df.to_dict(orient="records")
+        product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
 
-        # Fixed height inner container so catalog scrolls INSIDE its box without page expansion!
-        with st.container(height=360):
-            if not display_products:
-                st.info("🔍 No products found. Try searching for 'milk', 'atta', 'charger', 'snack', or select 'All Categories'.")
-            else:
-                for idx, prod in enumerate(display_products):
-                    unit_str = prod.get("unit") or get_product_unit(prod["name"])
-                    mrp_val = prod.get("mrp", prod["price"] + 10)
-                    
-                    c_card, c_add = st.columns([3.5, 1.2])
-                    with c_card:
-                        card_html = clean_html(f"""
-                        <div class="product-row-card">
-                            <div class="product-emoji-box">{prod.get('emoji', '🛒')}</div>
-                            <div style="overflow:hidden;">
-                                <div class="product-name-text">{prod['name']}</div>
-                                <div class="product-unit-text">{unit_str} • <span style="color:#0C831F; font-weight:600;">{prod.get('category', '')}</span></div>
-                                <div>
-                                    <span class="price-tag-current">₹{prod['price']}</span>
-                                    <span class="price-tag-mrp">₹{mrp_val}</span>
-                                </div>
-                            </div>
-                        </div>
-                        """)
-                        st.markdown(card_html, unsafe_allow_html=True)
-                    with c_add:
-                        st.markdown("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-                        if st.button("+ ADD", key=f"btn_add_{prod['id']}_{idx}"):
-                            st.session_state.cart.append(prod)
-                            st.rerun()
+        if product_map:
+            selected_item_key = st.selectbox("Select Item to Add:", list(product_map.keys()))
+            if st.button("+ Add Item to Grocery Basket", use_container_width=True):
+                item_to_add = product_map[selected_item_key]
+                st.session_state.cart.append(item_to_add)
+                st.rerun()
+        else:
+            st.info("🔍 No products match search. Clear search query or pick another category.")
 
     # -------------------------------------------------------------------------
     # RIGHT COLUMN: BASKET, AI NUDGE CARD & STICKY BILL SUMMARY
@@ -662,29 +570,27 @@ else:
         st.markdown("<div style='font-weight:800; font-size:14px; color:#111827;'>🧺 Grocery Basket & Checkout</div>", unsafe_allow_html=True)
         
         if not st.session_state.cart:
-            st.info("🛒 Basket is empty. Click '+ ADD' on items on the left!")
+            st.info("🛒 Basket is empty. Pick an item on the left to add!")
         else:
             subtotal = 0
-            # Inner scroll box for cart items if multiple
-            with st.container(height=140):
-                for idx, item in enumerate(st.session_state.cart):
-                    subtotal += item["price"]
-                    col_item, col_del = st.columns([4.2, 0.8])
-                    with col_item:
-                        cart_item_html = clean_html(f"""
-                        <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:8px; padding:6px 10px; margin-bottom:4px;'>
-                            <div>
-                                <span style='font-size:14px;'>{item.get('emoji', '🛒')}</span>
-                                <strong style='font-size:12px; color:#111827; margin-left:4px;'>{item['name']}</strong>
-                            </div>
-                            <span style='font-weight:bold; font-size:12px; color:#111827;'>₹{item['price']}</span>
+            for idx, item in enumerate(st.session_state.cart):
+                subtotal += item["price"]
+                col_item, col_del = st.columns([4.2, 0.8])
+                with col_item:
+                    cart_item_html = clean_html(f"""
+                    <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:8px; padding:6px 10px; margin-bottom:4px;'>
+                        <div>
+                            <span style='font-size:14px;'>{item.get('emoji', '🛒')}</span>
+                            <strong style='font-size:12px; color:#111827; margin-left:4px;'>{item['name']}</strong>
                         </div>
-                        """)
-                        st.markdown(cart_item_html, unsafe_allow_html=True)
-                    with col_del:
-                        if st.button("❌", key=f"del_cart_{idx}"):
-                            st.session_state.cart.pop(idx)
-                            st.rerun()
+                        <span style='font-weight:bold; font-size:12px; color:#111827;'>₹{item['price']}</span>
+                    </div>
+                    """)
+                    st.markdown(cart_item_html, unsafe_allow_html=True)
+                with col_del:
+                    if st.button("❌", key=f"del_cart_{idx}"):
+                        st.session_state.cart.pop(idx)
+                        st.rerun()
 
             # BLINKSMART CONTEXTUAL AI NUDGE CARD
             rec = get_blinksmart_recommendation(st.session_state.cart)
