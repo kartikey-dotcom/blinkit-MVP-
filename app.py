@@ -109,7 +109,7 @@ st.markdown(clean_html("""
 """), unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# DYNAMIC BLINKIT CATALOG LOADING (REPRESENTING ALL 11 CATEGORIES)
+# DYNAMIC BLINKIT CATALOG LOADING (REPRESENTING ALL 19 CATEGORIES)
 # -----------------------------------------------------------------------------
 @st.cache_data
 def load_blinkit_catalog():
@@ -117,106 +117,158 @@ def load_blinkit_catalog():
         df = pd.read_csv("blinkit_catalog.csv")
         return df.to_dict(orient="records")
     else:
-        return [
-            {"id": "aashirvaad_atta", "name": "Aashirvaad Shuddh Chakki Atta 5kg", "category": "Grocery & Staples", "price": 245, "mrp": 270, "emoji": "🌾"},
-            {"id": "blue_tokai", "name": "Blue Tokai Dark Roast Coffee Beans 250g", "category": "Dairy, Bread & Eggs", "price": 490, "mrp": 550, "emoji": "☕"},
-            {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "mrp": 75, "emoji": "🥛"},
-            {"id": "doritos", "name": "Doritos Nacho Cheese Chips 150g", "category": "Munchies & Snacks", "price": 60, "mrp": 60, "emoji": "🧀"},
-            {"id": "lays_chips", "name": "Lay's India's Magic Masala Chips 90g", "category": "Munchies & Snacks", "price": 40, "mrp": 40, "emoji": "🥔"},
-            {"id": "dairy_milk_silk", "name": "Cadbury Dairy Milk Silk 150g", "category": "Sweet Tooth & Bakery", "price": 175, "mrp": 175, "emoji": "🍫"},
-            {"id": "red_bull", "name": "Red Bull Energy Drink 250ml", "category": "Beverages & Cold Drinks", "price": 125, "mrp": 125, "emoji": "⚡"},
-            {"id": "avocado", "name": "Fresh Imported Hass Avocado (2 pcs)", "category": "Fruits & Vegetables", "price": 299, "mrp": 350, "emoji": "🥑"},
-            {"id": "minimalist_serum", "name": "Minimalist 10% Vitamin C Face Serum 30ml", "category": "Beauty & Personal Care", "price": 664, "mrp": 699, "emoji": "🧴"},
-            {"id": "spigen_charger", "name": "Spigen 20W Type-C Fast Wall Charger", "category": "Electronics", "price": 899, "mrp": 1499, "emoji": "🔌"},
-            {"id": "pampers_wipes", "name": "Pampers Fresh Clean Baby Wipes (80 Sheets)", "category": "Baby Care", "price": 185, "mrp": 225, "emoji": "👶"},
-            {"id": "pedigree_food", "name": "Pedigree Adult Dry Dog Food 1.2kg", "category": "Pet Care", "price": 380, "mrp": 410, "emoji": "🐶"},
-            {"id": "vim_liquid", "name": "Vim Dishwash Liquid Gel 500ml", "category": "Cleaning & Household", "price": 115, "mrp": 120, "emoji": "🧼"},
-            {"id": "revital_supplement", "name": "Revital H Daily Health Supplement (30 Capsules)", "category": "Pharma & Wellness", "price": 310, "mrp": 350, "emoji": "💊"}
-        ]
+        from scrape_blinkit_catalog import BLINKIT_CATALOG_DATA
+        return BLINKIT_CATALOG_DATA
 
 CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 
 # -----------------------------------------------------------------------------
-# UNIVERSAL 11-CATEGORY RECOMMENDATION MATRIX
+# UNIVERSAL 100% CATEGORY RECOMMENDATION MATRIX (COVERING ALL 19 CATEGORIES)
 # -----------------------------------------------------------------------------
 CATEGORY_RECOMMENDATIONS = {
-    "Beauty & Personal Care": {
-        "title": "Jade Facial Roller & Gua Sha Massager Set",
-        "price": 499,
+    "Dairy, Bread & Eggs": {
+        "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
+        "price": 799,
+        "mrp": 1200,
+        "category": "Home & Kitchen Utilities",
+        "emoji": "⚡",
+        "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
+        "why_suggested": "Suggested to upgrade your milk & breakfast basket.",
+        "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
+        "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
+    },
+    "Fruits & Vegetables": {
+        "title": "Portronics Digital Kitchen Scale",
+        "price": 399,
         "mrp": 999,
-        "category": "Beauty & Personal Care",
-        "emoji": "💎",
-        "scenario_badge": "✨ Facial Sculpt & Glow Massage",
-        "why_suggested": "Complements your beauty & skin care selection.",
-        "cobuying_utility": "Massage skin after applying sunscreen or serums to enhance product absorption and boost natural circulation.",
-        "social_proof": "28 skincare users in DLF Phase 3 bought this this week"
+        "category": "Home & Kitchen Utilities",
+        "emoji": "⚖️",
+        "scenario_badge": "👩‍🍳 Perfect Kitchen Portioning",
+        "why_suggested": "Matches your fresh produce and cooking ingredients.",
+        "cobuying_utility": "Weigh salad portions, recipe ingredients, and meal preps with 1g accuracy.",
+        "social_proof": "54 home cooks in DLF Phase 3 bought this this week"
     },
     "Grocery & Staples": {
         "title": "Portronics Digital Kitchen Scale",
         "price": 399,
-        "mrp": 899,
-        "category": "Home & Kitchen",
+        "mrp": 999,
+        "category": "Home & Kitchen Utilities",
         "emoji": "⚖️",
         "scenario_badge": "👩‍🍳 Perfect Kitchen Measurement",
         "why_suggested": "Matched to your daily cooking & flour staples selection.",
         "cobuying_utility": "Measure exact flour-to-water ratios with 1-gram precision to consistently make soft, fluffy rotis and dough without guessing.",
         "social_proof": "54 home cooks in DLF Phase 3 bought this this week"
     },
-    "Dairy, Bread & Eggs": {
-        "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
-        "price": 799,
-        "mrp": 1200,
-        "category": "Home & Kitchen",
-        "emoji": "⚡",
-        "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
-        "why_suggested": "Suggested to upgrade your milk & breakfast basket.",
-        "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
-        "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
-    },
-    "Dairy & Breakfast": {
-        "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
-        "price": 799,
-        "mrp": 1200,
-        "category": "Home & Kitchen",
-        "emoji": "⚡",
-        "scenario_badge": "☕ 15-Second Homemade Cafe Foam",
-        "why_suggested": "Suggested to upgrade your milk & breakfast basket.",
-        "cobuying_utility": "Blend cold milk and espresso shots directly in your glass to create cafe-style thick, frothy lattes and iced frappes in 15 seconds.",
-        "social_proof": "32 coffee lovers in DLF Phase 3 bought this this week"
-    },
     "Munchies & Snacks": {
         "title": "Portronics Multi-Angle Desktop Phone Stand",
-        "price": 299,
+        "price": 249,
         "mrp": 699,
-        "category": "Electronics & Tech",
+        "category": "Electronics & Tech Accessories",
         "emoji": "📱",
         "scenario_badge": "📺 Hands-Free Binge Watching",
         "why_suggested": "Pairs with your snack & munchies selection for desk entertainment.",
         "cobuying_utility": "Prop your phone hands-free to watch YouTube or sports while eating chips, keeping your touchscreen clean from grease and cheese dust.",
         "social_proof": "48 snack lovers in DLF Phase 3 bought this this week"
     },
-    "Sweet Tooth & Bakery": {
-        "title": "Borosil Microwave Dessert & Fondue Bowl",
-        "price": 499,
-        "mrp": 799,
-        "category": "Home & Kitchen",
+    "Beverages & Cold Drinks": {
+        "title": "Borosil Vacuum Insulated Stainless Steel Tumbler",
+        "price": 699,
+        "mrp": 999,
+        "category": "Home & Kitchen Utilities",
+        "emoji": "🥤",
+        "scenario_badge": "❄️ Sub-Zero Beverage Chill",
+        "why_suggested": "Pairs with your choice of beverages & cold drinks.",
+        "cobuying_utility": "Pour cold energy drinks or sodas into the vacuum insulated tumbler to keep them sub-zero cold for up to 12 hours without watering them down with ice.",
+        "social_proof": "42 drink lovers in DLF Phase 3 bought this this week"
+    },
+    "Tea, Coffee & Health Drinks": {
+        "title": "InstaCuppa Electric Milk Frother & Hand Mixer",
+        "price": 799,
+        "mrp": 1200,
+        "category": "Home & Kitchen Utilities",
+        "emoji": "⚡",
+        "scenario_badge": "☕ Cafe-Style Instant Froth",
+        "why_suggested": "Perfect pairing for your tea & premium coffee beans.",
+        "cobuying_utility": "Froth milk in 15 seconds to prepare barista-grade lattes and cappuccinos right at home.",
+        "social_proof": "61 coffee enthusiasts in DLF Phase 3 bought this this week"
+    },
+    "Instant & Frozen Food": {
+        "title": "Borosil Microwave Safe Glass Bowl",
+        "price": 299,
+        "mrp": 499,
+        "category": "Home & Kitchen Utilities",
+        "emoji": "🥣",
+        "scenario_badge": "🍜 2-Min Instant Microwave Heating",
+        "why_suggested": "Complements your instant noodles and quick meals.",
+        "cobuying_utility": "Safely heat ramen, soups, and frozen snacks without toxic plastic leaching.",
+        "social_proof": "39 instant food lovers in DLF Phase 3 bought this this week"
+    },
+    "Sweet Tooth, Chocolates & Bakery": {
+        "title": "Borosil Microwave Safe Glass Bowl",
+        "price": 299,
+        "mrp": 499,
+        "category": "Home & Kitchen Utilities",
         "emoji": "🥣",
         "scenario_badge": "🍫 Instant Dessert Fondue",
         "why_suggested": "Matched with your premium sweet & chocolate order.",
         "cobuying_utility": "Melt chocolate or heat syrup in this microwave-safe bowl for an instant, rich dessert fondue dip with fruit skewers or cookies.",
         "social_proof": "29 chocolate lovers in DLF Phase 3 bought this this week"
     },
-    "Beverages & Cold Drinks": {
-        "title": "Stainless Steel Vacuum Insulated Tumbler",
-        "price": 699,
+    "Beauty & Cosmetics": {
+        "title": "Jade Facial Roller & Gua Sha Massager Set",
+        "price": 499,
         "mrp": 999,
-        "category": "Home & Kitchen",
-        "emoji": "🥤",
-        "scenario_badge": "❄️ Sub-Zero Beverage Chill",
-        "why_suggested": "Pairs with your choice of beverages & cold drinks.",
-        "cobuying_utility": "Pour cold energy drinks or sodas into the vacuum insulated tumbler to keep them sub-zero cold for up to 12 hours without watering them down with ice.",
-        "social_proof": "42 drink lovers in DLF Phase 3 bought this this week"
+        "category": "Beauty & Personal Care",
+        "emoji": "💎",
+        "scenario_badge": "✨ Facial Sculpt & Glow Massage",
+        "why_suggested": "Complements your beauty & skincare serum selection.",
+        "cobuying_utility": "Massage skin after applying sunscreen or serums to enhance product absorption and boost natural circulation.",
+        "social_proof": "28 skincare users in DLF Phase 3 bought this this week"
+    },
+    "Bath, Body & Personal Care": {
+        "title": "Microfiber Quick-Dry Bath Hair Towel",
+        "price": 299,
+        "mrp": 599,
+        "category": "Bath, Body & Personal Care",
+        "emoji": "🧖‍♀️",
+        "scenario_badge": "🚿 Ultra-Soft Post-Shower Care",
+        "why_suggested": "Pairs with your shower gel and body care order.",
+        "cobuying_utility": "Ultra-absorbent microfiber wrap dries hair 3x faster without frizz or friction damage.",
+        "social_proof": "37 personal care buyers in DLF Phase 3 bought this this week"
+    },
+    "Electronics & Tech Accessories": {
+        "title": "Spigen 20W Fast Type-C Wall Charger Adapter",
+        "price": 899,
+        "mrp": 1499,
+        "category": "Electronics & Tech Accessories",
+        "emoji": "🔌",
+        "scenario_badge": "⚡ High-Speed Power Utility",
+        "why_suggested": "Fast charging accessory for your electronic devices.",
+        "cobuying_utility": "Power your phone, earbuds, or tablet from 0% to 50% in just 25 minutes with safe, certified wall charging.",
+        "social_proof": "72 tech buyers in DLF Phase 3 bought this this week"
+    },
+    "Home & Kitchen Utilities": {
+        "title": "Portronics Digital Kitchen Scale",
+        "price": 399,
+        "mrp": 999,
+        "category": "Home & Kitchen Utilities",
+        "emoji": "⚖️",
+        "scenario_badge": "👩‍🍳 Precision Cooking Tool",
+        "why_suggested": "Top utility item for modern home kitchen setups.",
+        "cobuying_utility": "Accurately measure baking and cooking ingredients down to 1 gram.",
+        "social_proof": "45 home makers in DLF Phase 3 bought this this week"
+    },
+    "Cleaning & Household Essentials": {
+        "title": "Waterproof Silicon Cleaning Gloves",
+        "price": 249,
+        "mrp": 499,
+        "category": "Cleaning & Household Essentials",
+        "emoji": "🧤",
+        "scenario_badge": "🧼 Safe Cleaning Guard",
+        "why_suggested": "Matched to your cleaning supplies & household order.",
+        "cobuying_utility": "Protect your hands from harsh detergent chemicals and grease while washing dishes or doing deep household cleaning.",
+        "social_proof": "31 home makers in DLF Phase 3 bought this this week"
     },
     "Baby Care": {
         "title": "Ultra-Soft Bamboo Baby Washcloth Set",
@@ -240,49 +292,49 @@ CATEGORY_RECOMMENDATIONS = {
         "cobuying_utility": "Spread wet gravy food or peanut butter on the slow-feeder lick mat to calm your pets and slow down fast eating during feeding sessions.",
         "social_proof": "19 pet owners in DLF Phase 3 bought this this week"
     },
-    "Cleaning & Household": {
-        "title": "Waterproof Silicon Cleaning Gloves",
-        "price": 249,
-        "mrp": 499,
-        "category": "Home & Kitchen",
-        "emoji": "🧤",
-        "scenario_badge": "🧼 Safe Cleaning Guard",
-        "why_suggested": "Matched to your cleaning supplies & household order.",
-        "cobuying_utility": "Protect your hands from harsh detergent chemicals and grease while washing dishes or doing deep household cleaning.",
-        "social_proof": "31 home makers in DLF Phase 3 bought this this week"
-    },
-    "Pharma & Wellness": {
+    "Health, Pharma & Wellness": {
         "title": "Weekly Pill Organizer & Hydration Bottle",
         "price": 399,
         "mrp": 699,
-        "category": "Pharma & Wellness",
+        "category": "Health, Pharma & Wellness",
         "emoji": "💊",
         "scenario_badge": "💧 Daily Hydration & Supplement Track",
         "why_suggested": "Pairs with your pharmacy & wellness selection.",
         "cobuying_utility": "Organize your weekly supplements and track your daily hydration intake with this multi-compartment bottle combo.",
         "social_proof": "22 health lovers in DLF Phase 3 bought this this week"
     },
-    "Electronics": {
-        "title": "Spigen 20W Fast Type-C Wall Charger Adapter",
+    "Stationery, Books & Games": {
+        "title": "Parker Vector Stainless Steel Gel Pen",
+        "price": 275,
+        "mrp": 300,
+        "category": "Stationery, Books & Games",
+        "emoji": "🖊️",
+        "scenario_badge": "📝 Smooth Executive Writing",
+        "why_suggested": "Pairs with your notebooks and desk stationery.",
+        "cobuying_utility": "Premium stainless steel gel pen for smooth, smudge-free daily note-taking.",
+        "social_proof": "18 desk workers in DLF Phase 3 bought this this week"
+    },
+    "Paan & Party Essentials": {
+        "title": "Catch Club Soda 750ml",
+        "price": 20,
+        "mrp": 20,
+        "category": "Paan & Party Essentials",
+        "emoji": "🥤",
+        "scenario_badge": "🎉 Party Beverage Mixer",
+        "why_suggested": "Essential mixer for party snacks and mouth fresheners.",
+        "cobuying_utility": "Refreshing carbonated soda for quick party drink mixing.",
+        "social_proof": "35 party hosts in DLF Phase 3 bought this this week"
+    },
+    "Meat, Fish & Eggs": {
+        "title": "Non-Stick Cast Iron Grill Pan",
         "price": 899,
         "mrp": 1499,
-        "category": "Electronics & Tech",
-        "emoji": "🔌",
-        "scenario_badge": "⚡ Desk & Late-Night Power Utility",
-        "why_suggested": "Fast charging accessory for your electronic devices.",
-        "cobuying_utility": "Power your phone, earbuds, or tablet from 0% to 50% in just 25 minutes with safe, certified wall charging.",
-        "social_proof": "42 tech enthusiasts in DLF Phase 3 bought this this week"
-    },
-    "Fruits & Vegetables": {
-        "title": "Jade Facial Roller & Gua Sha Massager Set",
-        "price": 499,
-        "mrp": 999,
-        "category": "Beauty & Personal Care",
-        "emoji": "💎",
-        "scenario_badge": "✨ Facial Sculpt & Glow Massage",
-        "why_suggested": "Matches your organic fresh produce selection for morning wellness care.",
-        "cobuying_utility": "Massage skin with the quartz roller after your morning breakfast routine to boost circulation and glowing look.",
-        "social_proof": "28 skincare users in DLF Phase 3 bought this this week"
+        "category": "Home & Kitchen Utilities",
+        "emoji": "🍳",
+        "scenario_badge": "🍗 High-Heat Meat Searing",
+        "why_suggested": "Ideal cooking utility for fresh poultry, meat, and eggs.",
+        "cobuying_utility": "Sear chicken breasts and steaks evenly with restaurant-style grill marks.",
+        "social_proof": "27 gourmet cooks in DLF Phase 3 bought this this week"
     }
 }
 
@@ -291,7 +343,7 @@ CATEGORY_RECOMMENDATIONS = {
 # -----------------------------------------------------------------------------
 if "cart" not in st.session_state:
     st.session_state.cart = [
-        {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
+        {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
     ]
 
 if "nudge_added" not in st.session_state:
@@ -307,13 +359,11 @@ if "exchange_triggered" not in st.session_state:
 # CONSTRAINED RECOMMENDATION MATRIX LOGIC (100% RELIABLE DECISION ENGINE)
 # -----------------------------------------------------------------------------
 def get_blinksmart_recommendation(cart_items):
-    # Determine the category of the first item in the cart to fetch from our Category Matrix
     for item in cart_items:
         category = item.get("category", "")
         if category in CATEGORY_RECOMMENDATIONS:
             return CATEGORY_RECOMMENDATIONS[category]
 
-    # Universal default fallback matching the prompt matrix logic
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
@@ -325,7 +375,7 @@ with st.sidebar:
     st.divider()
     if st.button("🔄 Reset Simulation Demo"):
         st.session_state.cart = [
-            {"id": "amul_milk", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
+            {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
         ]
         st.session_state.nudge_added = False
         st.session_state.order_placed = False
@@ -383,31 +433,35 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: ACTIVE CART & CATEGORY-FILTERED SEARCH BAR
+# SCREEN 2: ACTIVE CART & LIVE SEARCH BAR (100% CATEGORY & SKU COVERAGE)
 # -----------------------------------------------------------------------------
 else:
     st.markdown("#### 🛒 Search & Add Items to Grocery Basket")
-    col_cat, col_prod, col_btn = st.columns([1.5, 2.5, 1])
+    
+    search_query = st.text_input("🔍 Search any product (e.g. Maggi, Oats, Milk, Sunscreen, Coke, Diapers, Colgate, Atta):")
+    selected_cat = st.selectbox("Category Filter:", ["All Categories"] + sorted(list(CATALOG_DF["category"].unique())))
 
-    all_categories = ["All Categories"] + sorted(list(CATALOG_DF["category"].unique()))
-    with col_cat:
-        selected_cat = st.selectbox("Category:", all_categories, label_visibility="collapsed")
-        
-    filtered_df = CATALOG_DF if selected_cat == "All Categories" else CATALOG_DF[CATALOG_DF["category"] == selected_cat]
-    product_map = {row["name"]: row for _, row in filtered_df.iterrows()}
+    # Dynamically filter dataset
+    filtered_df = CATALOG_DF
+    if selected_cat != "All Categories":
+        filtered_df = filtered_df[filtered_df["category"] == selected_cat]
+    if search_query:
+        filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
-    selected_title = None
+    product_map = {f"{row.get('emoji', '🛒')} {row['name']} - ₹{row['price']}": row for _, row in filtered_df.iterrows()}
+
+    col_prod, col_btn = st.columns([3.5, 1.5])
     if product_map:
         with col_prod:
-            selected_title = st.selectbox("Select Product:", list(product_map.keys()), label_visibility="collapsed")
+            selected_title = st.selectbox("Select Matching Product:", list(product_map.keys()), label_visibility="collapsed")
         with col_btn:
-            if st.button("+ Add Item"):
+            if st.button("+ Add to Cart", use_container_width=True):
                 item_to_add = product_map[selected_title]
                 st.session_state.cart.append(item_to_add)
                 st.rerun()
     else:
         with col_prod:
-            st.selectbox("Select Product:", ["No products found"], disabled=True, label_visibility="collapsed")
+            st.selectbox("Select Product:", ["No products found matching search/filter"], disabled=True, label_visibility="collapsed")
 
     # Active Cart List
     st.markdown("#### 🧺 Active Grocery Basket")
