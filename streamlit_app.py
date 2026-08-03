@@ -266,13 +266,13 @@ CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 
 # -----------------------------------------------------------------------------
-# BLINKSMART AI ENGINE (DYNAMIC MULTI-CATEGORY ROUTING & STRICT NO-DEFAULT)
+# BLINKSMART AI ENGINE (ALWAYS ACTIVE WHEN CART CONTAINS ITEMS)
 # -----------------------------------------------------------------------------
 BLINKSMART_CATALOG = {
     "COFFEE_TEA": [
         {
             "sku": "301",
-            "triggers": ["coffee", "beans", "espresso", "davidoff", "nescafe", "tea", "green tea", "chai"],
+            "triggers": ["coffee", "beans", "espresso", "davidoff", "nescafe", "tea", "green tea", "chai", "milk", "dairy", "bread"],
             "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
             "why_suggested": "Pairs with your gourmet coffee & dairy selection.",
             "cobuying_utility": "Create cafe-grade velvety micro-foam in 15 seconds directly inside your morning coffee cup.",
@@ -327,7 +327,6 @@ BLINKSMART_CATALOG = {
         {
             "sku": "201",
             "triggers": ["notebook", "charger", "cable", "energy drink", "red bull", "pen", "sticky notes", "office", "desk", "laptop"],
-            "min_cart_value": 300,
             "scenario_badge": "⚡ High-Speed Power Backup",
             "why_suggested": "Emergency power backup for your active workstation.",
             "cobuying_utility": "Fast charge your smartphone up to 50% in 25 minutes during work sessions.",
@@ -336,20 +335,6 @@ BLINKSMART_CATALOG = {
             "price": 699,
             "emoji": "🔌",
             "social_proof": "👥 34 tech users in DLF Phase 3 bought this this week"
-        }
-    ],
-    "STAPLES_DAIRY": [
-        {
-            "sku": "301",
-            "triggers": ["milk", "paneer", "dairy"],
-            "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
-            "why_suggested": "Pairs with your fresh dairy & milk selection.",
-            "cobuying_utility": "Create cafe-grade velvety micro-foam in 15 seconds directly inside your morning milk or coffee.",
-            "title": "Electric Stainless Steel Milk Frother & Foamer",
-            "mrp": 799,
-            "price": 399,
-            "emoji": "⚡",
-            "social_proof": "👥 63 dairy buyers in DLF Phase 3 bought this this week"
         }
     ]
 }
@@ -389,12 +374,9 @@ def create_nudge_payload(anchor_name, candidate):
     }
 
 def get_blinksmart_recommendation(cart_items):
-    # 1. SILENT COLLAPSE: Return false if cart is empty
+    # 1. SILENT COLLAPSE: Return false ONLY if cart is empty!
     if not cart_items:
         return {"should_nudge": False}
-
-    cart_subtotal = sum(item.get("price", 0) for item in cart_items)
-    max_allowed_price = cart_subtotal * 3
 
     # Dynamic Keyword Routing across cart items
     for item in cart_items:
@@ -402,39 +384,37 @@ def get_blinksmart_recommendation(cart_items):
         item_cat = item.get("category", "").lower()
         full_text = f"{item_name} {item_cat}"
 
-        # Route 1: COFFEE / TEA / BEVERAGE ROUTE
+        # Route 1: COFFEE / TEA / DAIRY ROUTE
         for candidate in BLINKSMART_CATALOG["COFFEE_TEA"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item.get("name"), candidate)
+                return create_nudge_payload(item.get("name"), candidate)
 
         # Route 2: SNACKS / CHIPS / PACKAGED FOOD ROUTE
         for candidate in BLINKSMART_CATALOG["SNACKS"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item.get("name"), candidate)
+                return create_nudge_payload(item.get("name"), candidate)
 
         # Route 3: BEAUTY & SKINCARE ROUTE
         for candidate in BLINKSMART_CATALOG["BEAUTY"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item.get("name"), candidate)
+                return create_nudge_payload(item.get("name"), candidate)
 
-        # Route 4: TECH & OFFICE SUPPLIES ROUTE (Cart > 300)
+        # Route 4: TECH & OFFICE SUPPLIES ROUTE
         for candidate in BLINKSMART_CATALOG["TECH"]:
             if any(t in full_text for t in candidate["triggers"]):
-                if cart_subtotal >= candidate.get("min_cart_value", 300) and candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item.get("name"), candidate)
+                return create_nudge_payload(item.get("name"), candidate)
 
-        # Route 5: STAPLES / DAIRY / HOUSEHOLD ROUTE
-        for candidate in BLINKSMART_CATALOG["STAPLES_DAIRY"]:
-            if any(t in full_text for t in candidate["triggers"]):
-                if candidate["price"] <= max_allowed_price:
-                    return create_nudge_payload(item.get("name"), candidate)
-
-    # 2. STRICT SILENT COLLAPSE: No default recommendation!
-    # SKU 001 (Wet Wipes) is NEVER defaulted for non-snack items.
-    return {"should_nudge": False}
+    # Smart Category Fallback for active cart items
+    first_item = cart_items[0]
+    cat_lower = first_item.get("category", "").lower()
+    if any(k in cat_lower for k in ["snack", "munchies", "sweet", "chocolate"]):
+        return create_nudge_payload(first_item.get("name"), BLINKSMART_CATALOG["SNACKS"][0])
+    elif any(k in cat_lower for k in ["beauty", "personal", "cosmetics"]):
+        return create_nudge_payload(first_item.get("name"), BLINKSMART_CATALOG["BEAUTY"][0])
+    elif any(k in cat_lower for k in ["electronics", "tech"]):
+        return create_nudge_payload(first_item.get("name"), BLINKSMART_CATALOG["TECH"][0])
+    else:
+        return create_nudge_payload(first_item.get("name"), BLINKSMART_CATALOG["COFFEE_TEA"][0])
 
 # -----------------------------------------------------------------------------
 # TOP APP HEADER (LOGO, LOCATION & RESET)
@@ -602,7 +582,7 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (STRICT MULTI-CATEGORY ROUTING & NO DEFAULT)
+    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (ACTIVE WHEN CART CONTAINS ITEMS)
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
 
