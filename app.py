@@ -16,7 +16,7 @@ def clean_html(html_str):
     return " ".join(lines)
 
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & THEME SESSION INITIALIZATION
+# PAGE CONFIGURATION
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Blinkit Quick Commerce | Mobile App MVP",
@@ -25,55 +25,78 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-if "theme" not in st.session_state:
-    st.session_state.theme = "light"  # "light" | "dark"
-
-is_dark = st.session_state.theme == "dark"
-
-# Dynamic Theme Colors
-bg_main = "#0F172A" if is_dark else "#F4F6FB"
-bg_card = "#1E293B" if is_dark else "#FFFFFF"
-text_main = "#F8FAFC" if is_dark else "#111827"
-text_muted = "#94A3B8" if is_dark else "#64748B"
-border_color = "#334155" if is_dark else "#E5E7EB"
-status_bar_bg = "#1E293B" if is_dark else "#FFFFFF"
-rationale_bg = "#0F172A" if is_dark else "#F8FAFC"
-
-# Custom CSS for Light/Dark Theme & Differentiated CTA Visual Hierarchy
-st.markdown(clean_html(f"""
+# Custom CSS for System Auto Theme Detection (prefers-color-scheme: dark & light)
+st.markdown(clean_html("""
 <style>
-/* Blinkit Dynamic Palette */
-.main {{ background-color: {bg_main}; padding: 10px 0; transition: background 0.3s ease; }}
-.stApp {{ background-color: {bg_main}; color: {text_main}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }}
+:root {
+    --app-bg: #F4F6FB;
+    --card-bg: #FFFFFF;
+    --text-primary: #111827;
+    --text-secondary: #475569;
+    --border-color: #E2E8F0;
+    --status-bar-bg: #FFFFFF;
+    --rationale-bg: #F8FAFC;
+    --pill-bg: #F0FDF4;
+    --pill-border: #BBF7D0;
+    --pill-text: #0C831F;
+    --home-indicator: #CBD5E1;
+}
 
-/* Hide default streamlit headers/footers for app feel */
-#MainMenu {{ visibility: hidden; }}
-footer {{ visibility: hidden; }}
-header {{ visibility: hidden; }}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --app-bg: #0F172A;
+        --card-bg: #1E293B;
+        --text-primary: #F8FAFC;
+        --text-secondary: #CBD5E1;
+        --border-color: #334155;
+        --status-bar-bg: #1E293B;
+        --rationale-bg: #0F172A;
+        --pill-bg: #064E3B;
+        --pill-border: #059669;
+        --pill-text: #34D399;
+        --home-indicator: #475569;
+    }
+}
+
+/* Force Streamlit Body & Container Theme Adaptability */
+.main { background-color: var(--app-bg) !important; padding: 10px 0; transition: background 0.3s ease; }
+.stApp { background-color: var(--app-bg) !important; color: var(--text-primary) !important; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; }
+
+/* Hide default streamlit headers/footers */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
+
+/* Streamlit Inputs & Dropdowns Theme Customization */
+.stTextInput input, .stSelectbox select, div[data-baseweb="select"] > div {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
 
 /* iOS Top Status Bar & Dynamic Island */
-.ios-status-bar {{
+.ios-status-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px 4px 16px;
     font-size: 12px;
     font-weight: 700;
-    color: {text_main};
-    background-color: {status_bar_bg};
+    color: var(--text-primary);
+    background-color: var(--status-bar-bg);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    border-bottom: 1px solid {border_color};
-}}
+    border-bottom: 1px solid var(--border-color);
+}
 
-.dynamic-island-pill {{
+.dynamic-island-pill {
     width: 110px;
     height: 24px;
     background-color: #000000;
     border-radius: 20px;
-}}
+}
 
-.blinkit-logo-badge {{
+.blinkit-logo-badge {
     background-color: #F7C200;
     color: #000000;
     font-weight: 900;
@@ -84,32 +107,32 @@ header {{ visibility: hidden; }}
     display: inline-block;
     letter-spacing: -0.5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}}
+}
 
-.delivery-pill {{
-    background-color: {"#064E3B" if is_dark else "#F0FDF4"};
-    border: 1.5px solid {"#059669" if is_dark else "#BBF7D0"};
-    color: {"#34D399" if is_dark else "#0C831F"};
+.delivery-pill {
+    background-color: var(--pill-bg);
+    border: 1.5px solid var(--pill-border);
+    color: var(--pill-text);
     font-weight: 800;
     font-size: 11px;
     padding: 4px 12px;
     border-radius: 20px;
     display: inline-block;
     text-align: center;
-}}
+}
 
-.nudge-card {{
-    background: {bg_card};
+.nudge-card {
+    background: var(--card-bg);
     border: 1.5px solid #10B981;
     border-radius: 16px;
     padding: 16px;
     margin-top: 14px;
     margin-bottom: 14px;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.12);
-    color: {text_main};
-}}
+    color: var(--text-primary);
+}
 
-.nudge-tag {{
+.nudge-tag {
     background-color: #0C831F;
     color: #FFFFFF;
     padding: 4px 10px;
@@ -117,9 +140,9 @@ header {{ visibility: hidden; }}
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
-}}
+}
 
-.scenario-badge {{
+.scenario-badge {
     background-color: #F7C200;
     color: #000000;
     font-weight: 800;
@@ -127,105 +150,98 @@ header {{ visibility: hidden; }}
     border-radius: 20px;
     font-size: 11px;
     display: inline-block;
-}}
+}
 
-.rationale-box {{
-    background-color: {rationale_bg} !important;
+.rationale-box {
+    background-color: var(--rationale-bg) !important;
     border: 1.5px solid #10B981 !important;
     border-radius: 12px;
     padding: 12px;
     margin-top: 10px;
     margin-bottom: 12px;
-    color: {text_main} !important;
-}}
+    color: var(--text-primary) !important;
+}
 
-.shield-badge {{
+.shield-badge {
     background-color: #FEF08A;
     color: #854D0E;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 11px;
-}}
+}
 
 /* Primary Green CTA Button (Checkout & Catalog Add) */
-.stButton > button {{
-    background-color: #0C831F;
-    color: #FFFFFF;
-    font-weight: 800;
-    border-radius: 10px;
-    border: none;
-    padding: 8px 14px;
-    font-size: 13px;
-    width: 100%;
-    box-shadow: 0 2px 4px rgba(12, 131, 31, 0.2);
-}}
-.stButton > button:hover {{
-    background-color: #096818;
-    color: #FFFFFF;
-}}
+.stButton > button {
+    background-color: #0C831F !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    border: none !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    width: 100% !important;
+    box-shadow: 0 2px 4px rgba(12, 131, 31, 0.2) !important;
+}
+.stButton > button:hover {
+    background-color: #096818 !important;
+    color: #FFFFFF !important;
+}
 
 /* Secondary CTA (Nudge Add-on Button): Distinct Blinkit Gold (#F7C200) with dark text */
-.nudge-btn-wrapper .stButton > button {{
+.nudge-btn-wrapper .stButton > button {
     background-color: #F7C200 !important;
     color: #111827 !important;
     border: 1.5px solid #0C831F !important;
     font-weight: 800 !important;
     box-shadow: 0 2px 6px rgba(247, 194, 0, 0.3) !important;
-}}
-.nudge-btn-wrapper .stButton > button:hover {{
+}
+.nudge-btn-wrapper .stButton > button:hover {
     background-color: #E5B200 !important;
     color: #000000 !important;
-}}
+}
 
 /* iOS Bottom Tab Bar */
-.ios-tab-bar {{
+.ios-tab-bar {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: {status_bar_bg};
-    border-top: 1px solid {border_color};
+    background-color: var(--status-bar-bg);
+    border-top: 1px solid var(--border-color);
     padding: 10px 0 6px 0;
     margin-top: 20px;
     border-radius: 16px;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-}}
+}
 
-.ios-tab-item {{
+.ios-tab-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     font-size: 10px;
     font-weight: 600;
-    color: {text_muted};
-}}
+    color: var(--text-secondary);
+}
 
-.ios-tab-item.active {{
+.ios-tab-item.active {
     color: #0C831F;
     font-weight: 800;
-}}
+}
 
-.ios-home-indicator {{
+.ios-home-indicator {
     width: 134px;
     height: 5px;
-    background-color: {"#475569" if is_dark else "#CBD5E1"};
+    background-color: var(--home-indicator);
     border-radius: 100px;
     margin: 10px auto 4px auto;
-}}
-
-/* Form inputs & dropdowns styling for themes */
-.stTextInput input, .stSelectbox select {{
-    background-color: {bg_card} !important;
-    color: {text_main} !important;
-    border: 1px solid {border_color} !important;
-}}
+}
 </style>
 """), unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # iOS DYNAMIC ISLAND & STATUS BAR
 # -----------------------------------------------------------------------------
-ios_status_html = clean_html(f"""
+ios_status_html = clean_html("""
 <div class="ios-status-bar">
     <span>9:41</span>
     <div class="dynamic-island-pill"></div>
@@ -500,7 +516,7 @@ with col_logo:
 with col_info:
     st.markdown(clean_html("""
     <div style='text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;'>
-        <div style='font-size:12px; font-weight:800; color:#111827; margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
+        <div style='font-size:12px; font-weight:800; color:var(--text-primary); margin-bottom:3px;'>📍 DLF Phase 3, Gurgaon</div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
     """), unsafe_allow_html=True)
@@ -522,13 +538,13 @@ if st.session_state.order_placed:
     st.caption("Fulfillment Dark Store: Gurgaon Sector 43 Hub | Rider Assigned: Ramesh Kumar")
     st.divider()
 
-    order_success_html = clean_html(f"""
-<div style='background-color:{"#064e3b" if is_dark else "#f0fdf4"}; border: 1.5px solid #10b981; border-radius:12px; padding:16px; margin-bottom:16px;'>
+    order_success_html = clean_html("""
+<div style='background-color:var(--pill-bg); border: 1.5px solid var(--pill-border); border-radius:12px; padding:16px; margin-bottom:16px;'>
 <div style='display:flex; justify-content:space-between; align-items:center;'>
-<span style='color:{"#34d399" if is_dark else "#0c831f"}; font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
+<span style='color:var(--pill-text); font-weight:800; font-size:14px;'>🔰 First-Trial Safety Net Active</span>
 <span style='background-color:#f7c200; color:#000000; font-family:monospace; font-weight:bold; padding:2px 8px; border-radius:4px;'>09:59 MINS</span>
 </div>
-<p style='font-size:12px; color:{text_main}; margin-top:8px;'>
+<p style='font-size:12px; color:var(--text-primary); margin-top:8px;'>
 Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Inspect the unit upon arrival!
 </p>
 </div>
@@ -541,12 +557,12 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
             st.rerun()
     else:
         st.warning("⚡ Doorstep Exchange Dispatched!")
-        exchange_log_html = clean_html(f"""
-<div style='background-color:{bg_card}; border:1px solid {border_color}; border-radius:10px; padding:12px; font-size:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05);'>
-<div style='font-weight:bold; color:{text_main}; margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
+        exchange_log_html = clean_html("""
+<div style='background-color:var(--card-bg); border:1px solid var(--border-color); border-radius:10px; padding:12px; font-size:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05);'>
+<div style='font-weight:bold; color:var(--text-primary); margin-bottom:4px;'>🛵 Live Exchange Status Log:</div>
 <div style='color:#0c831f;'>• Exchange request logged via automated chatbot.</div>
-<div style='color:{text_muted};'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
-<div style='color:{text_muted};'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
+<div style='color:var(--text-secondary);'>• Rider Ramesh Kumar dispatched with fresh sealed unit from dark store.</div>
+<div style='color:var(--text-secondary);'>• Estimated Doorstep Swap Time: <strong>7 Minutes</strong>.</div>
 </div>
 """)
         st.markdown(exchange_log_html, unsafe_allow_html=True)
@@ -558,7 +574,7 @@ else:
     # -------------------------------------------------------------------------
     # 1. CATEGORY SELECTION & PRODUCT BROWSING
     # -------------------------------------------------------------------------
-    st.markdown(f"<div style='font-weight:800; font-size:15px; color:{text_main};'>🛒 Select Category & Browse Products</div>", unsafe_allow_html=True)
+    st.markdown("""<div style='font-weight:800; font-size:15px; color:var(--text-primary);'>🛒 Select Category & Browse Products</div>""", unsafe_allow_html=True)
 
     category_mapping = {
         "All Categories 🛒": "All Categories",
@@ -612,7 +628,7 @@ else:
     # -------------------------------------------------------------------------
     # 2. ACTIVE GROCERY BASKET (RENDERS FIRST BELOW CATALOG)
     # -------------------------------------------------------------------------
-    st.markdown(f"<div style='font-weight:800; font-size:15px; color:{text_main};'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
+    st.markdown("""<div style='font-weight:800; font-size:15px; color:var(--text-primary);'>🧺 Active Grocery Basket</div>""", unsafe_allow_html=True)
     
     if not st.session_state.cart:
         st.info("🛒 Your basket is empty. Select an item above to add!")
@@ -623,12 +639,12 @@ else:
             col_item, col_del = st.columns([4.5, 0.8])
             with col_item:
                 cart_item_html = clean_html(f"""
-                <div style='display:flex; justify-content:space-between; align-items:center; background-color:{bg_card}; border:1px solid {border_color}; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
+                <div style='display:flex; justify-content:space-between; align-items:center; background-color:var(--card-bg); border:1px solid var(--border-color); border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
                     <div>
                         <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-                        <strong style='font-size:13px; color:{text_main}; margin-left:6px;'>{item['name']}</strong>
+                        <strong style='font-size:13px; color:var(--text-primary); margin-left:6px;'>{item['name']}</strong>
                     </div>
-                    <span style='font-weight:bold; font-size:13px; color:{text_main};'>₹{item['price']}</span>
+                    <span style='font-weight:bold; font-size:13px; color:var(--text-primary);'>₹{item['price']}</span>
                 </div>
                 """)
                 st.markdown(cart_item_html, unsafe_allow_html=True)
@@ -652,13 +668,13 @@ else:
     </div>
     <div class="rationale-box">
         <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-        <div style="font-size:12px; color:{text_main}; margin-bottom:4px;">{rec['why_suggested']}</div>
+        <div style="font-size:12px; color:var(--text-primary); margin-bottom:4px;">{rec['why_suggested']}</div>
         <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-        <div style="font-size:12px; color:{text_muted}; line-height:1.4;">"{rec['cobuying_utility']}"</div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.4;">"{rec['cobuying_utility']}"</div>
     </div>
-    <div style="background-color:{bg_card}; border:1px solid {border_color}; border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="background-color:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <div style="font-size:15px; font-weight:700; color:{text_main};">{rec['emoji']} {rec['title']}</div>
+            <div style="font-size:15px; font-weight:700; color:var(--text-primary);">{rec['emoji']} {rec['title']}</div>
             <div style="font-size:11px; color:#0C831F; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
             <div style="margin-top:4px;">
                 <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
@@ -666,7 +682,7 @@ else:
             </div>
         </div>
     </div>
-    <div style="margin-top:8px; font-size:11px; color:{text_muted}; display:flex; justify-content:space-between; align-items:center;">
+    <div style="margin-top:8px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
         <span>👥 <strong>{rec['social_proof']}</strong></span>
         <span class="shield-badge">🔰 1st Trial Shield Active</span>
     </div>
@@ -693,7 +709,7 @@ else:
         if st.session_state.nudge_added:
             subtotal += rec['price']
 
-        st.markdown(f"<div style='font-weight:800; font-size:14px; color:{text_main}; margin-top:10px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
+        st.markdown("""<div style='font-weight:800; font-size:14px; color:var(--text-primary); margin-top:10px;'>📄 Bill Summary</div>""", unsafe_allow_html=True)
         handling_fee = 0 if st.session_state.nudge_added else 15
         grand_total = subtotal + handling_fee
 
@@ -723,15 +739,15 @@ else:
 # -----------------------------------------------------------------------------
 # iOS BOTTOM TAB BAR & HOME INDICATOR
 # -----------------------------------------------------------------------------
-ios_tab_html = clean_html(f"""
+ios_tab_html = clean_html("""
 <div class="ios-tab-bar">
     <div class="ios-tab-item active">
         <span style="font-size:18px;">🏠</span>
         <span>Home</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">🔍</span>
-        <span>Search</span>
+        <span style="font-size:18px;">🏷️</span>
+        <span>Categories</span>
     </div>
     <div class="ios-tab-item">
         <span style="font-size:18px;">⚡</span>
