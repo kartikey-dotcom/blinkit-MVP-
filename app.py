@@ -564,15 +564,9 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
 # -----------------------------------------------------------------------------
 else:
     # -------------------------------------------------------------------------
-    # 1. SEARCH & CATALOG LISTING / SELECTION
+    # 1. CATEGORY SELECTION & PRODUCT BROWSING
     # -------------------------------------------------------------------------
-    st.markdown(f"<div style='font-weight:800; font-size:15px; color:{text_main};'>🔍 Search & Add Grocery Items</div>", unsafe_allow_html=True)
-    
-    search_query = st.text_input(
-        "Search Catalog",
-        placeholder="🔍 Type 'milk, 20W charger, doritos, sunscreen...'",
-        label_visibility="collapsed"
-    )
+    st.markdown(f"<div style='font-weight:800; font-size:15px; color:{text_main};'>🛒 Select Category & Browse Products</div>", unsafe_allow_html=True)
 
     category_mapping = {
         "All Categories 🛒": "All Categories",
@@ -600,19 +594,15 @@ else:
     selected_pill = st.selectbox("Category:", list(category_mapping.keys()), label_visibility="collapsed")
     target_category = category_mapping[selected_pill]
 
-    # Filter catalog dataset
+    # Filter catalog dataset by category
     filtered_df = CATALOG_DF
     if target_category != "All Categories":
         filtered_df = filtered_df[filtered_df["category"] == target_category]
-    
-    # Clean Search Banner Logic (Suppress error box on empty, whitespace, or '-')
-    if search_query and search_query.strip() not in ["", "-"]:
-        filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
     product_map = {f"{row.get('emoji', '🛒')} {row['name']} — ₹{row['price']}": row for _, row in filtered_df.iterrows()}
 
     if product_map:
-        placeholder = "-- Choose a Product from Catalog --"
+        placeholder = "-- Choose a Product from Category --"
         options = [placeholder] + list(product_map.keys())
         selected_item_key = st.selectbox("Select Product to Add:", options)
         if st.button("+ Add Item to Grocery Basket", use_container_width=True, key="add_catalog_item_btn"):
@@ -623,9 +613,7 @@ else:
                 st.session_state.cart.append(item_to_add)
                 st.rerun()
     else:
-        # Triggered ONLY during actual failed searches
-        if search_query and search_query.strip() not in ["", "-"]:
-            st.info("🔍 No products match your search query. Try searching for milk, sunscreen, chips, or oats.")
+        st.info("📦 No products found in this category.")
 
     st.markdown("---")
 
