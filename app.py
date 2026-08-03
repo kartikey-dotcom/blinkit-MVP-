@@ -3,67 +3,152 @@ import json
 import requests
 import pandas as pd
 import os
+import re
 from dotenv import load_dotenv
 
-# Load environment variables (.env / Streamlit secrets)
+# Silently load environment variables / Streamlit secrets (Zero API key UI display)
 load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_API_KEY") or st.secrets.get("GEMINI_API_KEY", "")
 
-# Robust helper function to strip all leading/trailing whitespace from each line before joining
+# Robust helper function to clean inline HTML strings
 def clean_html(html_str):
     lines = [line.strip() for line in html_str.splitlines() if line.strip()]
     return " ".join(lines)
 
+# Helper to extract product unit/pack weight from name if absent
+def get_product_unit(name):
+    match = re.search(r'(\d+\s*(?:g|kg|ml|L|pcs|Pack|Count|Sheets|Strips|Tub|Jar|Can|Bottle|Bags))', name, re.IGNORECASE)
+    if match:
+        return match.group(1)
+    return "1 Unit"
+
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & BLINKIT BRAND STYLING
+# PAGE CONFIGURATION & NATIVE BLINKIT MOBILE UX STYLING
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="BlinkSmart Zero-Risk Shield MVP",
+    page_title="Blinkit Quick Commerce | BlinkSmart MVP",
     page_icon="⚡",
     layout="centered",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom light CSS styling matching Blinkit's mobile app theme
+# Custom light CSS styling matching Blinkit's native mobile app design system
 st.markdown(clean_html("""
 <style>
-.main { background-color: #f8fafc; }
-.stApp { background-color: #f8fafc; color: #1e293b; }
+/* Blinkit Brand Palette: Yellow #F7C200, Green #0C831F, Background #F4F6FB, Text #111827 */
+.main { background-color: #F4F6FB; }
+.stApp { background-color: #F4F6FB; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
-.blinkit-badge {
-    background-color: #f7c200;
+/* Hide default streamlit headers/footers for native app look */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
+
+.mobile-header-card {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.blinkit-logo-badge {
+    background-color: #F7C200;
     color: #000000;
-    font-weight: 800;
-    padding: 6px 14px;
+    font-weight: 900;
+    padding: 5px 14px;
     border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 18px;
+    font-size: 22px;
     display: inline-block;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    letter-spacing: -0.5px;
+}
+
+.delivery-pill {
+    background-color: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #0C831F;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.product-row-card {
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+}
+
+.product-emoji-box {
+    background-color: #F8FAFC;
+    border: 1px solid #F1F5F9;
+    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-right: 12px;
+}
+
+.product-name-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.product-unit-text {
+    font-size: 11px;
+    color: #6B7280;
+    margin-bottom: 4px;
+}
+
+.price-tag-current {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.price-tag-mrp {
+    font-size: 11px;
+    color: #9CA3AF;
+    text-decoration: line-through;
+    margin-left: 5px;
 }
 
 .nudge-card {
-    background: #f0fdf4;
-    border: 1.5px solid #10b981;
+    background: #F0FDF4;
+    border: 1.5px solid #10B981;
     border-radius: 16px;
-    padding: 18px;
+    padding: 16px;
     margin-top: 14px;
     margin-bottom: 14px;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
-    color: #1e293b;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.08);
+    color: #1E293B;
 }
 
 .nudge-tag {
-    background-color: #0c831f;
-    color: #ffffff;
+    background-color: #0C831F;
+    color: #FFFFFF;
     padding: 4px 10px;
     border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
     text-transform: uppercase;
 }
 
 .scenario-badge {
-    background-color: #f7c200;
+    background-color: #F7C200;
     color: #000000;
     font-weight: 800;
     padding: 4px 10px;
@@ -73,36 +158,37 @@ st.markdown(clean_html("""
 }
 
 .rationale-box {
-    background-color: #ffffff !important;
-    border: 1.5px solid #10b981 !important;
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #10B981 !important;
     border-radius: 12px;
-    padding: 14px;
+    padding: 12px;
     margin-top: 10px;
     margin-bottom: 12px;
-    color: #1e293b !important;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+    color: #1E293B !important;
 }
 
 .shield-badge {
-    background-color: #fef08a;
-    color: #854d0e;
+    background-color: #FEF08A;
+    color: #854D0E;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 11px;
 }
 
+/* Blinkit Green Buttons */
 .stButton > button {
-    background-color: #0c831f;
+    background-color: #0C831F;
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     border-radius: 10px;
     border: none;
-    padding: 8px 16px;
+    padding: 6px 14px;
+    font-size: 13px;
     width: 100%;
 }
 .stButton > button:hover {
-    background-color: #15803d;
+    background-color: #096818;
     color: white;
 }
 </style>
@@ -367,13 +453,20 @@ def get_blinksmart_recommendation(cart_items):
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# CLEAN SIDEBAR CONFIGURATION (ZERO FRONTEND API KEY DISPLAY)
+# 1. AUTHENTIC HEADER & LOCATION BAR
 # -----------------------------------------------------------------------------
-with st.sidebar:
-    st.markdown("### 📍 Location & User Profile")
-    st.info("Location: DLF Phase 3, Gurgaon\n\n**Segment:** Metro Tech Professional\n\n**Delivery Promise:** ⚡ 10 Mins")
-    st.divider()
-    if st.button("🔄 Reset Simulation Demo"):
+col_logo, col_info, col_reset = st.columns([1.2, 2.2, 1])
+with col_logo:
+    st.markdown(clean_html('<span class="blinkit-logo-badge">blinkit</span>'), unsafe_allow_html=True)
+with col_info:
+    st.markdown(clean_html("""
+    <div style='font-size:12px; color:#111827; margin-top:2px;'>
+        <div>📍 <strong>DLF Phase 3, Gurgaon</strong></div>
+        <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
+    </div>
+    """), unsafe_allow_html=True)
+with col_reset:
+    if st.button("🔄 Reset", key="top_reset_btn"):
         st.session_state.cart = [
             {"id": "amul_milk_1l", "name": "Amul Taaza T-Special Milk 1L", "category": "Dairy, Bread & Eggs", "price": 72, "emoji": "🥛"}
         ]
@@ -382,17 +475,7 @@ with st.sidebar:
         st.session_state.exchange_triggered = False
         st.rerun()
 
-# -----------------------------------------------------------------------------
-# MAIN APP HEADER
-# -----------------------------------------------------------------------------
-col_logo, col_loc = st.columns([1, 2])
-with col_logo:
-    st.markdown(clean_html('<span class="blinkit-badge">blinkit</span>'), unsafe_allow_html=True)
-with col_loc:
-    st.markdown(clean_html("<div style='text-align:right; font-size:12px; color:#475569;'>📍 DLF Phase 3, Gurgaon • <strong style='color:#0c831f;'>10 Mins Delivery</strong></div>"), unsafe_allow_html=True)
-
-st.title("BlinkSmart: Zero-Risk Shield Engine")
-st.caption("Functional MVP Prototype | Contextual Non-Grocery Cross-Sell Engine")
+st.caption("BlinkSmart: Contextual Non-Grocery Cross-Sell & Zero-Risk Shield Engine")
 
 # -----------------------------------------------------------------------------
 # SCREEN 1: ORDER PLACED & 10-MIN EXCHANGE SIMULATOR
@@ -433,111 +516,155 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: ACTIVE CART & LIVE SEARCH BAR (100% CATEGORY & SKU COVERAGE)
+# SCREEN 2: NATIVE MOBILE PRODUCT CATALOG & BASKET
 # -----------------------------------------------------------------------------
 else:
-    st.markdown("#### 🛒 Search & Add Items to Grocery Basket")
-    
-    search_query = st.text_input("🔍 Search any product (e.g. Maggi, Oats, Milk, Sunscreen, Coke, Diapers, Colgate, Atta):")
-    selected_cat = st.selectbox("Category Filter:", ["All Categories"] + sorted(list(CATALOG_DF["category"].unique())))
+    # 2. ROUNDED SEARCH BAR & PILL CATEGORY FILTERS
+    search_query = st.text_input(
+        "Search Bar",
+        placeholder="🔍 Search 'milk, 20W charger, doritos, sunscreen...'",
+        label_visibility="collapsed"
+    )
 
-    # Dynamically filter dataset
+    category_mapping = {
+        "All Categories 🛒": "All Categories",
+        "Dairy, Bread & Eggs 🥛": "Dairy, Bread & Eggs",
+        "Fruits & Vegetables 🥑": "Fruits & Vegetables",
+        "Grocery & Staples 🌾": "Grocery & Staples",
+        "Munchies & Snacks 🧀": "Munchies & Snacks",
+        "Beverages & Cold Drinks 🥤": "Beverages & Cold Drinks",
+        "Tea, Coffee & Health Drinks ☕": "Tea, Coffee & Health Drinks",
+        "Instant & Frozen Food 🍜": "Instant & Frozen Food",
+        "Sweet Tooth, Chocolates & Bakery 🍫": "Sweet Tooth, Chocolates & Bakery",
+        "Beauty & Cosmetics 🧴": "Beauty & Cosmetics",
+        "Bath, Body & Personal Care 🧼": "Bath, Body & Personal Care",
+        "Electronics & Tech Accessories ⚡": "Electronics & Tech Accessories",
+        "Home & Kitchen Utilities ⚖️": "Home & Kitchen Utilities",
+        "Cleaning & Household Essentials 🧺": "Cleaning & Household Essentials",
+        "Baby Care 👶": "Baby Care",
+        "Pet Care 🐶": "Pet Care",
+        "Health, Pharma & Wellness 💊": "Health, Pharma & Wellness",
+        "Stationery, Books & Games 📓": "Stationery, Books & Games",
+        "Paan & Party Essentials 🍬": "Paan & Party Essentials",
+        "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
+    }
+
+    selected_pill = st.selectbox("Category Filter:", list(category_mapping.keys()), label_visibility="collapsed")
+    target_category = category_mapping[selected_pill]
+
+    # Filter catalog
     filtered_df = CATALOG_DF
-    if selected_cat != "All Categories":
-        filtered_df = filtered_df[filtered_df["category"] == selected_cat]
+    if target_category != "All Categories":
+        filtered_df = filtered_df[filtered_df["category"] == target_category]
     if search_query:
         filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
-    product_map = {f"{row.get('emoji', '🛒')} {row['name']} - ₹{row['price']}": row for _, row in filtered_df.iterrows()}
+    st.markdown("<div style='font-size:13px; font-weight:700; color:#374151; margin-top:8px; margin-bottom:6px;'>⚡ Instant 10-Min Catalog</div>", unsafe_allow_html=True)
 
-    col_prod, col_btn = st.columns([3.5, 1.5])
-    if product_map:
-        with col_prod:
-            selected_title = st.selectbox("Select Matching Product:", list(product_map.keys()), label_visibility="collapsed")
-        with col_btn:
-            if st.button("+ Add to Cart", use_container_width=True):
-                item_to_add = product_map[selected_title]
-                st.session_state.cart.append(item_to_add)
-                st.rerun()
+    # 3. NATIVE MOBILE PRODUCT CARDS
+    display_products = filtered_df.to_dict(orient="records")
+    
+    if not display_products:
+        st.info("🔍 No products found matching your search. Try searching for 'milk', 'atta', 'charger', 'snack', or select 'All Categories'.")
     else:
-        with col_prod:
-            st.selectbox("Select Product:", ["No products found matching search/filter"], disabled=True, label_visibility="collapsed")
+        # Show top product cards (capped at 12 for clean mobile scroll UX if unfiltered)
+        cards_to_show = display_products[:15]
+        for idx, prod in enumerate(cards_to_show):
+            unit_str = prod.get("unit") or get_product_unit(prod["name"])
+            mrp_val = prod.get("mrp", prod["price"] + 10)
+            
+            col_card, col_add = st.columns([3.8, 1.2])
+            with col_card:
+                card_html = clean_html(f"""
+                <div class="product-row-card">
+                    <div class="product-emoji-box">{prod.get('emoji', '🛒')}</div>
+                    <div>
+                        <div class="product-name-text">{prod['name']}</div>
+                        <div class="product-unit-text">{unit_str} • <span style="color:#0C831F; font-weight:600;">{prod.get('category', '')}</span></div>
+                        <div>
+                            <span class="price-tag-current">₹{prod['price']}</span>
+                            <span class="price-tag-mrp">₹{mrp_val}</span>
+                        </div>
+                    </div>
+                </div>
+                """)
+                st.markdown(card_html, unsafe_allow_html=True)
+            with col_add:
+                st.markdown("<div style='margin-top:8px;'></div>", unsafe_allow_html=True)
+                if st.button("+ ADD", key=f"btn_add_{prod['id']}_{idx}"):
+                    st.session_state.cart.append(prod)
+                    st.rerun()
 
-    # Active Cart List
-    st.markdown("#### 🧺 Active Grocery Basket")
+    # 4. ACTIVE BASKET & CONTEXTUAL NUDGE INTEGRATION
+    st.markdown("---")
+    st.markdown("<div style='font-size:15px; font-weight:800; color:#111827; margin-bottom:8px;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
     
     if not st.session_state.cart:
-        st.info("🛒 Your basket is empty. Use the search bar above to add items!")
+        st.info("🛒 Your basket is empty. Tap '+ ADD' on any item above to get started!")
     else:
         subtotal = 0
         for idx, item in enumerate(st.session_state.cart):
             subtotal += item["price"]
-            col_item, col_del = st.columns([5, 1])
+            col_item, col_del = st.columns([4.5, 0.8])
             with col_item:
                 cart_item_html = clean_html(f"""
-<div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:8px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.02);'>
-<div>
-<span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-<strong style='font-size:13px; color:#1e293b; margin-left:8px;'>{item['name']}</strong>
-<span style='font-size:10px; color:#64748b; margin-left:6px;'>({item.get('category', 'Grocery')})</span>
-</div>
-<span style='font-weight:bold; font-size:13px; color:#1e293b;'>₹{item['price']}</span>
-</div>
-""")
+                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
+                    <div>
+                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
+                        <strong style='font-size:13px; color:#111827; margin-left:6px;'>{item['name']}</strong>
+                    </div>
+                    <span style='font-weight:bold; font-size:13px; color:#111827;'>₹{item['price']}</span>
+                </div>
+                """)
                 st.markdown(cart_item_html, unsafe_allow_html=True)
             with col_del:
-                if st.button("❌", key=f"del_{idx}"):
+                if st.button("❌", key=f"del_cart_{idx}"):
                     st.session_state.cart.pop(idx)
                     st.rerun()
 
-        # -------------------------------------------------------------------------
-        # BLINKSMART CONTEXTUAL AI NUDGE CARD (CLEAN VISUAL HTML RENDERING)
-        # -------------------------------------------------------------------------
+        # BLINKSMART CONTEXTUAL AI NUDGE CARD
         rec = get_blinksmart_recommendation(st.session_state.cart)
 
         nudge_card_html = clean_html(f"""
 <div class="nudge-card">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-<span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
-<span class="scenario-badge">{rec['scenario_badge']}</span>
-</div>
-<div class="rationale-box">
-<div style="font-size:11px; color:#0c831f; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-<div style="font-size:12px; color:#1e293b; margin-bottom:8px;">{rec['why_suggested']}</div>
-<div style="font-size:11px; color:#d97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-<div style="font-size:12px; color:#475569; line-height:1.4;">"{rec['cobuying_utility']}"</div>
-</div>
-<div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-<div>
-<div style="font-size:18px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#1e293b;">{rec['title']}</strong></div>
-<div style="font-size:11px; color:#0c831f; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
-<div style="margin-top:4px;">
-<span style="font-size:14px; font-weight:800; color:#0c831f;">₹{rec['price']}</span>
-<span style="font-size:11px; color:#64748b; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
-</div>
-</div>
-</div>
-<div style="margin-top:12px; font-size:12px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
-<span>👥 <strong>{rec['social_proof']}</strong></span>
-<span class="shield-badge">🔰 1st Trial Shield Active</span>
-</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
+        <span class="scenario-badge">{rec['scenario_badge']}</span>
+    </div>
+    <div class="rationale-box">
+        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
+        <div style="font-size:12px; color:#111827; margin-bottom:6px;">{rec['why_suggested']}</div>
+        <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
+        <div style="font-size:12px; color:#475569; line-height:1.4;">"{rec['cobuying_utility']}"</div>
+    </div>
+    <div style="background-color:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <div style="font-size:16px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#111827;">{rec['title']}</strong></div>
+            <div style="font-size:11px; color:#0C831F; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
+            <div style="margin-top:4px;">
+                <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
+                <span style="font-size:11px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:10px; font-size:11px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
+        <span>👥 <strong>{rec['social_proof']}</strong></span>
+        <span class="shield-badge">🔰 1st Trial Shield Active</span>
+    </div>
 </div>
 """)
         st.markdown(nudge_card_html, unsafe_allow_html=True)
 
-        # Nudge Add Action Button
         if not st.session_state.nudge_added:
-            if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)"):
+            if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
                 st.session_state.nudge_added = True
                 st.rerun()
         else:
             st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
             subtotal += rec['price']
 
-        # -------------------------------------------------------------------------
         # BILL SUMMARY & FAST CHECKOUT BAR
-        # -------------------------------------------------------------------------
-        st.markdown("#### 📄 Bill Summary")
+        st.markdown("<div style='font-size:14px; font-weight:800; color:#111827; margin-top:12px; margin-bottom:6px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
         handling_fee = 0 if st.session_state.nudge_added else 15
         grand_total = subtotal + handling_fee
 
@@ -559,7 +686,7 @@ else:
 
         st.divider()
 
-        # Sticky Checkout Bar
-        if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔"):
+        # Sticky Fast Checkout Button
+        if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
             st.session_state.order_placed = True
             st.rerun()
