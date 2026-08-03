@@ -23,23 +23,23 @@ def get_product_unit(name):
     return "1 Unit"
 
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & NATIVE iOS MOBILE APP UX STYLING
+# PAGE CONFIGURATION & STABLE SINGLE-SCREEN LAYOUT
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Blinkit Quick Commerce | iOS Mobile App MVP",
+    page_title="Blinkit Quick Commerce | Single-Screen MVP",
     page_icon="⚡",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom light CSS styling matching Blinkit's native iOS mobile app design system
+# Custom CSS for 1-Page Fixed Viewport (Zero Page Scrolling)
 st.markdown(clean_html("""
 <style>
-/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #F4F6FB, Text #111827 */
-.main { background-color: #0F172A; padding: 10px 0; }
+/* Blinkit Palette: Yellow #F7C200, Green #0C831F, Background #0F172A, Text #111827 */
+.main { background-color: #0F172A; padding: 6px 12px; }
 .stApp { background-color: #0F172A; color: #111827; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif; }
 
-/* Hide default streamlit headers/footers for iOS app feel */
+/* Hide default streamlit headers/footers for app feel */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
@@ -49,33 +49,30 @@ header { visibility: hidden; }
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 16px 4px 16px;
-    font-size: 12px;
+    padding: 6px 16px 4px 16px;
+    font-size: 11px;
     font-weight: 700;
     color: #111827;
     background-color: #FFFFFF;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
 .dynamic-island-pill {
-    width: 110px;
-    height: 24px;
+    width: 100px;
+    height: 20px;
     background-color: #000000;
     border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .blinkit-logo-badge {
     background-color: #F7C200;
     color: #000000;
     font-weight: 900;
-    padding: 5px 14px;
+    padding: 4px 12px;
     border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
     display: inline-block;
     letter-spacing: -0.5px;
 }
@@ -85,20 +82,20 @@ header { visibility: hidden; }
     border: 1px solid #BBF7D0;
     color: #0C831F;
     font-weight: 700;
-    font-size: 11px;
-    padding: 4px 10px;
+    font-size: 10px;
+    padding: 3px 8px;
     border-radius: 20px;
     display: inline-block;
 }
 
-/* Native Product Row Card */
+/* Compact Product Row Card */
 .product-row-card {
     background-color: #FFFFFF;
-    border-radius: 14px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
     border: 1px solid #E5E7EB;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
     display: flex;
     align-items: center;
 }
@@ -106,59 +103,62 @@ header { visibility: hidden; }
 .product-emoji-box {
     background-color: #F8FAFC;
     border: 1px solid #F1F5F9;
-    border-radius: 12px;
-    width: 48px;
-    height: 48px;
+    border-radius: 10px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    margin-right: 12px;
+    font-size: 22px;
+    margin-right: 10px;
 }
 
 .product-name-text {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: #111827;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .product-unit-text {
-    font-size: 11px;
+    font-size: 10px;
     color: #6B7280;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .price-tag-current {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 800;
     color: #111827;
 }
 
 .price-tag-mrp {
-    font-size: 11px;
+    font-size: 10px;
     color: #9CA3AF;
     text-decoration: line-through;
-    margin-left: 5px;
+    margin-left: 4px;
 }
 
 .nudge-card {
     background: #F0FDF4;
     border: 1.5px solid #10B981;
-    border-radius: 16px;
-    padding: 16px;
-    margin-top: 14px;
-    margin-bottom: 14px;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.08);
+    border-radius: 14px;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
     color: #1E293B;
 }
 
 .nudge-tag {
     background-color: #0C831F;
     color: #FFFFFF;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 800;
     text-transform: uppercase;
 }
@@ -167,19 +167,19 @@ header { visibility: hidden; }
     background-color: #F7C200;
     color: #000000;
     font-weight: 800;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 10px;
     display: inline-block;
 }
 
 .rationale-box {
     background-color: #FFFFFF !important;
     border: 1.5px solid #10B981 !important;
-    border-radius: 12px;
-    padding: 12px;
-    margin-top: 10px;
-    margin-bottom: 12px;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 6px;
     color: #1E293B !important;
 }
 
@@ -187,9 +187,9 @@ header { visibility: hidden; }
     background-color: #FEF08A;
     color: #854D0E;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 /* Blinkit Green Buttons */
@@ -197,10 +197,10 @@ header { visibility: hidden; }
     background-color: #0C831F;
     color: white;
     font-weight: 800;
-    border-radius: 10px;
+    border-radius: 8px;
     border: none;
-    padding: 6px 14px;
-    font-size: 13px;
+    padding: 5px 10px;
+    font-size: 12px;
     width: 100%;
 }
 .stButton > button:hover {
@@ -215,16 +215,16 @@ header { visibility: hidden; }
     align-items: center;
     background-color: #FFFFFF;
     border-top: 1px solid #E5E7EB;
-    padding: 10px 0 6px 0;
-    margin-top: 20px;
-    border-radius: 16px;
+    padding: 6px 0 4px 0;
+    margin-top: 8px;
+    border-radius: 14px;
 }
 
 .ios-tab-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
     color: #6B7280;
 }
@@ -235,11 +235,11 @@ header { visibility: hidden; }
 }
 
 .ios-home-indicator {
-    width: 134px;
-    height: 5px;
+    width: 120px;
+    height: 4px;
     background-color: #94A3B8;
     border-radius: 100px;
-    margin: 10px auto 4px auto;
+    margin: 4px auto 2px auto;
 }
 </style>
 """), unsafe_allow_html=True)
@@ -257,7 +257,7 @@ ios_status_html = clean_html("""
 st.markdown(ios_status_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# DYNAMIC BLINKIT CATALOG LOADING (REPRESENTING ALL 19 CATEGORIES)
+# DYNAMIC BLINKIT CATALOG LOADING
 # -----------------------------------------------------------------------------
 @st.cache_data
 def load_blinkit_catalog():
@@ -503,26 +503,22 @@ if "order_placed" not in st.session_state:
 if "exchange_triggered" not in st.session_state:
     st.session_state.exchange_triggered = False
 
-# -----------------------------------------------------------------------------
-# CONSTRAINED RECOMMENDATION MATRIX LOGIC (100% RELIABLE DECISION ENGINE)
-# -----------------------------------------------------------------------------
 def get_blinksmart_recommendation(cart_items):
     for item in cart_items:
         category = item.get("category", "")
         if category in CATEGORY_RECOMMENDATIONS:
             return CATEGORY_RECOMMENDATIONS[category]
-
     return CATEGORY_RECOMMENDATIONS["Munchies & Snacks"]
 
 # -----------------------------------------------------------------------------
-# 1. AUTHENTIC HEADER & LOCATION BAR
+# TOP APP HEADER
 # -----------------------------------------------------------------------------
 col_logo, col_info, col_reset = st.columns([1.2, 2.2, 1])
 with col_logo:
     st.markdown(clean_html('<span class="blinkit-logo-badge">blinkit</span>'), unsafe_allow_html=True)
 with col_info:
     st.markdown(clean_html("""
-    <div style='font-size:12px; color:#111827; margin-top:2px;'>
+    <div style='font-size:12px; color:#111827;'>
         <div>📍 <strong>DLF Phase 3, Gurgaon</strong></div>
         <div class='delivery-pill'>⚡ 10 MINS Delivery</div>
     </div>
@@ -536,8 +532,6 @@ with col_reset:
         st.session_state.order_placed = False
         st.session_state.exchange_triggered = False
         st.rerun()
-
-st.caption("BlinkSmart: Contextual Non-Grocery Cross-Sell & Zero-Risk Shield Engine")
 
 # -----------------------------------------------------------------------------
 # SCREEN 1: ORDER PLACED & 10-MIN EXCHANGE SIMULATOR
@@ -578,180 +572,166 @@ Your trial item is covered under the 10-Minute Doorstep Exchange Guarantee. Insp
         st.markdown(exchange_log_html, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# SCREEN 2: NATIVE MOBILE PRODUCT CATALOG & BASKET
+# SCREEN 2: 1-PAGE STABLE VIEWPORT (SIDE-BY-SIDE SIDEBAR-FREE 2-COL DASHBOARD)
 # -----------------------------------------------------------------------------
 else:
-    # 2. ROUNDED SEARCH BAR & PILL CATEGORY FILTERS
-    search_query = st.text_input(
-        "Search Bar",
-        placeholder="🔍 Search 'milk, 20W charger, doritos, sunscreen...'",
-        label_visibility="collapsed"
-    )
+    col_left, col_right = st.columns([1.15, 0.85], gap="small")
 
-    category_mapping = {
-        "All Categories 🛒": "All Categories",
-        "Dairy, Bread & Eggs 🥛": "Dairy, Bread & Eggs",
-        "Fruits & Vegetables 🥑": "Fruits & Vegetables",
-        "Grocery & Staples 🌾": "Grocery & Staples",
-        "Munchies & Snacks 🧀": "Munchies & Snacks",
-        "Beverages & Cold Drinks 🥤": "Beverages & Cold Drinks",
-        "Tea, Coffee & Health Drinks ☕": "Tea, Coffee & Health Drinks",
-        "Instant & Frozen Food 🍜": "Instant & Frozen Food",
-        "Sweet Tooth, Chocolates & Bakery 🍫": "Sweet Tooth, Chocolates & Bakery",
-        "Beauty & Cosmetics 🧴": "Beauty & Cosmetics",
-        "Bath, Body & Personal Care 🧼": "Bath, Body & Personal Care",
-        "Electronics & Tech Accessories ⚡": "Electronics & Tech Accessories",
-        "Home & Kitchen Utilities ⚖️": "Home & Kitchen Utilities",
-        "Cleaning & Household Essentials 🧺": "Cleaning & Household Essentials",
-        "Baby Care 👶": "Baby Care",
-        "Pet Care 🐶": "Pet Care",
-        "Health, Pharma & Wellness 💊": "Health, Pharma & Wellness",
-        "Stationery, Books & Games 📓": "Stationery, Books & Games",
-        "Paan & Party Essentials 🍬": "Paan & Party Essentials",
-        "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
-    }
+    # -------------------------------------------------------------------------
+    # LEFT COLUMN: CATALOG SEARCH & INNER SCROLLABLE PRODUCT LIST
+    # -------------------------------------------------------------------------
+    with col_left:
+        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827;'>⚡ Instant 10-Min Catalog</div>", unsafe_allow_html=True)
+        
+        search_query = st.text_input(
+            "Search Catalog",
+            placeholder="🔍 Search 'milk, 20W charger, doritos, sunscreen...'",
+            label_visibility="collapsed"
+        )
 
-    selected_pill = st.selectbox("Category Filter:", list(category_mapping.keys()), label_visibility="collapsed")
-    target_category = category_mapping[selected_pill]
+        category_mapping = {
+            "All Categories 🛒": "All Categories",
+            "Dairy, Bread & Eggs 🥛": "Dairy, Bread & Eggs",
+            "Fruits & Vegetables 🥑": "Fruits & Vegetables",
+            "Grocery & Staples 🌾": "Grocery & Staples",
+            "Munchies & Snacks 🧀": "Munchies & Snacks",
+            "Beverages & Cold Drinks 🥤": "Beverages & Cold Drinks",
+            "Tea, Coffee & Health Drinks ☕": "Tea, Coffee & Health Drinks",
+            "Instant & Frozen Food 🍜": "Instant & Frozen Food",
+            "Sweet Tooth, Chocolates & Bakery 🍫": "Sweet Tooth, Chocolates & Bakery",
+            "Beauty & Cosmetics 🧴": "Beauty & Cosmetics",
+            "Bath, Body & Personal Care 🧼": "Bath, Body & Personal Care",
+            "Electronics & Tech Accessories ⚡": "Electronics & Tech Accessories",
+            "Home & Kitchen Utilities ⚖️": "Home & Kitchen Utilities",
+            "Cleaning & Household Essentials 🧺": "Cleaning & Household Essentials",
+            "Baby Care 👶": "Baby Care",
+            "Pet Care 🐶": "Pet Care",
+            "Health, Pharma & Wellness 💊": "Health, Pharma & Wellness",
+            "Stationery, Books & Games 📓": "Stationery, Books & Games",
+            "Paan & Party Essentials 🍬": "Paan & Party Essentials",
+            "Meat, Fish & Eggs 🍗": "Meat, Fish & Eggs"
+        }
 
-    # Filter catalog
-    filtered_df = CATALOG_DF
-    if target_category != "All Categories":
-        filtered_df = filtered_df[filtered_df["category"] == target_category]
-    if search_query:
-        filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
+        selected_pill = st.selectbox("Filter Category:", list(category_mapping.keys()), label_visibility="collapsed")
+        target_category = category_mapping[selected_pill]
 
-    st.markdown("<div style='font-size:13px; font-weight:700; color:#374151; margin-top:8px; margin-bottom:6px;'>⚡ Instant 10-Min Catalog</div>", unsafe_allow_html=True)
+        # Filter catalog dataset
+        filtered_df = CATALOG_DF
+        if target_category != "All Categories":
+            filtered_df = filtered_df[filtered_df["category"] == target_category]
+        if search_query:
+            filtered_df = filtered_df[filtered_df["name"].str.contains(search_query, case=False, na=False)]
 
-    # 3. NATIVE MOBILE PRODUCT CARDS
-    display_products = filtered_df.to_dict(orient="records")
-    
-    if not display_products:
-        st.info("🔍 No products found matching your search. Try searching for 'milk', 'atta', 'charger', 'snack', or select 'All Categories'.")
-    else:
-        # Show top product cards (capped at 15 for clean mobile scroll UX if unfiltered)
-        cards_to_show = display_products[:15]
-        for idx, prod in enumerate(cards_to_show):
-            unit_str = prod.get("unit") or get_product_unit(prod["name"])
-            mrp_val = prod.get("mrp", prod["price"] + 10)
-            
-            col_card, col_add = st.columns([3.8, 1.2])
-            with col_card:
-                card_html = clean_html(f"""
-                <div class="product-row-card">
-                    <div class="product-emoji-box">{prod.get('emoji', '🛒')}</div>
-                    <div>
-                        <div class="product-name-text">{prod['name']}</div>
-                        <div class="product-unit-text">{unit_str} • <span style="color:#0C831F; font-weight:600;">{prod.get('category', '')}</span></div>
-                        <div>
-                            <span class="price-tag-current">₹{prod['price']}</span>
-                            <span class="price-tag-mrp">₹{mrp_val}</span>
+        display_products = filtered_df.to_dict(orient="records")
+
+        # Fixed height inner container so catalog scrolls INSIDE its box without page expansion!
+        with st.container(height=360):
+            if not display_products:
+                st.info("🔍 No products found. Try searching for 'milk', 'atta', 'charger', 'snack', or select 'All Categories'.")
+            else:
+                for idx, prod in enumerate(display_products):
+                    unit_str = prod.get("unit") or get_product_unit(prod["name"])
+                    mrp_val = prod.get("mrp", prod["price"] + 10)
+                    
+                    c_card, c_add = st.columns([3.5, 1.2])
+                    with c_card:
+                        card_html = clean_html(f"""
+                        <div class="product-row-card">
+                            <div class="product-emoji-box">{prod.get('emoji', '🛒')}</div>
+                            <div style="overflow:hidden;">
+                                <div class="product-name-text">{prod['name']}</div>
+                                <div class="product-unit-text">{unit_str} • <span style="color:#0C831F; font-weight:600;">{prod.get('category', '')}</span></div>
+                                <div>
+                                    <span class="price-tag-current">₹{prod['price']}</span>
+                                    <span class="price-tag-mrp">₹{mrp_val}</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                """)
-                st.markdown(card_html, unsafe_allow_html=True)
-            with col_add:
-                st.markdown("<div style='margin-top:8px;'></div>", unsafe_allow_html=True)
-                if st.button("+ ADD", key=f"btn_add_{prod['id']}_{idx}"):
-                    st.session_state.cart.append(prod)
-                    st.rerun()
+                        """)
+                        st.markdown(card_html, unsafe_allow_html=True)
+                    with c_add:
+                        st.markdown("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+                        if st.button("+ ADD", key=f"btn_add_{prod['id']}_{idx}"):
+                            st.session_state.cart.append(prod)
+                            st.rerun()
 
-    # 4. ACTIVE BASKET & CONTEXTUAL NUDGE INTEGRATION
-    st.markdown("---")
-    st.markdown("<div style='font-size:15px; font-weight:800; color:#111827; margin-bottom:8px;'>🧺 Active Grocery Basket</div>", unsafe_allow_html=True)
-    
-    if not st.session_state.cart:
-        st.info("🛒 Your basket is empty. Tap '+ ADD' on any item above to get started!")
-    else:
-        subtotal = 0
-        for idx, item in enumerate(st.session_state.cart):
-            subtotal += item["price"]
-            col_item, col_del = st.columns([4.5, 0.8])
-            with col_item:
-                cart_item_html = clean_html(f"""
-                <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:10px; padding:8px 12px; margin-bottom:6px;'>
-                    <div>
-                        <span style='font-size:16px;'>{item.get('emoji', '🛒')}</span>
-                        <strong style='font-size:13px; color:#111827; margin-left:6px;'>{item['name']}</strong>
-                    </div>
-                    <span style='font-weight:bold; font-size:13px; color:#111827;'>₹{item['price']}</span>
-                </div>
-                """)
-                st.markdown(cart_item_html, unsafe_allow_html=True)
-            with col_del:
-                if st.button("❌", key=f"del_cart_{idx}"):
-                    st.session_state.cart.pop(idx)
-                    st.rerun()
+    # -------------------------------------------------------------------------
+    # RIGHT COLUMN: BASKET, AI NUDGE CARD & STICKY BILL SUMMARY
+    # -------------------------------------------------------------------------
+    with col_right:
+        st.markdown("<div style='font-weight:800; font-size:14px; color:#111827;'>🧺 Grocery Basket & Checkout</div>", unsafe_allow_html=True)
+        
+        if not st.session_state.cart:
+            st.info("🛒 Basket is empty. Click '+ ADD' on items on the left!")
+        else:
+            subtotal = 0
+            # Inner scroll box for cart items if multiple
+            with st.container(height=140):
+                for idx, item in enumerate(st.session_state.cart):
+                    subtotal += item["price"]
+                    col_item, col_del = st.columns([4.2, 0.8])
+                    with col_item:
+                        cart_item_html = clean_html(f"""
+                        <div style='display:flex; justify-content:space-between; align-items:center; background-color:#ffffff; border:1px solid #E5E7EB; border-radius:8px; padding:6px 10px; margin-bottom:4px;'>
+                            <div>
+                                <span style='font-size:14px;'>{item.get('emoji', '🛒')}</span>
+                                <strong style='font-size:12px; color:#111827; margin-left:4px;'>{item['name']}</strong>
+                            </div>
+                            <span style='font-weight:bold; font-size:12px; color:#111827;'>₹{item['price']}</span>
+                        </div>
+                        """)
+                        st.markdown(cart_item_html, unsafe_allow_html=True)
+                    with col_del:
+                        if st.button("❌", key=f"del_cart_{idx}"):
+                            st.session_state.cart.pop(idx)
+                            st.rerun()
 
-        # BLINKSMART CONTEXTUAL AI NUDGE CARD
-        rec = get_blinksmart_recommendation(st.session_state.cart)
+            # BLINKSMART CONTEXTUAL AI NUDGE CARD
+            rec = get_blinksmart_recommendation(st.session_state.cart)
 
-        nudge_card_html = clean_html(f"""
+            nudge_card_html = clean_html(f"""
 <div class="nudge-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <span class="nudge-tag">✨ BlinkSmart Contextual Nudge</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span class="nudge-tag">✨ BlinkSmart Nudge</span>
         <span class="scenario-badge">{rec['scenario_badge']}</span>
     </div>
     <div class="rationale-box">
-        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-        <div style="font-size:12px; color:#111827; margin-bottom:6px;">{rec['why_suggested']}</div>
-        <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-        <div style="font-size:12px; color:#475569; line-height:1.4;">"{rec['cobuying_utility']}"</div>
+        <div style="font-size:10px; color:#0C831F; font-weight:800;">🎯 WHY: {rec['why_suggested']}</div>
+        <div style="font-size:10px; color:#475569; margin-top:2px;">🤝 "{rec['cobuying_utility']}"</div>
     </div>
-    <div style="background-color:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="background-color:#FFFFFF; border:1px solid #E5E7EB; border-radius:10px; padding:8px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <div style="font-size:16px; margin-bottom:2px;">{rec['emoji']} <strong style="font-size:13px; color:#111827;">{rec['title']}</strong></div>
-            <div style="font-size:11px; color:#0C831F; font-weight:600;">🔰 100% Brand Authenticity Seal</div>
-            <div style="margin-top:4px;">
-                <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
-                <span style="font-size:11px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
+            <div style="font-size:13px; font-weight:700; color:#111827;">{rec['emoji']} {rec['title']}</div>
+            <div>
+                <span style="font-size:13px; font-weight:800; color:#0C831F;">₹{rec['price']}</span>
+                <span style="font-size:10px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{rec['mrp']}</span>
             </div>
         </div>
     </div>
-    <div style="margin-top:10px; font-size:11px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
-        <span>👥 <strong>{rec['social_proof']}</strong></span>
-        <span class="shield-badge">🔰 1st Trial Shield Active</span>
-    </div>
 </div>
 """)
-        st.markdown(nudge_card_html, unsafe_allow_html=True)
+            st.markdown(nudge_card_html, unsafe_allow_html=True)
 
-        if not st.session_state.nudge_added:
-            if st.button(f"+ Add {rec['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
-                st.session_state.nudge_added = True
-                st.rerun()
-        else:
-            st.success(f"✓ {rec['title']} Added to Basket with First-Trial Shield!")
-            subtotal += rec['price']
+            if not st.session_state.nudge_added:
+                if st.button(f"+ Add {rec['title']} (₹15 Fee Waived)", key="add_nudge_btn"):
+                    st.session_state.nudge_added = True
+                    st.rerun()
+            else:
+                st.success(f"✓ {rec['title']} Added!")
+                subtotal += rec['price']
 
-        # BILL SUMMARY & FAST CHECKOUT BAR
-        st.markdown("<div style='font-size:14px; font-weight:800; color:#111827; margin-top:12px; margin-bottom:6px;'>📄 Bill Summary</div>", unsafe_allow_html=True)
-        handling_fee = 0 if st.session_state.nudge_added else 15
-        grand_total = subtotal + handling_fee
+            # BILL SUMMARY & FAST CHECKOUT BAR
+            handling_fee = 0 if st.session_state.nudge_added else 15
+            grand_total = subtotal + handling_fee
 
-        col_label, col_val = st.columns([3, 1])
-        with col_label:
-            st.write("Item Subtotal")
-            st.write("Delivery Fee (⚡ 10 Mins)")
-            st.write("Handling Fee")
-            if st.session_state.nudge_added:
-                st.write("First-Trial Shield Fee Waiver")
-            st.markdown("**Grand Total**")
-        with col_val:
-            st.write(f"₹{subtotal}")
-            st.write("FREE")
-            st.write(f"₹{handling_fee}")
-            if st.session_state.nudge_added:
-                st.write("-₹15")
-            st.markdown(f"**₹{grand_total}**")
-
-        st.divider()
-
-        # Sticky Fast Checkout Button
-        if st.button(f"Pay ₹{grand_total} via Face ID / UPI (<15s) ➔", key="checkout_btn"):
-            st.session_state.order_placed = True
-            st.rerun()
+            col_label, col_val = st.columns([2.5, 1])
+            with col_label:
+                st.caption("Subtotal | Delivery: FREE | Handling: ₹" + str(handling_fee))
+                st.markdown(f"**Total: ₹{grand_total}**")
+            with col_val:
+                if st.button(f"Pay ₹{grand_total} ➔", key="checkout_btn"):
+                    st.session_state.order_placed = True
+                    st.rerun()
 
 # -----------------------------------------------------------------------------
 # iOS BOTTOM TAB BAR & HOME INDICATOR
@@ -759,23 +739,23 @@ else:
 ios_tab_html = clean_html("""
 <div class="ios-tab-bar">
     <div class="ios-tab-item active">
-        <span style="font-size:18px;">🏠</span>
+        <span style="font-size:16px;">🏠</span>
         <span>Home</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">🔍</span>
-        <span>Categories</span>
+        <span style="font-size:16px;">🔍</span>
+        <span>Search</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">⚡</span>
+        <span style="font-size:16px;">⚡</span>
         <span>BlinkSmart</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">🧺</span>
+        <span style="font-size:16px;">🧺</span>
         <span>Basket</span>
     </div>
     <div class="ios-tab-item">
-        <span style="font-size:18px;">👤</span>
+        <span style="font-size:16px;">👤</span>
         <span>Account</span>
     </div>
 </div>
