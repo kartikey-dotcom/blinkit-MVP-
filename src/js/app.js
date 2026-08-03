@@ -12,7 +12,6 @@ import { OrderTracker } from './components/OrderTracker.js';
 import { DarkStoreView } from './components/DarkStoreView.js';
 import { RiderView } from './components/RiderView.js';
 import { AdminView } from './components/AdminView.js';
-import { Footer } from './components/Footer.js';
 
 class App {
   constructor() {
@@ -46,11 +45,10 @@ class App {
     // 4. Initialize Order Tracker
     this.orderTracker = new OrderTracker('order-tracker-container');
 
-    // 5. Initialize Persona Views & Footer
+    // 5. Initialize Persona Views
     new DarkStoreView('picker-view-container');
     new RiderView('rider-view-container');
     new AdminView('admin-view-container');
-    new Footer('footer-container');
 
     // 6. Listen to state changes for theme & view visibility
     store.subscribe((state) => this.handleStateChange(state));
