@@ -157,8 +157,8 @@ header { visibility: hidden; }
     border: 1.5px solid #10B981 !important;
     border-radius: 12px;
     padding: 12px;
-    margin-top: 10px;
-    margin-bottom: 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     color: var(--text-primary) !important;
 }
 
@@ -282,17 +282,17 @@ ROUTING_MATRIX = [
             "social_proof": "👥 42 fitness & salad lovers nearby added this this week"
         }
     },
-    # 2. Munchies & Chips
+    # 2. Munchies, Chips & Sweet Tooth
     {
-        "categories": ["munchies & snacks"],
-        "keywords": ["doritos", "chips", "lays", "bhujia", "popcorn", "kurkure", "pringles", "nachos", "snack"],
+        "categories": ["munchies & snacks", "sweet tooth, chocolates & bakery"],
+        "keywords": ["doritos", "chips", "lays", "bhujia", "popcorn", "kurkure", "pringles", "nachos", "snack", "silk", "cadbury", "nutella", "ferrero", "chocolate", "dessert"],
         "primary": {
             "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
             "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
             "scenario_badge": "🧼 Instant Finger Cleanup",
-            "why_suggested": "Instantly wipes away masala grease and seasoning from fingers without drying skin.",
-            "cobuying_utility": "Instantly wipes away masala grease and seasoning from fingers without drying skin.",
-            "social_proof": "👥 48 snack buyers in your neighborhood added this this week"
+            "why_suggested": "Instantly wipes away masala grease, chocolate residue, and seasoning from fingers.",
+            "cobuying_utility": "Instantly wipes away masala grease, chocolate residue, and seasoning from fingers without drying skin.",
+            "social_proof": "👥 48 snack & dessert buyers added this this week"
         }
     },
     # 3. Coffee & Tea
@@ -332,14 +332,6 @@ ROUTING_MATRIX = [
             "why_suggested": "Fast charge your workstation devices up to 50% in 25 minutes.",
             "cobuying_utility": "Fast charge your workstation devices up to 50% in 25 minutes.",
             "social_proof": "👥 34 tech buyers added this this week"
-        },
-        "secondary": {
-            "title": "Portronics Multi-Angle Desktop Phone Stand",
-            "mrp": 699, "price": 249, "emoji": "📱", "sku": "604",
-            "scenario_badge": "📱 Ergonomic Phone Stand",
-            "why_suggested": "Enjoy an ergonomic hands-free viewing angle on your desk.",
-            "cobuying_utility": "Enjoy an ergonomic hands-free viewing angle on your desk.",
-            "social_proof": "👥 49 tech users bought this this week"
         }
     },
     # 6. Beverages & Cold Drinks
@@ -432,11 +424,6 @@ def get_blinksmart_recommendation(cart_items):
                 if prim["sku"] not in used_skus and prim["price"] <= max_allowed_price:
                     matched_prod = prim
                     break
-                elif "secondary" in route:
-                    sec = route["secondary"]
-                    if sec["sku"] not in used_skus and sec["price"] <= max_allowed_price:
-                        matched_prod = sec
-                        break
 
         # Fallback to Wipes (SKU 001) if not already used & within price ratio
         if not matched_prod:
@@ -621,56 +608,66 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE ARRAY (MULTI-PRODUCT ARRAY & DEDUPLICATION)
+    # 3. SINGLE CONSOLIDATED BLINKSMART CONTEXTUAL NUDGE CARD
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
     nudge_trial_added = False
 
     if rec.get("should_nudge", False):
         recommendations = rec.get("recommendations", [])
-        st.markdown(f"""<div style='font-weight:800; font-size:14px; color:#0C831F; margin-bottom:8px;'>✨ BLINKSMART AI TRIAL RECOMMENDATIONS ({len(recommendations)})</div>""", unsafe_allow_html=True)
         
-        for r_idx, nudge in enumerate(recommendations):
+        # Build inner HTML for each recommendation inside the SINGLE consolidated box
+        inner_items_html = ""
+        for idx, nudge in enumerate(recommendations):
             prod = nudge["product"]
+            num_emoji = "1️⃣" if idx == 0 else ("2️⃣" if idx == 1 else "3️⃣")
+            
+            inner_items_html += clean_html(f"""
+            <div class="rationale-box">
+                <div style="font-size:11px; font-weight:800; color:#0C831F; margin-bottom:4px;">
+                    {num_emoji} FOR: {nudge['anchor_item'].upper()}
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <div style="font-size:14px; font-weight:700; color:var(--text-primary);">
+                        {nudge.get('emoji', '✨')} {prod['title']}
+                    </div>
+                    <div>
+                        <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{prod['offer_price']}</span>
+                        <span style="font-size:11px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{prod['mrp']}</span>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-primary); margin-bottom:2px;">🎯 {nudge['why_suggested']}</div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.3;">🤝 "{nudge['cobuying_utility']}"</div>
+            </div>
+            """)
 
-            nudge_card_html = clean_html(f"""
-<div class="nudge-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span class="nudge-tag">{nudge['nudge_badge']}</span>
-        <span class="scenario-badge">{nudge['category_pill']}</span>
-    </div>
-    <div class="rationale-box">
-        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 FOR: {nudge['anchor_item'].upper()}</div>
-        <div style="font-size:12px; color:var(--text-primary); margin-bottom:4px;">{nudge['why_suggested']}</div>
-        <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.4;">"{nudge['cobuying_utility']}"</div>
-    </div>
-    <div style="background-color:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <div style="font-size:15px; font-weight:700; color:var(--text-primary);">{nudge.get('emoji', '✨')} {prod['title']}</div>
-            <div style="font-size:11px; color:#0C831F; font-weight:600;">{prod['authenticity_badge']}</div>
-            <div style="margin-top:4px;">
-                <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{prod['offer_price']}</span>
-                <span style="font-size:11px; color:#9CA3AF; text-decoration:line-through; margin-left:4px;">₹{prod['mrp']}</span>
+        single_box_html = clean_html(f"""
+        <div class="nudge-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="nudge-tag">✨ BLINKSMART CONTEXTUAL NUDGES ({len(recommendations)})</span>
+                <span class="shield-badge">🔰 1st Trial Shield Active</span>
+            </div>
+            {inner_items_html}
+            <div style="margin-top:10px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
+                <span>🔰 100% Brand Authenticity Guarantee</span>
+                <span>👥 High Local Social Proof</span>
             </div>
         </div>
-    </div>
-    <div style="margin-top:8px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-        <span>{nudge['social_proof']}</span>
-        <span class="shield-badge">{prod['shield_badge']}</span>
-    </div>
-</div>
-""")
-            st.markdown(nudge_card_html, unsafe_allow_html=True)
+        """)
+        st.markdown(single_box_html, unsafe_allow_html=True)
 
+        # Render Add-on CTA Buttons for each recommendation right below the single consolidated box
+        for r_idx, nudge in enumerate(recommendations):
+            prod = nudge["product"]
             btn_key = f"add_nudge_btn_{r_idx}_{prod['title'][:8]}"
             nudge_flag_key = f"nudge_added_{r_idx}_{prod['title'][:8]}"
+            
             if nudge_flag_key not in st.session_state:
                 st.session_state[nudge_flag_key] = False
 
             if not st.session_state[nudge_flag_key]:
                 st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
-                if st.button(f"+ Add {prod['title']} to Order (₹15 Fee Waived)", key=btn_key):
+                if st.button(f"+ Add #{r_idx+1} {prod['title']} to Order (₹15 Fee Waived)", key=btn_key):
                     st.session_state[nudge_flag_key] = True
                     st.session_state.cart.append({
                         "id": f"trial_{r_idx}",
@@ -684,9 +681,9 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
             else:
                 nudge_trial_added = True
-                st.success(f"✓ {prod['title']} Added to Basket with First-Trial Shield!")
+                st.success(f"✓ #{r_idx+1} {prod['title']} Added to Basket with First-Trial Shield!")
 
-            st.markdown("---")
+        st.markdown("---")
 
     # -------------------------------------------------------------------------
     # 4. BILL SUMMARY & PRIMARY CHECKOUT CTA (RENDERS THIRD)
