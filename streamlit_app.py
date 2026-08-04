@@ -266,31 +266,10 @@ CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
 
 # -----------------------------------------------------------------------------
-# BLINKSMART AI ENGINE (COMPLETE 19-CATEGORY MATRIX & DYNAMIC LATEST-ITEM ROUTING)
+# BLINKSMART AI ENGINE (MULTI-PRODUCT RECOMMENDATION ARRAY & DEDUPLICATION)
 # -----------------------------------------------------------------------------
 ROUTING_MATRIX = [
-    # 1. Dairy, Bread & Eggs
-    {
-        "categories": ["dairy, bread & eggs"],
-        "keywords": ["milk", "butter", "bread", "egg", "yogurt", "paneer", "amul", "eggoz", "harvest", "epigamia", "mother dairy"],
-        "primary": {
-            "title": "Electric Stainless Steel Milk Frother & Foamer",
-            "mrp": 799, "price": 399, "emoji": "⚡", "sku": "301",
-            "scenario_badge": "☕ 15-Sec Micro-Foam & Whisk",
-            "why_suggested": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee to velvety perfection.",
-            "cobuying_utility": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee to velvety perfection in 15 seconds.",
-            "social_proof": "👥 63 dairy & breakfast buyers in DLF Phase 3 bought this this week"
-        },
-        "secondary": {
-            "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
-            "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
-            "scenario_badge": "⚖️ Exact Ingredient Precision",
-            "why_suggested": "Accurately measure baking flour, protein, and recipe proportions.",
-            "cobuying_utility": "Accurately measure baking flour, protein, and recipe proportions for health tracking.",
-            "social_proof": "👥 31 home cooks nearby bought this this week"
-        }
-    },
-    # 2. Fruits & Vegetables
+    # 1. Fruits & Vegetables
     {
         "categories": ["fruits & vegetables"],
         "keywords": ["avocado", "tomatoes", "onions", "potatoes", "bananas", "apples", "coriander", "lemons", "fresh"],
@@ -298,294 +277,95 @@ ROUTING_MATRIX = [
             "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
             "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
             "scenario_badge": "⚖️ Produce & Macro Precision",
-            "why_suggested": "Accurately measure smoothie portions, avocado macros, and salad ingredients.",
-            "cobuying_utility": "Accurately measure smoothie portions, avocado macros, and salad ingredients, or clean hands after prepping.",
+            "why_suggested": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
+            "cobuying_utility": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
             "social_proof": "👥 42 fitness & salad lovers nearby added this this week"
-        },
-        "secondary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Instant Food Prep Cleanup",
-            "why_suggested": "Quickly sanitize hands after handling raw produce or peeling vegetables.",
-            "cobuying_utility": "Instantly wipes away dirt, sticky juices, and residue from hands during food prep.",
-            "social_proof": "👥 48 grocery buyers in your neighborhood added this this week"
         }
     },
-    # 3. Grocery & Staples
-    {
-        "categories": ["grocery & staples"],
-        "keywords": ["atta", "oil", "rice", "dal", "salt", "turmeric", "haldi", "mirch", "chilli", "aashirvaad", "fortune", "daawat", "tata"],
-        "primary": {
-            "title": "Pigeon 1.5L Stainless Steel Electric Kettle",
-            "mrp": 1195, "price": 649, "emoji": "🫖", "sku": "603",
-            "scenario_badge": "⚡ Instant Hot Water Prep",
-            "why_suggested": "Instant boiling water to speed up rice, dal, and atta dough prep times in the kitchen.",
-            "cobuying_utility": "Instant boiling water to speed up rice, dal, and atta dough prep times in the kitchen.",
-            "social_proof": "👥 54 kitchen users in Gurgaon Sector 43 bought this this week"
-        },
-        "secondary": {
-            "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
-            "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
-            "scenario_badge": "⚖️ Staple Portion Scale",
-            "why_suggested": "Measure exact grain and dal portions for daily family meals.",
-            "cobuying_utility": "Accurately weigh grain, pulse, and flour portions for meal prep.",
-            "social_proof": "👥 29 home chefs added this this week"
-        }
-    },
-    # 4. Munchies & Snacks
+    # 2. Munchies & Chips
     {
         "categories": ["munchies & snacks"],
         "keywords": ["doritos", "chips", "lays", "bhujia", "popcorn", "kurkure", "pringles", "nachos", "snack"],
         "primary": {
             "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
             "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Finger & Masala Cleanup",
-            "why_suggested": "Essential cleanup utility for snack time.",
-            "cobuying_utility": "Instantly wipes away masala grease, seasoning, and oil from fingers without leaving sticky residue.",
+            "scenario_badge": "🧼 Instant Finger Cleanup",
+            "why_suggested": "Instantly wipes away masala grease and seasoning from fingers without drying skin.",
+            "cobuying_utility": "Instantly wipes away masala grease and seasoning from fingers without drying skin.",
             "social_proof": "👥 48 snack buyers in your neighborhood added this this week"
         }
     },
-    # 5. Beverages & Cold Drinks
-    {
-        "categories": ["beverages & cold drinks"],
-        "keywords": ["red bull", "coke", "coca-cola", "thums up", "juice", "water", "bisleri", "soda", "drink"],
-        "primary": {
-            "title": "Insulated Neoprene Cold Can Cooler Sleeve",
-            "mrp": 199, "price": 99, "emoji": "🥤", "sku": "002",
-            "scenario_badge": "❄️ Sub-Zero Can Thermal Chill",
-            "why_suggested": "Keeps chilled cans, juices, and energy drinks cold 2x longer without messy condensation.",
-            "cobuying_utility": "Keeps chilled cans, juices, and energy drinks cold 2x longer without messy condensation.",
-            "social_proof": "👥 19 beverage buyers nearby added this this week"
-        }
-    },
-    # 6. Tea, Coffee & Health Drinks
+    # 3. Coffee & Tea
     {
         "categories": ["tea, coffee & health drinks"],
         "keywords": ["coffee", "tokai", "nescafe", "tea", "tetley", "green tea", "bournvita", "chai", "espresso"],
         "primary": {
             "title": "Electric Stainless Steel Milk Frother & Foamer",
             "mrp": 799, "price": 399, "emoji": "⚡", "sku": "301",
-            "scenario_badge": "☕ 15-Second Cafe Micro-Foam",
-            "why_suggested": "Create rich, cafe-style micro-foam for cappuccinos, lattes, green teas, and health drinks right at home.",
-            "cobuying_utility": "Create rich, cafe-style micro-foam for cappuccinos, lattes, green teas, and health drinks right at home.",
+            "scenario_badge": "☕ 15-Sec Cafe Micro-Foam",
+            "why_suggested": "Create rich, cafe-style micro-foam for lattes and teas right at home.",
+            "cobuying_utility": "Create rich, cafe-style micro-foam for lattes and teas right at home.",
             "social_proof": "👥 63 coffee lovers in DLF Phase 3 bought this this week"
         }
     },
-    # 7. Instant & Frozen Food
+    # 4. Beauty & Skincare
     {
-        "categories": ["instant & frozen food"],
-        "keywords": ["maggi", "oats", "french fries", "mccain", "corn flakes", "yippee", "noodles"],
-        "primary": {
-            "title": "Pigeon 1.5L Stainless Steel Electric Kettle",
-            "mrp": 1195, "price": 649, "emoji": "🫖", "sku": "603",
-            "scenario_badge": "⚡ 2-Min Rapid Hot Water",
-            "why_suggested": "Boil water in under 2 minutes for lightning-fast instant noodles, oatmeal, and hot snacks.",
-            "cobuying_utility": "Boil water in under 2 minutes for lightning-fast instant noodles, oatmeal, and hot snacks.",
-            "social_proof": "👥 51 quick meal buyers bought this this week"
-        },
-        "secondary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Instant Meal Cleanup",
-            "why_suggested": "Clean hands instantly after eating hot fries or noodles.",
-            "cobuying_utility": "Wipes away sauce and grease after instant snacks.",
-            "social_proof": "👥 38 buyers added this this week"
-        }
-    },
-    # 8. Sweet Tooth, Chocolates & Bakery
-    {
-        "categories": ["sweet tooth, chocolates & bakery"],
-        "keywords": ["silk", "cadbury", "nutella", "ferrero", "ice cream", "kwality", "chocolate", "dessert"],
-        "primary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Sticky Dessert Cleanup",
-            "why_suggested": "Wipe chocolate residue clean off hands or keep ice cream containers insulated.",
-            "cobuying_utility": "Wipe chocolate residue clean off hands or keep ice cream containers insulated.",
-            "social_proof": "👥 44 dessert lovers added this this week"
-        },
-        "secondary": {
-            "title": "Insulated Neoprene Cold Can Cooler Sleeve",
-            "mrp": 199, "price": 99, "emoji": "🍦", "sku": "002",
-            "scenario_badge": "❄️ Thermal Ice Cream Insulation",
-            "why_suggested": "Keep ice cream tubs and desserts cold while eating.",
-            "cobuying_utility": "Insulates dessert tubs for longer enjoyment.",
-            "social_proof": "👥 18 sweet lovers bought this"
-        }
-    },
-    # 9. Beauty & Cosmetics
-    {
-        "categories": ["beauty & cosmetics"],
-        "keywords": ["derma", "sunscreen", "minimalist", "serum", "garnier", "micellar", "maybelline", "mascara"],
+        "categories": ["beauty & cosmetics", "bath, body & personal care"],
+        "keywords": ["derma", "sunscreen", "minimalist", "serum", "garnier", "micellar", "maybelline", "mascara", "skincare"],
         "primary": {
             "title": "Jade Facial Roller & Gua Sha Massager Set",
             "mrp": 999, "price": 499, "emoji": "💎", "sku": "101",
             "scenario_badge": "✨ Facial Sculpt & Glow Massage",
-            "why_suggested": "Massage skin after applying serums or sunscreen to boost absorption, drainage, and natural glow.",
-            "cobuying_utility": "Massage skin after applying serums or sunscreen to boost absorption, drainage, and natural glow.",
+            "why_suggested": "Massage skin after applying serums or sunscreen to boost absorption.",
+            "cobuying_utility": "Massage skin after applying serums or sunscreen to boost absorption.",
             "social_proof": "👥 28 skincare users in DLF Phase 3 bought this this week"
         }
     },
-    # 10. Bath, Body & Personal Care
+    # 5. Tech & Office Supplies
     {
-        "categories": ["bath, body & personal care"],
-        "keywords": ["cetaphil", "colgate", "dettol", "dove", "shampoo", "nivea", "lotion", "cleanser", "soap"],
+        "categories": ["electronics & tech accessories", "stationery, books & games"],
+        "keywords": ["red bull", "charger", "spigen", "cable", "power bank", "notebook", "office", "desk", "laptop"],
         "primary": {
-            "title": "Jade Facial Roller & Gua Sha Massager Set",
-            "mrp": 999, "price": 499, "emoji": "💎", "sku": "101",
-            "scenario_badge": "✨ Post-Cleansing Skin Massage",
-            "why_suggested": "Enhance daily skincare absorption and facial relaxation right after cleansing and moisturizing.",
-            "cobuying_utility": "Enhance daily skincare absorption and facial relaxation right after cleansing and moisturizing.",
-            "social_proof": "👥 35 personal care buyers bought this this week"
-        },
-        "secondary": {
-            "title": "Garnier Skin Naturals Micellar Cleansing Water 125ml",
-            "mrp": 225, "price": 199, "emoji": "🧼", "sku": "103",
-            "scenario_badge": "🧼 Gentle Pore Cleansing",
-            "why_suggested": "Deep clean makeup and impurities after daily bathing routines.",
-            "cobuying_utility": "Effortlessly dissolves makeup and dirt.",
-            "social_proof": "👥 22 users bought this this week"
-        }
-    },
-    # 11. Electronics & Tech Accessories
-    {
-        "categories": ["electronics & tech accessories"],
-        "keywords": ["spigen", "charger", "boat", "airdopes", "portronics", "cable", "power bank", "mi"],
-        "primary": {
-            "title": "Portronics Multi-Angle Desktop Phone Stand",
-            "mrp": 699, "price": 249, "emoji": "📱", "sku": "604",
-            "scenario_badge": "📱 Hands-Free Workstation View",
-            "why_suggested": "Enjoy an ergonomic hands-free viewing angle while fast-charging or listening to audio on your desk.",
-            "cobuying_utility": "Enjoy an ergonomic hands-free viewing angle while fast-charging or listening to audio on your desk.",
-            "social_proof": "👥 49 tech users in Gurgaon Sector 43 bought this this week"
-        },
-        "secondary": {
             "title": "Spigen 20W Fast Type-C Wall Charger Adapter",
             "mrp": 1499, "price": 899, "emoji": "🔌", "sku": "201",
-            "scenario_badge": "⚡ 20W Fast Power Backup",
-            "why_suggested": "Essential fast charging plug for your mobile gear.",
-            "cobuying_utility": "Fast charge devices 50% in 25 mins.",
+            "scenario_badge": "⚡ 20W Fast Workstation Power",
+            "why_suggested": "Fast charge your workstation devices up to 50% in 25 minutes.",
+            "cobuying_utility": "Fast charge your workstation devices up to 50% in 25 minutes.",
             "social_proof": "👥 34 tech buyers added this this week"
-        }
-    },
-    # 12. Home & Kitchen Utilities
-    {
-        "categories": ["home & kitchen utilities"],
-        "keywords": ["frother", "scale", "kettle", "phone stand", "borosil", "bowl", "utility"],
-        "primary": {
-            "title": "Portronics Multi-Angle Desktop Phone Stand",
-            "mrp": 699, "price": 249, "emoji": "📱", "sku": "604",
-            "scenario_badge": "📱 Recipe Video Phone Stand",
-            "why_suggested": "Keep recipes and video guides clearly visible on your screen hands-free while cooking.",
-            "cobuying_utility": "Keep recipes and video guides clearly visible on your screen hands-free while cooking.",
-            "social_proof": "👥 39 home cooks bought this this week"
-        }
-    },
-    # 13. Cleaning & Household Essentials
-    {
-        "categories": ["cleaning & household essentials"],
-        "keywords": ["surf excel", "colin", "vim", "origami", "tissue", "cleaner", "washing"],
-        "primary": {
-            "title": "Origami 2-Ply Facial Tissue Box (200 Sheets)",
-            "mrp": 110, "price": 95, "emoji": "🧻", "sku": "1301",
-            "scenario_badge": "🧻 Quick Counter Spill Absorb",
-            "why_suggested": "Quick-absorb tissues and wipes for accidental countertop spills and instant surface dusting.",
-            "cobuying_utility": "Quick-absorb tissues and wipes for accidental countertop spills and instant surface dusting.",
-            "social_proof": "👥 61 household buyers added this this week"
         },
         "secondary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Multi-Surface Hand Wipe",
-            "why_suggested": "Wipe hands clean after household chores.",
-            "cobuying_utility": "Quick sanitizing hand wipe after cleaning.",
-            "social_proof": "👥 40 users bought this"
-        }
-    },
-    # 14. Baby Care
-    {
-        "categories": ["baby care"],
-        "keywords": ["pampers", "wipes", "diapers", "sebamed", "lotion", "baby"],
-        "primary": {
-            "title": "Pampers Fresh Clean Baby Wipes (80 Sheets)",
-            "mrp": 225, "price": 185, "emoji": "👶", "sku": "1401",
-            "scenario_badge": "👶 Pure Water Rash Shield",
-            "why_suggested": "Ultra-gentle 99% pure water wipes for rash-free, hypoallergenic cleanup during diaper changes.",
-            "cobuying_utility": "Ultra-gentle 99% pure water wipes for rash-free, hypoallergenic cleanup during diaper changes.",
-            "social_proof": "👥 38 young parents in DLF Phase 3 bought this this week"
-        }
-    },
-    # 15. Pet Care
-    {
-        "categories": ["pet care"],
-        "keywords": ["pedigree", "dog", "whiskas", "cat", "pet"],
-        "primary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🐾 Paw & Snout Meal Wipe",
-            "why_suggested": "Quickly clean muddy paws, snouts, and feeding bowl spills instantly after mealtime.",
-            "cobuying_utility": "Quickly clean muddy paws, snouts, and feeding bowl spills instantly after mealtime.",
-            "social_proof": "👥 27 pet parents in your neighborhood bought this this week"
-        }
-    },
-    # 16. Health, Pharma & Wellness
-    {
-        "categories": ["health, pharma & wellness"],
-        "keywords": ["ors", "enerzal", "volini", "dettol", "bandages", "spray", "pain"],
-        "primary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🩹 Antiseptic Skin Prep Wipe",
-            "why_suggested": "Hygienically clean skin before applying pain sprays or antiseptic adhesive bandages.",
-            "cobuying_utility": "Hygienically clean skin before applying pain sprays or antiseptic adhesive bandages.",
-            "social_proof": "👥 32 health buyers added this this week"
-        }
-    },
-    # 17. Stationery, Books & Games
-    {
-        "categories": ["stationery, books & games"],
-        "keywords": ["classmate", "notebook", "parker", "pen", "uno", "cards", "book"],
-        "primary": {
             "title": "Portronics Multi-Angle Desktop Phone Stand",
             "mrp": 699, "price": 249, "emoji": "📱", "sku": "604",
-            "scenario_badge": "📱 Ergonomic Desk Study Stand",
-            "why_suggested": "Keep your study tools organized and devices fast-charged during late-night study or gaming sessions.",
-            "cobuying_utility": "Keep your study tools organized and devices fast-charged during late-night study or gaming sessions.",
-            "social_proof": "👥 29 students & gamers bought this this week"
+            "scenario_badge": "📱 Ergonomic Phone Stand",
+            "why_suggested": "Enjoy an ergonomic hands-free viewing angle on your desk.",
+            "cobuying_utility": "Enjoy an ergonomic hands-free viewing angle on your desk.",
+            "social_proof": "👥 49 tech users bought this this week"
         }
     },
-    # 18. Paan & Party Essentials
+    # 6. Beverages & Cold Drinks
     {
-        "categories": ["paan & party essentials"],
-        "keywords": ["orbit", "gum", "soda", "catch", "party"],
+        "categories": ["beverages & cold drinks"],
+        "keywords": ["coke", "coca-cola", "thums up", "juice", "water", "bisleri", "soda", "drink"],
         "primary": {
             "title": "Insulated Neoprene Cold Can Cooler Sleeve",
             "mrp": 199, "price": 99, "emoji": "🥤", "sku": "002",
-            "scenario_badge": "❄️ Party Chill Can Lock",
-            "why_suggested": "Keep party mixers and sodas ice-cold 2x longer during gatherings.",
-            "cobuying_utility": "Keep party mixers and sodas ice-cold 2x longer during gatherings.",
-            "social_proof": "👥 21 party hosts added this this week"
+            "scenario_badge": "❄️ Sub-Zero Can Thermal Chill",
+            "why_suggested": "Keeps chilled cans, juices, and drinks cold 2x longer.",
+            "cobuying_utility": "Keeps chilled cans, juices, and drinks cold 2x longer.",
+            "social_proof": "👥 19 beverage buyers added this this week"
         }
     },
-    # 19. Meat, Fish & Eggs
+    # 7. Dairy, Bread & Eggs
     {
-        "categories": ["meat, fish & eggs"],
-        "keywords": ["chicken", "breast", "meat", "fish", "licious"],
+        "categories": ["dairy, bread & eggs"],
+        "keywords": ["milk", "butter", "bread", "egg", "yogurt", "paneer", "amul", "eggoz", "harvest", "epigamia", "mother dairy"],
         "primary": {
-            "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
-            "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
-            "scenario_badge": "⚖️ Protein Macro Weighing",
-            "why_suggested": "Accurately weigh protein meal portions and sanitize hands instantly after handling raw meat.",
-            "cobuying_utility": "Accurately weigh protein meal portions and sanitize hands instantly after handling raw meat.",
-            "social_proof": "👥 37 fitness enthusiasts bought this this week"
-        },
-        "secondary": {
-            "title": "Pure Water Refreshing Wet Wipes (Pack of 15)",
-            "mrp": 99, "price": 49, "emoji": "🧼", "sku": "001",
-            "scenario_badge": "🧼 Raw Meat Hand Sanitizer",
-            "why_suggested": "Sanitize hands after handling raw poultry.",
-            "cobuying_utility": "Quick hygienic cleanup for hands.",
-            "social_proof": "👥 45 buyers added this"
+            "title": "Electric Stainless Steel Milk Frother & Foamer",
+            "mrp": 799, "price": 399, "emoji": "⚡", "sku": "301",
+            "scenario_badge": "☕ 15-Sec Micro-Foam & Whisk",
+            "why_suggested": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee.",
+            "cobuying_utility": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee in 15 seconds.",
+            "social_proof": "👥 63 dairy buyers in DLF Phase 3 bought this this week"
         }
     }
 ]
@@ -596,18 +376,14 @@ ROUTING_MATRIX = [
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-if "nudge_added" not in st.session_state:
-    st.session_state.nudge_added = False
-
 if "order_placed" not in st.session_state:
     st.session_state.order_placed = False
 
 if "exchange_triggered" not in st.session_state:
     st.session_state.exchange_triggered = False
 
-def create_nudge_payload(anchor_name, prod_dict):
+def create_nudge_item_payload(anchor_name, prod_dict):
     return {
-        "should_nudge": True,
         "anchor_item": anchor_name or "Basket Item",
         "nudge_badge": "✨ BLINKSMART CONTEXTUAL NUDGE",
         "category_pill": prod_dict["scenario_badge"],
@@ -627,46 +403,58 @@ def create_nudge_payload(anchor_name, prod_dict):
 def get_blinksmart_recommendation(cart_items):
     # 1. SILENT COLLAPSE: Return false if cart is empty
     if not cart_items:
-        return {"should_nudge": False}
+        return {"should_nudge": False, "recommendations": []}
 
     cart_subtotal = sum(item.get("price", 0) for item in cart_items)
-
-    # 2. PRICE RATIO & BASKET PROTECTION: Max price is 3x cart value
     max_allowed_price = cart_subtotal * 3
 
-    # RULE 1: LATEST ITEM PRIORITY (Evaluate cart_items[-1] first)
-    last_item = cart_items[-1]
-    anchor_name = last_item.get("name", "Basket Item")
-    item_name_lower = anchor_name.lower()
-    item_cat_lower = last_item.get("category", "").lower()
-    full_text = f"{item_name_lower} {item_cat_lower}"
+    recommendations = []
+    used_skus = set()
 
-    # Search for matching category route in ROUTING_MATRIX
-    for route in ROUTING_MATRIX:
-        cat_match = any(c in item_cat_lower for c in route["categories"])
-        kw_match = any(kw in full_text for kw in route["keywords"])
+    # Iterate through unique items/categories in cart (reversed for latest item first)
+    for item in reversed(cart_items):
+        if len(recommendations) >= 3:
+            break
 
-        if cat_match or kw_match:
-            # Try primary recommendation first
-            prim = route["primary"]
-            if cart_subtotal < 100 and prim["price"] > 150:
-                # Check low-cost secondary if present
-                if "secondary" in route and route["secondary"]["price"] <= max_allowed_price:
-                    return create_nudge_payload(anchor_name, route["secondary"])
-                elif ROUTING_MATRIX[3]["primary"]["price"] <= max_allowed_price: # ₹49 Wipes
-                    return create_nudge_payload(anchor_name, ROUTING_MATRIX[3]["primary"])
-            elif prim["price"] <= max_allowed_price:
-                return create_nudge_payload(anchor_name, prim)
-            elif "secondary" in route and route["secondary"]["price"] <= max_allowed_price:
-                return create_nudge_payload(anchor_name, route["secondary"])
+        anchor_name = item.get("name", "Basket Item")
+        item_name_lower = anchor_name.lower()
+        item_cat_lower = item.get("category", "").lower()
+        full_text = f"{item_name_lower} {item_cat_lower}"
 
-    # Fallback to low-cost utility (SKU 001 Wipes @ ₹49) if price ratio allows
-    wipes = ROUTING_MATRIX[3]["primary"]
-    if wipes["price"] <= max_allowed_price:
-        return create_nudge_payload(anchor_name, wipes)
+        matched_prod = None
 
-    # 3. SILENT COLLAPSE: If no candidate satisfies the price ratio constraint
-    return {"should_nudge": False}
+        for route in ROUTING_MATRIX:
+            cat_match = any(c in item_cat_lower for c in route["categories"])
+            kw_match = any(kw in full_text for kw in route["keywords"])
+
+            if cat_match or kw_match:
+                prim = route["primary"]
+                if prim["sku"] not in used_skus and prim["price"] <= max_allowed_price:
+                    matched_prod = prim
+                    break
+                elif "secondary" in route:
+                    sec = route["secondary"]
+                    if sec["sku"] not in used_skus and sec["price"] <= max_allowed_price:
+                        matched_prod = sec
+                        break
+
+        # Fallback to Wipes (SKU 001) if not already used & within price ratio
+        if not matched_prod:
+            wipes = ROUTING_MATRIX[1]["primary"] # SKU 001 Wipes @ ₹49
+            if wipes["sku"] not in used_skus and wipes["price"] <= max_allowed_price:
+                matched_prod = wipes
+
+        if matched_prod:
+            used_skus.add(matched_prod["sku"])
+            recommendations.append(create_nudge_item_payload(anchor_name, matched_prod))
+
+    if recommendations:
+        return {
+            "should_nudge": True,
+            "recommendations": recommendations
+        }
+
+    return {"should_nudge": False, "recommendations": []}
 
 # -----------------------------------------------------------------------------
 # TOP APP HEADER (LOGO, LOCATION & RESET)
@@ -690,7 +478,6 @@ with col_info:
 with col_reset:
     if st.button("🔄 Reset", key="top_reset_btn"):
         st.session_state.cart = []
-        st.session_state.nudge_added = False
         st.session_state.order_placed = False
         st.session_state.exchange_triggered = False
         st.rerun()
@@ -834,28 +621,33 @@ else:
     st.markdown("---")
 
     # -------------------------------------------------------------------------
-    # 3. BLINKSMART CONTEXTUAL NUDGE CARD (DYNAMIC RECENT-ITEM ROUTING)
+    # 3. BLINKSMART CONTEXTUAL NUDGE ARRAY (MULTI-PRODUCT ARRAY & DEDUPLICATION)
     # -------------------------------------------------------------------------
     rec = get_blinksmart_recommendation(st.session_state.cart)
+    nudge_trial_added = False
 
     if rec.get("should_nudge", False):
-        prod = rec["product"]
+        recommendations = rec.get("recommendations", [])
+        st.markdown(f"""<div style='font-weight:800; font-size:14px; color:#0C831F; margin-bottom:8px;'>✨ BLINKSMART AI TRIAL RECOMMENDATIONS ({len(recommendations)})</div>""", unsafe_allow_html=True)
+        
+        for r_idx, nudge in enumerate(recommendations):
+            prod = nudge["product"]
 
-        nudge_card_html = clean_html(f"""
+            nudge_card_html = clean_html(f"""
 <div class="nudge-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span class="nudge-tag">{rec['nudge_badge']}</span>
-        <span class="scenario-badge">{rec['category_pill']}</span>
+        <span class="nudge-tag">{nudge['nudge_badge']}</span>
+        <span class="scenario-badge">{nudge['category_pill']}</span>
     </div>
     <div class="rationale-box">
-        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 WHY SUGGESTED:</div>
-        <div style="font-size:12px; color:var(--text-primary); margin-bottom:4px;">{rec['why_suggested']}</div>
+        <div style="font-size:11px; color:#0C831F; font-weight:800; margin-bottom:2px;">🎯 FOR: {nudge['anchor_item'].upper()}</div>
+        <div style="font-size:12px; color:var(--text-primary); margin-bottom:4px;">{nudge['why_suggested']}</div>
         <div style="font-size:11px; color:#D97706; font-weight:800; margin-bottom:2px;">🤝 CO-BUYING UTILITY:</div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.4;">"{rec['cobuying_utility']}"</div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.4;">"{nudge['cobuying_utility']}"</div>
     </div>
     <div style="background-color:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <div style="font-size:15px; font-weight:700; color:var(--text-primary);">{rec.get('emoji', '✨')} {prod['title']}</div>
+            <div style="font-size:15px; font-weight:700; color:var(--text-primary);">{nudge.get('emoji', '✨')} {prod['title']}</div>
             <div style="font-size:11px; color:#0C831F; font-weight:600;">{prod['authenticity_badge']}</div>
             <div style="margin-top:4px;">
                 <span style="font-size:14px; font-weight:800; color:#0C831F;">₹{prod['offer_price']}</span>
@@ -864,34 +656,44 @@ else:
         </div>
     </div>
     <div style="margin-top:8px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-        <span>{rec['social_proof']}</span>
+        <span>{nudge['social_proof']}</span>
         <span class="shield-badge">{prod['shield_badge']}</span>
     </div>
 </div>
 """)
-        st.markdown(nudge_card_html, unsafe_allow_html=True)
+            st.markdown(nudge_card_html, unsafe_allow_html=True)
 
-        # Differentiated Secondary CTA button styling (Blinkit Gold #F7C200)
-        if not st.session_state.nudge_added:
-            st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
-            if st.button(f"+ Add {prod['title']} to Order (₹15 Fee Waived)", key="add_nudge_btn"):
-                st.session_state.nudge_added = True
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-        else:
-            st.success(f"✓ {prod['title']} Added to Basket with First-Trial Shield!")
+            btn_key = f"add_nudge_btn_{r_idx}_{prod['title'][:8]}"
+            nudge_flag_key = f"nudge_added_{r_idx}_{prod['title'][:8]}"
+            if nudge_flag_key not in st.session_state:
+                st.session_state[nudge_flag_key] = False
 
-        st.markdown("---")
+            if not st.session_state[nudge_flag_key]:
+                st.markdown('<div class="nudge-btn-wrapper">', unsafe_allow_html=True)
+                if st.button(f"+ Add {prod['title']} to Order (₹15 Fee Waived)", key=btn_key):
+                    st.session_state[nudge_flag_key] = True
+                    st.session_state.cart.append({
+                        "id": f"trial_{r_idx}",
+                        "name": prod["title"],
+                        "price": prod["offer_price"],
+                        "mrp": prod["mrp"],
+                        "category": "Trial Product",
+                        "emoji": nudge.get("emoji", "✨")
+                    })
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                nudge_trial_added = True
+                st.success(f"✓ {prod['title']} Added to Basket with First-Trial Shield!")
+
+            st.markdown("---")
 
     # -------------------------------------------------------------------------
     # 4. BILL SUMMARY & PRIMARY CHECKOUT CTA (RENDERS THIRD)
     # -------------------------------------------------------------------------
     if st.session_state.cart:
-        if st.session_state.nudge_added and rec.get("should_nudge", False):
-            subtotal += prod['offer_price']
-
         st.markdown("""<div style='font-weight:800; font-size:14px; color:var(--text-primary); margin-top:10px;'>📄 Bill Summary</div>""", unsafe_allow_html=True)
-        handling_fee = 0 if st.session_state.nudge_added else 15
+        handling_fee = 0 if nudge_trial_added else 15
         grand_total = subtotal + handling_fee
 
         col_label, col_val = st.columns([3, 1])
@@ -899,14 +701,14 @@ else:
             st.write("Item Subtotal")
             st.write("Delivery Fee (⚡ 10 Mins)")
             st.write("Handling Fee")
-            if st.session_state.nudge_added:
+            if nudge_trial_added:
                 st.write("First-Trial Shield Fee Waiver")
             st.markdown("**Grand Total**")
         with col_val:
             st.write(f"₹{subtotal}")
             st.write("FREE")
             st.write(f"₹{handling_fee}")
-            if st.session_state.nudge_added:
+            if nudge_trial_added:
                 st.write("-₹15")
             st.markdown(f"**₹{grand_total}**")
 
