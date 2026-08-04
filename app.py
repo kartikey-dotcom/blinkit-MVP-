@@ -171,6 +171,18 @@ header { visibility: hidden; }
     font-size: 11px;
 }
 
+.social-proof-pill {
+    background-color: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    color: #047857;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
 /* Primary Green CTA Button (Checkout & Catalog Add) */
 .stButton > button {
     background-color: #0C831F !important;
@@ -275,11 +287,11 @@ ROUTING_MATRIX = [
         "keywords": ["avocado", "tomatoes", "onions", "potatoes", "bananas", "apples", "coriander", "lemons", "fresh"],
         "primary": {
             "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
-            "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
+            "mrp": 999, "price": 399, "emoji": "秤️", "sku": "602",
             "scenario_badge": "⚖️ Produce & Macro Precision",
             "why_suggested": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
             "cobuying_utility": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
-            "social_proof": "👥 42 fitness & salad lovers nearby added this this week"
+            "social_proof": "👥 142 residents in DLF Phase 3 bought this item this week"
         }
     },
     # 2. Munchies, Chips & Sweet Tooth
@@ -292,7 +304,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "🧼 Instant Finger Cleanup",
             "why_suggested": "Instantly wipes away masala grease, chocolate residue, and seasoning from fingers.",
             "cobuying_utility": "Instantly wipes away masala grease, chocolate residue, and seasoning from fingers without drying skin.",
-            "social_proof": "👥 48 snack & dessert buyers added this this week"
+            "social_proof": "👥 389 residents in DLF Phase 3 bought this item this week"
         }
     },
     # 3. Coffee & Tea
@@ -305,7 +317,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "☕ 15-Sec Cafe Micro-Foam",
             "why_suggested": "Create rich, cafe-style micro-foam for lattes and teas right at home.",
             "cobuying_utility": "Create rich, cafe-style micro-foam for lattes and teas right at home.",
-            "social_proof": "👥 63 coffee lovers in DLF Phase 3 bought this this week"
+            "social_proof": "👥 215 coffee lovers in DLF Phase 3 bought this item this week"
         }
     },
     # 4. Beauty & Skincare
@@ -318,7 +330,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "✨ Facial Sculpt & Glow Massage",
             "why_suggested": "Massage skin after applying serums or sunscreen to boost absorption.",
             "cobuying_utility": "Massage skin after applying serums or sunscreen to boost absorption.",
-            "social_proof": "👥 28 skincare users in DLF Phase 3 bought this this week"
+            "social_proof": "👥 178 skincare buyers in DLF Phase 3 bought this item this week"
         }
     },
     # 5. Tech & Office Supplies
@@ -331,7 +343,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "⚡ 20W Fast Workstation Power",
             "why_suggested": "Fast charge your workstation devices up to 50% in 25 minutes.",
             "cobuying_utility": "Fast charge your workstation devices up to 50% in 25 minutes.",
-            "social_proof": "👥 34 tech buyers added this this week"
+            "social_proof": "👥 264 tech users in DLF Phase 3 bought this item this week"
         }
     },
     # 6. Beverages & Cold Drinks
@@ -344,7 +356,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "❄️ Sub-Zero Can Thermal Chill",
             "why_suggested": "Keeps chilled cans, juices, and drinks cold 2x longer.",
             "cobuying_utility": "Keeps chilled cans, juices, and drinks cold 2x longer.",
-            "social_proof": "👥 19 beverage buyers added this this week"
+            "social_proof": "👥 195 drink buyers in DLF Phase 3 bought this item this week"
         }
     },
     # 7. Dairy, Bread & Eggs
@@ -357,7 +369,7 @@ ROUTING_MATRIX = [
             "scenario_badge": "☕ 15-Sec Micro-Foam & Whisk",
             "why_suggested": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee.",
             "cobuying_utility": "Whisk egg batters, Greek yogurt smoothies, or hot milk coffee in 15 seconds.",
-            "social_proof": "👥 63 dairy buyers in DLF Phase 3 bought this this week"
+            "social_proof": "👥 312 breakfast buyers in DLF Phase 3 bought this item this week"
         }
     }
 ]
@@ -637,7 +649,8 @@ else:
                     </div>
                 </div>
                 <div style="font-size:12px; color:var(--text-primary); margin-bottom:2px;">🎯 {nudge['why_suggested']}</div>
-                <div style="font-size:11px; color:var(--text-secondary); line-height:1.3;">🤝 "{nudge['cobuying_utility']}"</div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.3; margin-bottom:4px;">🤝 "{nudge['cobuying_utility']}"</div>
+                <div class="social-proof-pill">{nudge['social_proof']}</div>
             </div>
             """)
 
@@ -650,7 +663,7 @@ else:
             {inner_items_html}
             <div style="margin-top:10px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
                 <span>🔰 100% Brand Authenticity Guarantee</span>
-                <span>👥 High Local Social Proof</span>
+                <span>⚡ 10-Minute Doorstep Rider Exchange</span>
             </div>
         </div>
         """)
