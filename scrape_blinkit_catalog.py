@@ -133,7 +133,7 @@ BLINKIT_CATALOG_DATA = [
 
 def generate_catalog_files():
     df = pd.DataFrame(BLINKIT_CATALOG_DATA)
-    df.to_csv("blinkit_catalog.csv", index=False)
+    df.to_csv("blinkit_catalog.csv", index=False, encoding="utf-8")
     
     with open("blinkit_catalog.json", "w", encoding="utf-8") as f:
         json.dump(BLINKIT_CATALOG_DATA, f, indent=4)

@@ -8,7 +8,20 @@ from dotenv import load_dotenv
 
 # Silently load environment variables / Streamlit secrets (Zero API key UI display)
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_API_KEY") or st.secrets.get("GEMINI_API_KEY", "")
+
+def get_streamlit_secret(key, default=""):
+    try:
+        if hasattr(st, "secrets") and st.secrets is not None:
+            return st.secrets.get(key, default)
+    except Exception:
+        pass
+    return default
+
+GEMINI_API_KEY = (
+    os.getenv("GEMINI_API_KEY") 
+    or os.getenv("GOOGLE_AI_STUDIO_API_KEY") 
+    or get_streamlit_secret("GEMINI_API_KEY", "")
+)
 
 # Robust helper function to clean inline HTML strings
 def clean_html(html_str):
@@ -267,12 +280,14 @@ st.markdown(ios_status_html, unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 @st.cache_data
 def load_blinkit_catalog():
-    if os.path.exists("blinkit_catalog.csv"):
-        df = pd.read_csv("blinkit_catalog.csv")
-        return df.to_dict(orient="records")
-    else:
-        from scrape_blinkit_catalog import BLINKIT_CATALOG_DATA
-        return BLINKIT_CATALOG_DATA
+    try:
+        if os.path.exists("blinkit_catalog.csv"):
+            df = pd.read_csv("blinkit_catalog.csv", encoding="utf-8")
+            return df.to_dict(orient="records")
+    except Exception:
+        pass
+    from scrape_blinkit_catalog import BLINKIT_CATALOG_DATA
+    return BLINKIT_CATALOG_DATA
 
 CATALOG_LIST = load_blinkit_catalog()
 CATALOG_DF = pd.DataFrame(CATALOG_LIST)
@@ -287,7 +302,7 @@ ROUTING_MATRIX = [
         "keywords": ["avocado", "tomatoes", "onions", "potatoes", "bananas", "apples", "coriander", "lemons", "fresh"],
         "primary": {
             "title": "Portronics Digital Kitchen Weight Scale (1g to 10kg)",
-            "mrp": 999, "price": 399, "emoji": "秤️", "sku": "602",
+            "mrp": 999, "price": 399, "emoji": "⚖️", "sku": "602",
             "scenario_badge": "⚖️ Produce & Macro Precision",
             "why_suggested": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
             "cobuying_utility": "Accurately weigh fruit portions, avocado macros, and salad ingredients.",
@@ -578,7 +593,7 @@ else:
             if selected_item_key == placeholder:
                 st.warning("⚠️ Please select a product from the list above first.")
             else:
-                item_to_add = product_map[selected_item_key]
+                item_to_add = dict(product_map[selected_item_key])
                 st.session_state.cart.append(item_to_add)
                 st.rerun()
     else:
