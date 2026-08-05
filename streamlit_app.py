@@ -6,6 +6,16 @@ import os
 import re
 from dotenv import load_dotenv
 
+# -----------------------------------------------------------------------------
+# PAGE CONFIGURATION (MUST BE FIRST STREAMLIT COMMAND)
+# -----------------------------------------------------------------------------
+st.set_page_config(
+    page_title="Blinkit Quick Commerce | Mobile App MVP",
+    page_icon="⚡",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
 # Silently load environment variables / Streamlit secrets (Zero API key UI display)
 load_dotenv()
 
@@ -27,16 +37,6 @@ GEMINI_API_KEY = (
 def clean_html(html_str):
     lines = [line.strip() for line in html_str.splitlines() if line.strip()]
     return " ".join(lines)
-
-# -----------------------------------------------------------------------------
-# PAGE CONFIGURATION
-# -----------------------------------------------------------------------------
-st.set_page_config(
-    page_title="Blinkit Quick Commerce | Mobile App MVP",
-    page_icon="⚡",
-    layout="centered",
-    initial_sidebar_state="collapsed"
-)
 
 # Custom CSS for System Auto Theme Detection (prefers-color-scheme: dark & light)
 st.markdown(clean_html("""
